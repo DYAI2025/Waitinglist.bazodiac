@@ -1,0 +1,145 @@
+/*
+BAZODIAC Cursor FX — extracted and portable
+Source behavior:
+- 4px white dot, mix-blend-mode:difference
+- 40px gold ring, delayed follow, expands on interactive hover
+- 560/600px blurred indigo nebula lens
+- mouse-centered vignette via CSS variables
+- optional connected-vortex canvas reacting to pointer
+*/
+
+:root {
+  --cursorfx-bg: #05070a;
+  --cursorfx-gold: #D4AF37;
+  --cursorfx-indigo-rgb: 99, 102, 241;
+  --cursorfx-gold-rgb: 212, 175, 55;
+  --cursorfx-x: 50%;
+  --cursorfx-y: 50%;
+}
+
+/* Enable on fine-pointer devices only; JS adds .cursorfx-enabled. */
+.cursorfx-enabled,
+.cursorfx-enabled a,
+.cursorfx-enabled button,
+.cursorfx-enabled [role="button"],
+.cursorfx-enabled .interactive {
+  cursor: none;
+}
+
+.cursorfx-enabled input,
+.cursorfx-enabled textarea,
+.cursorfx-enabled select,
+.cursorfx-enabled label {
+  cursor: text;
+}
+
+.cursorfx-film-grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9996;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+.cursorfx-vignette {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    circle at var(--cursorfx-x, 50%) var(--cursorfx-y, 50%),
+    transparent 20%,
+    rgba(5, 7, 10, 0.40) 100%
+  );
+  z-index: 9997;
+  pointer-events: none;
+}
+
+.cursorfx-nebula-lens {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--cursorfx-indigo-rgb), 0.04) 0%, transparent 70%);
+  filter: blur(50px);
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  will-change: transform, opacity;
+  transform: translate3d(-9999px, -9999px, 0) translate(-50%, -50%);
+}
+
+.cursorfx-dot {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #fff;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  mix-blend-mode: difference;
+  will-change: transform, opacity;
+  transform: translate3d(-9999px, -9999px, 0) translate(-50%, -50%);
+}
+
+.cursorfx-ring {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 40px;
+  height: 40px;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0;
+  will-change: transform, opacity;
+  transform: translate3d(-9999px, -9999px, 0) translate(-50%, -50%);
+}
+
+.cursorfx-ring::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(var(--cursorfx-gold-rgb), 0);
+  border-radius: 50%;
+  transform: scale(0.55);
+  transition:
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.4s ease;
+}
+
+.cursorfx-ring.is-active::before {
+  transform: scale(1.2);
+  border-color: rgba(var(--cursorfx-gold-rgb), 1);
+}
+
+.cursorfx-vortex {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@media (pointer: coarse), (max-width: 720px), (prefers-reduced-motion: reduce) {
+  .cursorfx-enabled,
+  .cursorfx-enabled a,
+  .cursorfx-enabled button,
+  .cursorfx-enabled [role="button"],
+  .cursorfx-enabled .interactive {
+    cursor: auto;
+  }
+
+  .cursorfx-dot,
+  .cursorfx-ring,
+  .cursorfx-nebula-lens,
+  .cursorfx-vignette,
+  .cursorfx-film-grain,
+  .cursorfx-vortex {
+    display: none !important;
+  }
+}

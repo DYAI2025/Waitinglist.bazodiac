@@ -1,0 +1,8 @@
+{
+  "ok": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "chartSessionId is required",
+    "field": "chartSessionId"
+  }
+}

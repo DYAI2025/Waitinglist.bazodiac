@@ -1,0 +1,2092 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bazodiac · FuFirE Fusion Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-0:#05050A;
+    --bg-1:#080A12;
+    --bg-2:#0B1020;
+    --gold:#D8B76A;
+    --gold-soft:#F2D28A;
+    --gold-line:rgba(216,183,106,0.18);
+    --gold-glow:rgba(216,183,106,0.16);
+    --fg:#F7F3E8;
+    --fg-2:#A9A9B7;
+    --fg-30:rgba(247,243,232,0.30);
+    --fg-10:rgba(247,243,232,0.10);
+    --glass:rgba(255,255,255,0.06);
+    --glass-2:rgba(255,255,255,0.03);
+    --border-dark:#1a1c20;
+    --water:#4DA3FF;
+    --fire:#FF5A3D;
+    --earth:#B98B5A;
+    --wood:#65C18C;
+    --metal:#C9D4E2;
+    --header-bg:rgba(5,5,10,0.8);
+    --footer-bg:rgba(5,5,10,0.8);
+    --modal-back:rgba(5,5,10,0.92);
+    --field-bg:#080A12;
+    --field-bg-focus:#070a14;
+    --interp-bg:rgba(5,5,10,0.5);
+    --ease-celestial: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-cinema:    cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  [data-theme="light"]{
+    --bg-0:#F2EEE3;
+    --bg-1:#EAE4D2;
+    --bg-2:#E4DCC4;
+    --gold:#9B7B2C;
+    --gold-soft:#7C5F19;
+    --gold-line:rgba(155,123,44,0.28);
+    --gold-glow:rgba(155,123,44,0.14);
+    --fg:#1a1812;
+    --fg-2:#5a574d;
+    --fg-30:rgba(26,24,18,0.45);
+    --fg-10:rgba(26,24,18,0.16);
+    --glass:rgba(255,253,247,0.65);
+    --glass-2:rgba(255,253,247,0.4);
+    --border-dark:#c8bfa6;
+    --water:#1F6FB0;
+    --fire:#B0341B;
+    --earth:#7C5A33;
+    --wood:#3F8054;
+    --metal:#5C6B7A;
+    --header-bg:rgba(242,238,227,0.85);
+    --footer-bg:rgba(242,238,227,0.85);
+    --modal-back:rgba(242,238,227,0.92);
+    --field-bg:#EAE4D2;
+    --field-bg-focus:#E6DEC7;
+    --interp-bg:rgba(234,228,210,0.6);
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg-0);color:var(--fg);transition:background-color .55s var(--ease-cinema), color .55s var(--ease-cinema)}
+  body{
+    font-family:"Inter", ui-sans-serif, system-ui, sans-serif;
+    font-weight:300;
+    -webkit-font-smoothing:antialiased;
+    min-height:100dvh;
+    overflow-x:hidden;
+    overflow:hidden;
+  }
+
+  /* ============== PAGE SHELL ENTRANCE BEAT ============== */
+  /* shell fades in first; everything else gated on .ready */
+  body{ opacity:0; transition:opacity .55s var(--ease-cinema), background-color .55s var(--ease-cinema), color .55s var(--ease-cinema) }
+  body.shell-in{ opacity:1 }
+
+  @media (max-width:1100px){ body{ overflow-y:auto } }
+  ::selection{background:var(--gold);color:var(--bg-0)}
+  .mono{font-family:"JetBrains Mono", ui-monospace, monospace}
+
+  /* ============== SHELL ============== */
+  .shell{
+    position:relative;min-height:100dvh;display:flex;flex-direction:column;
+    border:4px solid var(--border-dark);overflow:hidden;isolation:isolate;
+  }
+  .film-grain{
+    position:fixed;inset:0;pointer-events:none;z-index:60;opacity:.025;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+  [data-theme="light"] .film-grain{opacity:.04}
+  .ambience{
+    position:fixed;top:50%;left:50%;width:760px;height:760px;
+    transform:translate(-50%,-50%);
+    background:radial-gradient(circle, var(--gold-glow), transparent 60%);
+    filter:blur(80px);border-radius:50%;pointer-events:none;z-index:0;
+    animation:pulse-glow 16s ease-in-out infinite;
+    opacity:0;transition:opacity 1s var(--ease-cinema);
+  }
+  body.shell-in .ambience{opacity:1}
+  @keyframes pulse-glow{
+    0%,100%{opacity:.45;transform:translate(-50%,-50%) scale(1)}
+    50%{opacity:.7;transform:translate(-50%,-50%) scale(1.06)}
+  }
+
+  /* ============== CONSTELLATION LAYER ============== */
+  .constellation{
+    position:fixed;inset:0;pointer-events:none;z-index:1;opacity:0;
+    transition:opacity 1.4s var(--ease-celestial);
+  }
+  .ready .constellation{opacity:.9}
+  .constellation svg{width:100%;height:100%;display:block}
+  .constellation .star{ fill:var(--gold); opacity:0; animation:star-fade-in 1.2s var(--ease-celestial) forwards }
+  @keyframes star-fade-in{ 0%{opacity:0;transform:scale(.4)} 100%{opacity:.55;transform:scale(1)} }
+  .constellation .star.dim{ animation-name:star-fade-dim }
+  @keyframes star-fade-dim{ 0%{opacity:0} 100%{opacity:.22} }
+  .constellation .star.fire{fill:var(--fire)}
+  .constellation .star.water{fill:var(--water)}
+  .constellation .star.wood{fill:var(--wood)}
+  .constellation .line{
+    stroke:var(--gold-line);stroke-width:.6;fill:none;
+    stroke-dasharray:600;stroke-dashoffset:600;
+    animation:line-draw 2.4s var(--ease-celestial) forwards;animation-delay:1.4s;
+  }
+  @keyframes line-draw{ to{stroke-dashoffset:0} }
+  .ready .constellation-inner{ animation:ambient-drift 28s ease-in-out infinite alternate; transform-origin:50% 50%; }
+  @keyframes ambient-drift{
+    0%{transform:translate3d(0,0,0)} 50%{transform:translate3d(4px,-6px,0)} 100%{transform:translate3d(-3px,5px,0)}
+  }
+  .constellation-parallax{ transform:translate3d(0, calc(var(--scroll-y, 0px) * -0.08), 0); will-change:transform }
+
+  /* ============== HEADER ============== */
+  .header{
+    padding:1.1rem 1.5rem;
+    display:flex;justify-content:space-between;align-items:center;
+    background:var(--header-bg);backdrop-filter:blur(10px);position:relative;z-index:40;
+  }
+  /* drawn baseline under header */
+  .header::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+    background:var(--gold-line);transform-origin:left center;transform:scaleX(0);
+    transition:transform 1.1s var(--ease-celestial);transition-delay:240ms;
+  }
+  .ready .header::after{transform:scaleX(1)}
+  .logo{display:flex;align-items:center;gap:.75rem}
+  .logo .ring{ width:32px;height:32px;border-radius:50%;border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;padding:4px }
+  .logo .ring-inner{ width:100%;height:100%;border:1px solid rgba(216,183,106,0.4);border-radius:50%; animation:ring-pulse 4s ease-in-out infinite }
+  @keyframes ring-pulse{0%,100%{opacity:.6}50%{opacity:1}}
+  .logo .name{ font-size:11px;letter-spacing:.5em;font-weight:300;text-transform:uppercase;color:var(--gold) }
+  .header-meta{display:flex;align-items:center;gap:1rem;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+  /* (header-meta beta/sep colors live on theme vars) */
+
+  /* language toggle */
+  .lang-toggle{
+    display:inline-flex;border:1px solid var(--gold-line);border-radius:2px;
+    overflow:hidden;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;
+  }
+  .lang-toggle button{
+    background:transparent;border:0;color:var(--fg-2);padding:.45rem .7rem;cursor:pointer;
+    text-transform:uppercase;transition:background .25s, color .25s;
+  }
+  .lang-toggle button.active{ background:var(--gold);color:var(--bg-0) }
+  .lang-toggle button:focus-visible{ outline:2px solid var(--gold);outline-offset:2px }
+
+  @media (max-width:720px){
+    .header-meta .region,.header-meta .sep,.header-meta .beta{display:none}
+  }
+
+  /* ============== MAIN GRID ============== */
+  .main{
+    flex:1;display:grid;grid-template-columns:repeat(12, 1fr);gap:2rem;
+    padding:2rem 2.5rem;position:relative;z-index:10;
+  }
+  @media (max-width:1100px){ .main{padding:1.5rem 1rem;gap:1.5rem;grid-template-columns:1fr} }
+  .col-hero{grid-column:span 7;display:flex;flex-direction:column;justify-content:center;gap:1.75rem}
+  .col-side{grid-column:span 5;display:flex;flex-direction:column;gap:.75rem;min-width:0}
+  @media (max-width:1100px){ .col-hero,.col-side{grid-column:1/-1} }
+
+  /* ============== HERO ============== */
+  .eyebrow{display:flex;align-items:center;gap:1rem}
+  .eyebrow .rule{height:1px;width:48px;background:rgba(216,183,106,0.4)}
+  .eyebrow .label{ font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);white-space:nowrap }
+  .headline{
+    font-size:clamp(2.2rem, 4.6vw, 3.4rem);line-height:1.06;font-weight:200;
+    text-transform:uppercase;color:var(--gold);margin:0;letter-spacing:-0.01em;max-width:780px;
+  }
+  .headline .accent{color:var(--fg)}
+  .sub{ color:var(--fg-2);max-width:560px;font-size:.95rem;line-height:1.65;font-weight:300;margin:0 }
+  .sub strong{color:var(--fg);font-weight:400}
+  .sub .small{ display:block;margin-top:.6rem;font-family:"JetBrains Mono",monospace;
+    font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--fg-30) }
+
+  .reveal-line{ overflow:hidden;display:block }
+  .reveal-line > span{
+    display:block;transform:translateY(110%);opacity:0;
+    transition:transform .9s var(--ease-celestial), opacity .9s var(--ease-celestial);
+    transition-delay:var(--rd, 0ms);
+  }
+  .ready .reveal-line > span{transform:translateY(0);opacity:1}
+  .reveal-fade{
+    opacity:0;transform:translateY(8px);
+    transition:opacity .8s var(--ease-celestial), transform .8s var(--ease-celestial);
+    transition-delay:var(--rd, 0ms);
+  }
+  .ready .reveal-fade{opacity:1;transform:none}
+
+  /* ============== CARDS ============== */
+  .card{
+    position:relative;background:var(--glass);border:1px solid var(--fg-10);
+    border-radius:3px;
+    opacity:0;clip-path:inset(0 100% 0 0);transform:translateY(10px);
+    transition-property:opacity, clip-path, transform, border-color, background, box-shadow;
+    transition-duration:.9s, 1.1s, .65s, .5s, .55s, .65s;
+    transition-timing-function:var(--ease-celestial), var(--ease-celestial), cubic-bezier(.2,.8,.2,1), var(--ease-cinema), var(--ease-cinema), cubic-bezier(.2,.8,.2,1);
+    transition-delay:var(--rd, 0ms), var(--rd, 0ms), var(--rd, 0ms), 0ms, 0ms, 0ms;
+    will-change: transform, box-shadow;
+    box-shadow: 0 0 0 0 rgba(0,0,0,0);
+  }
+  .ready .card{opacity:1;clip-path:inset(0 0 0 0);transform:translateY(0)}
+  /* drawn top line on every card */
+  .card::before{
+    content:"";position:absolute;left:0;top:0;height:1px;width:100%;
+    background:linear-gradient(to right, transparent, var(--gold), transparent);
+    transform-origin:left center;transform:scaleX(0);
+    transition:transform 1.1s var(--ease-celestial); transition-delay:calc(var(--rd, 0ms) + 80ms);
+    pointer-events:none;opacity:.55;
+  }
+  .ready .card::before{transform:scaleX(1)}
+  .card::after{
+    content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+    background:radial-gradient(260px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), var(--gold-glow), transparent 38%);
+    opacity:0;transition:opacity .5s var(--ease-cinema);z-index:1;
+  }
+  .ready .card.glow:hover{
+    transform: translateY(-7px) scale(1.012);
+    border-color: var(--gold);
+    box-shadow:
+      0 24px 60px -18px rgba(0,0,0,0.55),
+      0 8px 20px -10px rgba(212,175,55,0.18),
+      0 1px 0 0 rgba(255,255,255,0.04) inset;
+  }
+  .card.glow:hover::after{opacity:1}
+  .card > *{position:relative;z-index:2}
+  @media (hover:none){
+    .card.glow:active{ transform:translateY(-2px); border-color:var(--gold) }
+    .card.glow:active::after{opacity:.6}
+  }
+
+  /* generic drawn line utility */
+  .draw-line{
+    position:relative;height:1px;background:var(--gold-line);
+    transform-origin:left center;transform:scaleX(0);
+    transition:transform 1s var(--ease-celestial);
+  }
+  .draw-line.in{transform:scaleX(1)}
+
+  /* ============== FORM CARD ============== */
+  .form-card{padding:1.5rem 1.5rem 1.25rem;min-width:0}
+  .form-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.25rem;gap:1rem;flex-wrap:wrap}
+  .form-title{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin:0 0 .35rem 0}
+  .form-sub{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--fg-30);margin:0}
+
+  .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem 1rem}
+  .field{display:flex;flex-direction:column;gap:.4rem;min-width:0}
+  .field.full{grid-column:1/-1}
+  .field label{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:rgba(216,183,106,0.6)}
+  .field input::placeholder{color:var(--fg-30)}
+  .field input:focus{border-color:var(--gold);background:var(--field-bg-focus)}
+  .field input{
+    width:100%;background:var(--field-bg);border:1px solid var(--fg-10);color:var(--fg);
+    padding:.75rem .9rem;font-family:"JetBrains Mono",monospace;font-size:13px;letter-spacing:.05em;
+    border-radius:0;outline:none;
+    transition:border-color .25s var(--ease-cinema), background .25s var(--ease-cinema);
+    min-height:48px;
+  }
+  .field input:focus-visible{outline:1px solid rgba(216,183,106,0.3);outline-offset:2px}
+  .field input.error{border-color:var(--fire)}
+  .field .err{ font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--fire);min-height:14px;letter-spacing:.06em; }
+  .field-check{display:flex;align-items:center;gap:.6rem;cursor:pointer;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--fg-2);grid-column:1/-1;padding:.4rem 0}
+  .field-check input{appearance:none;width:16px;height:16px;border:1px solid var(--fg-10);background:var(--field-bg);position:relative;cursor:pointer;min-height:0}
+  .field-check input:checked{background:var(--gold);border-color:var(--gold)}
+  .field-check input:checked::after{content:"";position:absolute;inset:3px;background:var(--bg-0)}
+  .field-check input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+  .form-actions{margin-top:1.25rem;display:flex;gap:.75rem;align-items:stretch;flex-wrap:wrap}
+  .btn{
+    position:relative;display:inline-flex;align-items:center;justify-content:center;gap:.6rem;
+    padding:1rem 1.25rem;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.25em;text-transform:uppercase;
+    border:1px solid transparent;cursor:pointer;
+    transition:transform .35s var(--ease-cinema), background .25s var(--ease-cinema), color .25s var(--ease-cinema), border-color .25s var(--ease-cinema), box-shadow .35s var(--ease-cinema), opacity .25s;
+    will-change:transform;user-select:none;min-height:48px;
+  }
+  .btn:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;pointer-events:none}
+  .btn-primary{background:var(--gold);color:var(--bg-0);font-weight:600;box-shadow:0 4px 18px var(--gold-glow);flex:1;min-width:200px}
+  .btn-primary:hover{background:var(--gold-soft);box-shadow:0 8px 30px var(--gold-glow)}
+  .btn-ghost{background:transparent;color:var(--gold);border-color:var(--gold-line)}
+  .btn-ghost:hover{border-color:var(--gold);background:var(--gold-glow)}
+
+  /* status pill */
+  .status-row{
+    margin-top:1rem;padding-top:1rem;
+    font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--fg-30);
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;min-height:22px;position:relative;
+  }
+  .status-row::before{
+    content:"";position:absolute;left:0;right:0;top:0;height:1px;background:var(--gold-line);
+    transform-origin:left center;transform:scaleX(0);
+    transition:transform 1s var(--ease-celestial);transition-delay:calc(var(--rd, 0ms) + 240ms);
+  }
+  .ready .status-row::before{transform:scaleX(1)}
+  .status-row .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:rgba(247,243,232,0.2);margin-right:.6rem;transition:background .3s, box-shadow .3s}
+  .status-row.loading .dot{background:var(--gold);animation:dot-pulse 1.2s infinite ease-in-out}
+  .status-row.success .dot{background:var(--gold);box-shadow:0 0 10px var(--gold)}
+  .status-row.error .dot{background:var(--fire);box-shadow:0 0 8px var(--fire)}
+  @keyframes dot-pulse{0%,100%{opacity:.4;transform:scale(.9)}50%{opacity:1;transform:scale(1.2)}}
+
+  /* error banner inside form/chart */
+  .err-banner{
+    margin-top:.9rem;padding:.7rem .85rem;border:1px solid rgba(255,90,61,0.4);
+    background:rgba(255,90,61,0.06);color:#ffb3a6;
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.05em;line-height:1.55;
+    display:flex;flex-direction:column;gap:.25rem;
+  }
+  .err-banner .code{font-size:9px;color:rgba(255,90,61,0.7);letter-spacing:.2em;text-transform:uppercase}
+
+  /* ============== FUSION CHART CARD ============== */
+  .chart-card{padding:1.25rem;display:flex;flex-direction:column;gap:.9rem;min-width:0}
+  .chart-head{display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+  .chart-state{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;gap:.9rem;text-align:center;padding:1rem .5rem}
+  .chart-state[hidden]{display:none}
+  .chart-empty .icon{ width:56px;height:56px;border-radius:50%;border:1px dashed rgba(216,183,106,0.3);display:flex;align-items:center;justify-content:center;color:var(--gold);font-family:"JetBrains Mono",monospace;font-size:18px }
+  .chart-empty p,.chart-loading p,.chart-error p{
+    font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--fg-30);max-width:280px;margin:0;line-height:1.7;
+  }
+  .chart-loading .ring-loader{
+    width:74px;height:74px;border-radius:50%;position:relative;
+    border:1px solid rgba(216,183,106,0.12);
+  }
+  .chart-loading .ring-loader::before,
+  .chart-loading .ring-loader::after{
+    content:"";position:absolute;border-radius:50%;border:1px solid transparent;
+  }
+  .chart-loading .ring-loader::before{
+    inset:-1px;border-top-color:var(--gold);animation:spin 1.4s linear infinite;
+  }
+  .chart-loading .ring-loader::after{
+    inset:8px;border-left-color:rgba(216,183,106,0.5);animation:spin 2.2s linear reverse infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .chart-loading .layers{
+    display:flex;flex-direction:column;gap:.3rem;font-family:"JetBrains Mono",monospace;
+    font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--fg-30);
+  }
+  .chart-loading .layers span.active{color:var(--gold)}
+  .chart-error .icon{
+    width:56px;height:56px;border-radius:50%;border:1px solid var(--fire);color:var(--fire);
+    display:flex;align-items:center;justify-content:center;font-family:"JetBrains Mono",monospace;font-size:20px;
+  }
+  .chart-error p{color:#ffb3a6}
+  .chart-error .code{font-size:9px;color:rgba(255,90,61,0.65);letter-spacing:.25em;text-transform:uppercase}
+
+  .chart-success{display:flex;flex-direction:column;gap:.85rem}
+  .chart-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.7rem .9rem}
+  .stat{display:flex;flex-direction:column;gap:.2rem;min-width:0}
+  .stat .k{font-family:"JetBrains Mono",monospace;font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:rgba(216,183,106,0.55)}
+  .stat .v{font-family:"JetBrains Mono",monospace;font-size:13px;text-transform:uppercase;color:var(--fg);letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .stat.highlight .v{color:var(--gold);font-weight:500}
+
+  .wuxing-vec{
+    display:flex;flex-direction:column;gap:.5rem;
+    padding-top:.85rem;position:relative;
+  }
+  .wuxing-vec::before{
+    content:"";position:absolute;left:0;right:0;top:0;height:1px;background:var(--gold-line);
+    transform-origin:left center;transform:scaleX(0);
+    transition:transform 1s var(--ease-celestial);transition-delay:calc(var(--rd, 0ms) + 320ms);
+  }
+  .ready .wuxing-vec::before{transform:scaleX(1)}
+  .wuxing-vec .lab{ font-family:"JetBrains Mono",monospace;font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:rgba(216,183,106,0.55) }
+  .wuxing-bars{display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem}
+  .wuxing-bars .el{display:flex;flex-direction:column;gap:.3rem;align-items:flex-start}
+  .wuxing-bars .el .name{font-family:"JetBrains Mono",monospace;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--fg-2)}
+  .wuxing-bars .el .track{ width:100%;height:3px;background:rgba(247,243,232,0.06);position:relative;overflow:hidden }
+  .wuxing-bars .el .track > span{position:absolute;left:0;top:0;bottom:0;width:0;transition:width 1s var(--ease-celestial)}
+  .wuxing-bars .wood .track > span{background:var(--wood)}
+  .wuxing-bars .fire .track > span{background:var(--fire)}
+  .wuxing-bars .earth .track > span{background:var(--earth)}
+  .wuxing-bars .metal .track > span{background:var(--metal)}
+  .wuxing-bars .water .track > span{background:var(--water)}
+
+  .chart-cta{display:flex;justify-content:space-between;align-items:center;gap:.6rem;padding-top:.85rem;flex-wrap:wrap;position:relative}
+  .chart-cta::before{
+    content:"";position:absolute;left:0;right:0;top:0;height:1px;background:var(--gold-line);
+    transform-origin:left center;transform:scaleX(0);
+    transition:transform 1s var(--ease-celestial);transition-delay:calc(var(--rd, 0ms) + 380ms);
+  }
+  .ready .chart-cta::before{transform:scaleX(1)}
+  .chart-cta .vec{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--fg-30)}
+  .chart-cta .vec b{color:var(--gold);font-weight:500}
+
+  /* ============== HUD MINI CARDS ============== */
+  .bento{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;width:100%}
+  .bento .card{padding:.95rem;min-height:96px;display:flex;flex-direction:column;justify-content:space-between}
+  .bento .card.span2{grid-column:span 2}
+  .bento .ck{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
+  .bento .ck .label{font-family:"JetBrains Mono",monospace;font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:rgba(216,183,106,0.5)}
+  .bento .ck .ico{width:14px;height:14px;color:rgba(216,183,106,0.3);transition:color .3s}
+  .bento .card:hover .ck .ico{color:var(--gold)}
+  .bento .v{font-family:"JetBrains Mono",monospace;font-size:14px;text-transform:uppercase;color:var(--fg);letter-spacing:.05em}
+  .bento .v small{font-size:8px;color:var(--fg-30);letter-spacing:.2em;margin-left:.4rem}
+
+  /* ============== NEWSLETTER (replaces left card) ============== */
+  .newsletter h2{
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--gold);margin:0 0 .25rem 0;
+  }
+  .newsletter .lead{
+    font-size:.95rem;color:var(--fg);line-height:1.6;font-weight:300;margin:0 0 1.25rem 0;max-width:520px;
+  }
+  .newsletter .lead .small{display:block;margin-top:.5rem;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--fg-30)}
+
+  .nl-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem 1rem}
+  .nl-grid .full{grid-column:1/-1}
+
+  /* ============== FOOTER ============== */
+  .footer{
+    padding:1rem 1.5rem;
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--fg-30);
+    background:var(--footer-bg);backdrop-filter:blur(10px);position:relative;z-index:40;
+  }
+  .footer::before{
+    content:"";position:absolute;left:0;right:0;top:0;height:1px;background:var(--gold-line);
+    transform-origin:right center;transform:scaleX(0);
+    transition:transform 1.2s var(--ease-celestial);transition-delay:1300ms;
+  }
+  .ready .footer::before{transform:scaleX(1)}
+  .footer .links{display:flex;gap:1.5rem}
+  @media (max-width:720px){
+    .footer{flex-direction:column;gap:.6rem;text-align:center}
+    .footer .links{flex-direction:column;gap:.4rem}
+  }
+
+  /* ============== MODAL ============== */
+  .modal-root{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:1.25rem;pointer-events:none}
+  .modal-root.open{pointer-events:auto}
+  .modal-back{position:absolute;inset:0;background:var(--modal-back);backdrop-filter:blur(18px);opacity:0;transition:opacity .35s var(--ease-cinema)}
+  .modal-root.open .modal-back{opacity:1}
+  .modal-card{
+    position:relative;width:100%;max-width:760px;max-height:90vh;
+    background:var(--glass);border:1px solid rgba(216,183,106,0.25);border-radius:6px;
+    display:flex;flex-direction:column;overflow:hidden;
+    transform:translateY(20px) scale(.98);opacity:0;
+    transition:transform .45s var(--ease-celestial), opacity .35s var(--ease-cinema);
+  }
+  .modal-root.open .modal-card{transform:none;opacity:1}
+  .modal-head{padding:1.1rem 1.25rem;border-bottom:1px solid rgba(216,183,106,0.1);background:rgba(5,5,10,0.4);display:flex;justify-content:space-between;align-items:center;gap:1rem}
+  .modal-head h2{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin:0}
+  .modal-head p{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--fg-30);margin:.3rem 0 0 0}
+  .modal-close{background:transparent;border:0;color:rgba(216,183,106,0.6);cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;line-height:1;transition:background .25s, color .25s}
+  .modal-close:hover{background:rgba(216,183,106,0.1);color:var(--gold)}
+  .modal-close:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+  .modal-body{padding:1.5rem;overflow-y:auto;display:flex;flex-direction:column;gap:1.25rem}
+  .modal-state{min-height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9rem;text-align:center}
+  .modal-state[hidden]{display:none}
+  .modal-state .icon{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:"JetBrains Mono",monospace}
+  .modal-state.loading .icon{border:1px solid rgba(216,183,106,0.15);border-top-color:var(--gold);animation:spin 1.2s linear infinite}
+  .modal-state.error .icon{border:1px solid var(--fire);color:var(--fire)}
+  .modal-state p{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--fg-30);margin:0;line-height:1.7;max-width:340px}
+  .modal-state.error p{color:#ffb3a6}
+  .modal-state .code{font-size:9px;color:rgba(255,90,61,0.65);letter-spacing:.25em;text-transform:uppercase}
+
+  .interpretation{padding:1.1rem;background:var(--interp-bg);border:1px solid var(--gold-line);position:relative}
+  .interpretation::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--gold);opacity:.5}
+  .interpretation h3{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin:0 0 .8rem 0}
+  .interpretation p{font-size:13px;color:var(--fg);opacity:.88;line-height:1.7;margin:0 0 .75rem 0;font-weight:300}
+  .interpretation p:last-child{margin-bottom:0}
+  .interpretation p strong{color:var(--gold)}
+
+  .modal-foot{padding:1rem 1.25rem;border-top:1px solid rgba(216,183,106,0.1);background:rgba(5,5,10,0.4);display:flex;justify-content:space-between;align-items:center;gap:.8rem;flex-wrap:wrap}
+  .modal-foot .note{font-family:"JetBrains Mono",monospace;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--fg-30);max-width:320px;line-height:1.6}
+  .modal-foot .acts{display:flex;gap:.5rem;flex-wrap:wrap}
+  .modal-foot .btn{padding:.7rem .9rem;font-size:10px;min-width:auto;flex:0 0 auto}
+
+  /* live region (visually hidden but accessible) */
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+  /* ==========================================================
+     MOTION PROFILES — breakpoint-based remapping
+     ----------------------------------------------------------
+     [data-motion="desktop"]  ≥1100px : full motion stack
+     [data-motion="tablet"]    720–1099px : reduced hover deps,
+                                            simplified reveals
+     [data-motion="mobile"]    <720px : no trail/cursor/WebGL,
+                                        mask-reveal + simple fade/translate
+     [data-motion="reduced"]   prefers-reduced-motion: reduce
+     ========================================================== */
+
+  /* ---------- TABLET PROFILE ---------- */
+  html[data-motion="tablet"] body .card.glow:hover{ transform:translateY(-2px) }
+  html[data-motion="tablet"] body .card.glow::after{ display:none } /* drop cursor-tracked glow */
+  html[data-motion="tablet"] body .constellation .star.extra,
+  html[data-motion="tablet"] body .constellation .line.extra{ display:none }
+  html[data-motion="tablet"] body .constellation-parallax{ transform:none !important }
+  html[data-motion="tablet"] body .ready .reveal-line > span{
+    transition: transform .55s cubic-bezier(0.16,1,0.3,1), opacity .45s linear !important;
+  }
+  html[data-motion="tablet"] body .ready .card{
+    transition: opacity .55s linear, transform .55s cubic-bezier(0.16,1,0.3,1) !important;
+    clip-path: none !important;
+  }
+  html[data-motion="tablet"] body .ambience{ animation-duration: 26s }
+
+  /* ---------- MOBILE PROFILE ----------
+     Image trail / custom cursor / heavy WebGL are gated off in JS.
+     Entrance switches to a simple mask-reveal + staggered fade/translate. */
+  html[data-motion="mobile"] body .ambience{ display:none }
+  html[data-motion="mobile"] body .constellation .star.extra,
+  html[data-motion="mobile"] body .constellation .line.extra{ display:none }
+  html[data-motion="mobile"] body .constellation-parallax{ transform:none !important }
+  html[data-motion="mobile"] body .card.glow::after{ display:none }
+  html[data-motion="mobile"] body .ready .reveal-line > span{
+    /* simple mask reveal — flat translate, no expo curve */
+    transition: transform .5s ease-out, opacity .35s linear !important;
+  }
+  html[data-motion="mobile"] body .ready .card{
+    /* fade + small translate, no clip-path mask, no stagger spread */
+    transition: opacity .5s linear, transform .5s ease-out !important;
+    clip-path: none !important;
+    transform: translateY(0) !important;
+  }
+  html[data-motion="mobile"] body .reveal-fade{
+    transition: opacity .5s linear, transform .5s ease-out !important;
+  }
+  html[data-motion="mobile"] body .card::before,
+  html[data-motion="mobile"] body .draw-line,
+  html[data-motion="mobile"] body .eyebrow .rule,
+  html[data-motion="mobile"] body .header::after,
+  html[data-motion="mobile"] body .footer::before,
+  html[data-motion="mobile"] body .status-row::before,
+  html[data-motion="mobile"] body .wuxing-vec::before,
+  html[data-motion="mobile"] body .chart-cta::before{
+    transition: opacity .35s linear !important;
+    transform: scaleX(1) !important;
+    opacity: 0;
+  }
+  html[data-motion="mobile"] body.ready .card::before,
+  html[data-motion="mobile"] body.ready .draw-line,
+  html[data-motion="mobile"] body.ready .eyebrow .rule,
+  html[data-motion="mobile"] body.ready .header::after,
+  html[data-motion="mobile"] body.ready .footer::before,
+  html[data-motion="mobile"] body.ready .status-row::before,
+  html[data-motion="mobile"] body.ready .wuxing-vec::before,
+  html[data-motion="mobile"] body.ready .chart-cta::before{ opacity:1 }
+
+  /* ============== CURSOR FX (BAZODIAC) ============== */
+  :root {
+    --cursorfx-bg: #05070a;
+    --cursorfx-gold: #D4AF37;
+    --cursorfx-indigo-rgb: 99, 102, 241;
+    --cursorfx-gold-rgb: 212, 175, 55;
+    --cursorfx-x: 50%;
+    --cursorfx-y: 50%;
+  }
+  .cursorfx-enabled,
+  .cursorfx-enabled a,
+  .cursorfx-enabled button,
+  .cursorfx-enabled [role="button"],
+  .cursorfx-enabled .interactive { cursor: none; }
+  .cursorfx-enabled input,
+  .cursorfx-enabled textarea,
+  .cursorfx-enabled select,
+  .cursorfx-enabled label { cursor: text; }
+  .cursorfx-film-grain{
+    position:fixed;inset:0;pointer-events:none;z-index:9996;opacity:.025;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  }
+  .cursorfx-vignette{
+    position:fixed;inset:0;pointer-events:none;z-index:9997;
+    background:radial-gradient(circle at var(--cursorfx-x,50%) var(--cursorfx-y,50%),transparent 20%,rgba(5,7,10,.40) 100%);
+  }
+  .cursorfx-nebula-lens{
+    position:fixed;left:0;top:0;width:600px;height:600px;border-radius:50%;
+    background:radial-gradient(circle, rgba(var(--cursorfx-indigo-rgb),.04) 0%, transparent 70%);
+    filter:blur(50px);pointer-events:none;z-index:1;opacity:0;
+    will-change:transform,opacity;
+    transform:translate3d(-9999px,-9999px,0) translate(-50%,-50%);
+  }
+  .cursorfx-dot{
+    position:fixed;left:0;top:0;width:4px;height:4px;border-radius:50%;
+    background:#fff;pointer-events:none;z-index:9999;opacity:0;mix-blend-mode:difference;
+    will-change:transform,opacity;transform:translate3d(-9999px,-9999px,0) translate(-50%,-50%);
+  }
+  .cursorfx-ring{
+    position:fixed;left:0;top:0;width:40px;height:40px;pointer-events:none;
+    z-index:9998;opacity:0;will-change:transform,opacity;
+    transform:translate3d(-9999px,-9999px,0) translate(-50%,-50%);
+  }
+  .cursorfx-ring::before{
+    content:"";position:absolute;inset:0;
+    border:1px solid rgba(var(--cursorfx-gold-rgb),0);border-radius:50%;
+    transform:scale(.55);
+    transition:transform .4s cubic-bezier(.16,1,.3,1), border-color .4s ease;
+  }
+  .cursorfx-ring.is-active::before{
+    transform:scale(1.2);border-color:rgba(var(--cursorfx-gold-rgb),1);
+  }
+  .cursorfx-vortex{
+    position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;
+  }
+  @media (pointer:coarse),(max-width:720px),(prefers-reduced-motion:reduce){
+    .cursorfx-enabled,.cursorfx-enabled a,.cursorfx-enabled button,
+    .cursorfx-enabled [role="button"],.cursorfx-enabled .interactive{ cursor:auto; }
+    .cursorfx-dot,.cursorfx-ring,.cursorfx-nebula-lens,.cursorfx-vignette,
+    .cursorfx-film-grain,.cursorfx-vortex{ display:none !important; }
+  }
+
+  /* ============== REDUCED MOTION ============== */
+  @media (prefers-reduced-motion: reduce){
+    body{transition:opacity .3s linear !important;opacity:1 !important}
+    .reveal-line > span,.card,.reveal-fade{transition:opacity .4s linear !important;transform:none !important;clip-path:none !important}
+    .card::before,.draw-line,.eyebrow .rule,.header::after,.footer::before,.status-row::before,.wuxing-vec::before,.chart-cta::before{transition:none !important;transform:scaleX(1) !important}
+    .constellation,.ready .constellation{transition:opacity .4s linear !important}
+    .ready .constellation .star{animation:none !important;opacity:.45 !important}
+    .ready .constellation .star.dim{opacity:.18 !important}
+    .constellation .line{animation:none !important;stroke-dashoffset:0 !important}
+    .ready .constellation-inner{animation:none !important}
+    .constellation-parallax{transform:none !important}
+    .ambience{animation:none !important}
+    .logo .ring-inner{animation:none !important}
+    .card.glow:hover{transform:none !important}
+    .btn:hover{transform:none !important}
+    .chart-loading .ring-loader::before,.chart-loading .ring-loader::after{animation:none !important}
+    .modal-state.loading .icon{animation:none !important}
+    .wuxing-bars .el .track > span{transition:none !important}
+  }
+
+  @media (max-width:720px){
+    .constellation .star.extra,.constellation .line.extra{display:none}
+    .constellation-parallax{transform:none !important}
+    .field-grid{grid-template-columns:1fr}
+    .chart-stats{grid-template-columns:1fr 1fr}
+    .nl-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<div class="film-grain" aria-hidden="true"></div>
+<div class="ambience" aria-hidden="true"></div>
+
+<!-- Cursor FX layers -->
+<div class="cursorfx-vignette" aria-hidden="true"></div>
+<canvas class="cursorfx-vortex" aria-hidden="true"></canvas>
+<div class="cursorfx-nebula-lens" aria-hidden="true"></div>
+<div class="cursorfx-ring" aria-hidden="true"></div>
+<div class="cursorfx-dot" aria-hidden="true"></div>
+
+<!-- Constellation Layer -->
+<div class="constellation" aria-hidden="true">
+  <div class="constellation-parallax">
+    <div class="constellation-inner">
+      <svg viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+        <polyline class="line" points="120,140 240,180 360,150 460,220 540,190 620,260" />
+        <polyline class="line extra" points="240,180 280,90" />
+        <polyline class="line" points="1180,130 1280,210 1380,160 1450,250 1520,210" />
+        <polyline class="line extra" points="80,720 220,820 360,760 500,840" />
+        <polyline class="line" points="1100,860 1240,820 1340,880 1460,830 1540,890" />
+        <polyline class="line extra" points="700,420 820,360 940,440" />
+        <g>
+          <circle class="star" cx="120" cy="140" r="1.6" style="animation-delay:.2s"/>
+          <circle class="star" cx="240" cy="180" r="1.4" style="animation-delay:.35s"/>
+          <circle class="star" cx="360" cy="150" r="1.8" style="animation-delay:.5s"/>
+          <circle class="star" cx="460" cy="220" r="1.2" style="animation-delay:.65s"/>
+          <circle class="star" cx="540" cy="190" r="1.5" style="animation-delay:.8s"/>
+          <circle class="star" cx="620" cy="260" r="1.3" style="animation-delay:.95s"/>
+          <circle class="star dim" cx="280" cy="90"  r="1.1" style="animation-delay:.6s"/>
+          <circle class="star dim" cx="190" cy="260" r="0.9" style="animation-delay:.7s"/>
+          <circle class="star" cx="1180" cy="130" r="1.5" style="animation-delay:.4s"/>
+          <circle class="star" cx="1280" cy="210" r="1.7" style="animation-delay:.55s"/>
+          <circle class="star" cx="1380" cy="160" r="1.3" style="animation-delay:.7s"/>
+          <circle class="star" cx="1450" cy="250" r="1.4" style="animation-delay:.85s"/>
+          <circle class="star" cx="1520" cy="210" r="1.6" style="animation-delay:1s"/>
+          <circle class="star dim" cx="1430" cy="100" r="1" style="animation-delay:.95s"/>
+          <circle class="star extra" cx="80"  cy="720" r="1.3" style="animation-delay:.7s"/>
+          <circle class="star extra" cx="220" cy="820" r="1.1" style="animation-delay:.85s"/>
+          <circle class="star extra" cx="360" cy="760" r="1.4" style="animation-delay:1s"/>
+          <circle class="star extra" cx="500" cy="840" r="1.2" style="animation-delay:1.15s"/>
+          <circle class="star" cx="1100" cy="860" r="1.5" style="animation-delay:.95s"/>
+          <circle class="star" cx="1240" cy="820" r="1.3" style="animation-delay:1.1s"/>
+          <circle class="star" cx="1340" cy="880" r="1.6" style="animation-delay:1.25s"/>
+          <circle class="star" cx="1460" cy="830" r="1.2" style="animation-delay:1.4s"/>
+          <circle class="star" cx="1540" cy="890" r="1.4" style="animation-delay:1.55s"/>
+          <circle class="star dim" cx="700" cy="420" r="0.9" style="animation-delay:1.2s"/>
+          <circle class="star dim" cx="820" cy="360" r="1"   style="animation-delay:1.35s"/>
+          <circle class="star dim" cx="940" cy="440" r="0.9" style="animation-delay:1.5s"/>
+          <circle class="star fire dim extra"  cx="1080" cy="640" r="1.1" style="animation-delay:1.4s"/>
+          <circle class="star water dim extra" cx="180"  cy="500" r="1"   style="animation-delay:1.6s"/>
+          <circle class="star wood dim extra"  cx="780"  cy="780" r="1.1" style="animation-delay:1.8s"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- live regions -->
+<div class="sr-only" id="live-status" aria-live="polite" aria-atomic="true"></div>
+
+<div class="shell" id="shell">
+
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="logo reveal-fade" style="--rd:60ms">
+      <div class="ring" aria-hidden="true"><div class="ring-inner"></div></div>
+      <span class="name">Bazodiac</span>
+    </div>
+    <div class="header-meta reveal-fade" style="--rd:200ms">
+      <span class="beta" data-i18n="header.beta">Pre-Release · FuFirE Fusion Preview</span>
+      <span class="sep"></span>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme" title="Toggle theme">
+        <svg class="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <span class="sep"></span>
+      <div class="lang-toggle" role="tablist" aria-label="Language">
+        <button role="tab" aria-selected="true" data-lang="de" class="active">DE</button>
+        <button role="tab" aria-selected="false" data-lang="en">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- LEFT: Hero + Form / Newsletter -->
+    <section class="col-hero">
+
+      <div>
+        <div class="eyebrow reveal-fade" style="--rd:340ms">
+          <span class="rule"></span>
+          <span class="label" data-i18n="hero.eyebrow">FuFirE Fusion Preview</span>
+        </div>
+
+        <h1 class="headline" style="margin-top:1rem">
+          <span class="reveal-line"><span style="--rd:440ms" data-i18n="hero.h1">Berechne dein echtes</span></span>
+          <span class="reveal-line"><span style="--rd:560ms" data-i18n="hero.h2" class="accent">Bazodiac Fusion-Chart.</span></span>
+        </h1>
+
+        <p class="sub reveal-fade" style="--rd:740ms;margin-top:1.1rem">
+          <span data-i18n="hero.lead">Bazodiac verbindet westliche Astrologie, chinesisches BaZi und Wu-Xing zu einer auditierbaren Cosmic Signature — powered by FuFirE.</span>
+          <span class="small" data-i18n="hero.disclaimer">Kein Horoskop-Versprechen. Ein Reflexionsmodell aus echten Chartdaten.</span>
+        </p>
+      </div>
+
+      <!-- Left card panel: birthdata or newsletter (swapped by state) -->
+      <div id="left-panel">
+
+        <!-- BirthDataForm -->
+        <form class="card glow form-card" id="birthdata-form" novalidate style="--rd:880ms" data-card data-panel="birthdata">
+          <div class="form-head">
+            <div>
+              <h2 class="form-title" data-i18n="form.title">Geburtsdaten</h2>
+              <p class="form-sub" data-i18n="form.sub">Schritt 01 · Temporale Signatur</p>
+            </div>
+            <div class="form-sub mono" data-i18n="form.engine">FuFirE Engine · Vorbereitet</div>
+          </div>
+
+          <div class="field-grid">
+            <div class="field full">
+              <label for="bd-date" data-i18n="form.date">Geburtsdatum</label>
+              <input id="bd-date" name="birthDate" type="text" placeholder="JJJJ-MM-TT" data-placeholder-de="JJJJ-MM-TT" data-placeholder-en="YYYY-MM-DD" autocomplete="bday" aria-required="true" aria-describedby="err-date"/>
+              <div class="err" id="err-date" role="alert"></div>
+            </div>
+
+            <div class="field full">
+              <label for="bd-time" data-i18n="form.time">Geburtszeit</label>
+              <input id="bd-time" name="birthTime" type="text" placeholder="HH:MM" autocomplete="off" aria-describedby="err-time"/>
+              <div class="err" id="err-time" role="alert"></div>
+            </div>
+
+            <label class="field-check">
+              <input type="checkbox" id="bd-unknown-time"/>
+              <span data-i18n="form.unknownTime">Ich kenne meine Geburtszeit nicht</span>
+            </label>
+
+            <div class="field full">
+              <label for="bd-place" data-i18n="form.place">Geburtsort</label>
+              <input id="bd-place" name="birthPlace" type="text" placeholder="Stadt, Land" data-placeholder-de="Stadt, Land" data-placeholder-en="City, country" autocomplete="off" aria-required="true" aria-describedby="err-place"/>
+              <div class="err" id="err-place" role="alert"></div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="btn-compute" data-magnetic>
+              <span data-i18n="form.cta">Fusion-Chart berechnen</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+
+          <div class="status-row" id="status-row">
+            <div><span class="dot" aria-hidden="true"></span><span id="status-label" data-i18n="status.idle">Bereit</span></div>
+            <span id="status-meta" class="mono">FuFirE · idle</span>
+          </div>
+
+          <div class="err-banner" id="form-err-banner" hidden role="alert">
+            <span class="code" id="form-err-code">FUFIRE_UNAVAILABLE</span>
+            <span id="form-err-msg" data-i18n="error.fufireUnavailable">Die FuFirE-Berechnung konnte nicht abgeschlossen werden. Bitte prüfe deine Eingaben oder versuche es später erneut.</span>
+          </div>
+        </form>
+
+        <!-- NewsletterSignupForm (hidden until prompted) -->
+        <form class="card glow form-card newsletter" id="newsletter-form" novalidate hidden data-card data-panel="newsletter">
+          <div class="form-head">
+            <div>
+              <h2 data-i18n="nl.title">Updates erhalten</h2>
+              <p class="form-sub" data-i18n="nl.sub">Bazodiac Pre-Release · Quartalstransmission</p>
+            </div>
+            <button type="button" class="btn btn-ghost" id="btn-back-to-chart" style="padding:.5rem .8rem;font-size:10px;min-height:36px" data-i18n="nl.back">← Zurück</button>
+          </div>
+
+          <p class="lead">
+            <span data-i18n="nl.lead">Wir halten dich über das Bazodiac Release auf dem Laufenden. Kein Horoskop-Newsletter. Kein Marketing-Lärm.</span>
+            <span class="small" data-i18n="nl.frequency">~4 Mails pro Jahr · DSGVO · Abmeldung jederzeit</span>
+          </p>
+
+          <div class="nl-grid">
+            <div class="field full">
+              <label for="nl-email" data-i18n="nl.email">E-Mail</label>
+              <input id="nl-email" type="email" placeholder="du@beispiel.io" data-placeholder-de="du@beispiel.io" data-placeholder-en="you@example.io" autocomplete="email" aria-required="true" aria-describedby="err-nl-email" required />
+              <div class="err" id="err-nl-email" role="alert"></div>
+            </div>
+            <div class="field full">
+              <label for="nl-name" data-i18n="nl.name">Name (optional)</label>
+              <input id="nl-name" type="text" placeholder="—" autocomplete="name"/>
+            </div>
+            <label class="field-check">
+              <input type="checkbox" id="nl-consent" required/>
+              <span data-i18n="nl.consent">Ich willige ein, Updates zu Bazodiac per E-Mail zu erhalten.</span>
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" data-magnetic>
+              <span data-i18n="nl.cta">Auf die Update-Liste setzen</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+
+          <div class="status-row" id="nl-status-row">
+            <div><span class="dot" aria-hidden="true"></span><span id="nl-status-label" data-i18n="status.idle">Bereit</span></div>
+            <span class="mono" id="nl-status-meta">Newsletter · idle</span>
+          </div>
+
+          <div class="err-banner" id="nl-err-banner" hidden role="alert">
+            <span class="code" id="nl-err-code">NEWSLETTER_UNAVAILABLE</span>
+            <span id="nl-err-msg" data-i18n="error.nlUnavailable">Die Newsletter-Anmeldung ist vorbereitet. Der Backend-Endpunkt ist noch nicht verbunden.</span>
+          </div>
+        </form>
+      </div>
+
+    </section>
+
+    <!-- RIGHT: Chart + HUD -->
+    <aside class="col-side">
+
+      <!-- Fusion Chart Card -->
+      <div class="card glow chart-card" style="--rd:1000ms" data-card aria-live="polite">
+        <div class="chart-head">
+          <div>
+            <div class="form-title" style="margin-bottom:.2rem" data-i18n="chart.title">Fusion-Chart</div>
+            <div class="form-sub" data-i18n="chart.sub">FuFirE Engine Output</div>
+          </div>
+          <div class="form-sub mono"><b id="chart-state-label">EMPTY</b></div>
+        </div>
+
+        <!-- empty -->
+        <div class="chart-state chart-empty" id="state-empty">
+          <div class="icon">◐</div>
+          <p data-i18n="chart.empty.line1">Dein Fusion-Chart erscheint hier.</p>
+          <p data-i18n="chart.empty.line2" style="opacity:.7">Western Layer · BaZi Layer · Wu-Xing Vector</p>
+        </div>
+
+        <!-- loading -->
+        <div class="chart-state chart-loading" id="state-loading" hidden>
+          <div class="ring-loader" aria-hidden="true"></div>
+          <p data-i18n="chart.loading.title">FuFirE berechnet dein Fusion-Chart …</p>
+          <div class="layers">
+            <span data-i18n="chart.loading.l1">Western Chart Layer</span>
+            <span data-i18n="chart.loading.l2">BaZi Timing Layer</span>
+            <span data-i18n="chart.loading.l3">Wu-Xing Vector</span>
+          </div>
+        </div>
+
+        <!-- error -->
+        <div class="chart-state chart-error" id="state-error" hidden>
+          <div class="icon" aria-hidden="true">!</div>
+          <p data-i18n="chart.error.line1">Die FuFirE-Berechnung konnte nicht abgeschlossen werden.</p>
+          <p data-i18n="chart.error.line2">Bitte prüfe deine Eingaben oder versuche es später erneut.</p>
+          <span class="code" id="chart-err-code">FUFIRE_UNAVAILABLE</span>
+          <button class="btn btn-ghost" data-magnetic id="btn-retry-chart" style="margin-top:.4rem">
+            <span data-i18n="action.retry">Erneut versuchen</span>
+          </button>
+        </div>
+
+        <!-- success (only filled by real response) -->
+        <div class="chart-state chart-success" id="state-success" hidden>
+          <div class="chart-stats">
+            <div class="stat"><span class="k" data-i18n="chart.k.sun">Sonne</span><span class="v" id="r-sun">—</span></div>
+            <div class="stat"><span class="k" data-i18n="chart.k.moon">Mond</span><span class="v" id="r-moon">—</span></div>
+            <div class="stat"><span class="k" data-i18n="chart.k.asc">Aszendent</span><span class="v" id="r-asc">—</span></div>
+            <div class="stat"><span class="k" data-i18n="chart.k.animal">BaZi Jahrestier</span><span class="v" id="r-animal">—</span></div>
+            <div class="stat"><span class="k" data-i18n="chart.k.day">Tagesmeister</span><span class="v" id="r-day">—</span></div>
+            <div class="stat highlight"><span class="k" data-i18n="chart.k.dom">Dominantes Element</span><span class="v" id="r-dom">—</span></div>
+          </div>
+
+          <div class="wuxing-vec">
+            <span class="lab" data-i18n="chart.wuxing">Wu-Xing Vector</span>
+            <div class="wuxing-bars" id="wuxing-bars">
+              <div class="el wood"><span class="name">Holz</span><div class="track"><span data-el="wood"></span></div></div>
+              <div class="el fire"><span class="name">Feuer</span><div class="track"><span data-el="fire"></span></div></div>
+              <div class="el earth"><span class="name">Erde</span><div class="track"><span data-el="earth"></span></div></div>
+              <div class="el metal"><span class="name">Metall</span><div class="track"><span data-el="metal"></span></div></div>
+              <div class="el water"><span class="name">Wasser</span><div class="track"><span data-el="water"></span></div></div>
+            </div>
+          </div>
+
+          <div class="chart-cta">
+            <div class="vec"><span data-i18n="chart.coh">Coherence Index</span> · <b id="r-coh">—</b></div>
+            <button class="btn btn-ghost" id="btn-open-report" data-magnetic style="padding:.55rem .9rem;font-size:10px;min-height:36px">
+              <span data-i18n="action.openReport">Fusion-Deutung öffnen</span> →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- HUD Bento -->
+      <div class="bento">
+        <div class="card glow" style="--rd:1120ms" data-card>
+          <div class="ck">
+            <span class="label" data-i18n="hud.engine">FuFirE Engine</span>
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>
+          </div>
+          <div class="v">v1<small data-i18n="hud.engineSub">VORBEREITET</small></div>
+        </div>
+
+        <div class="card glow" style="--rd:1200ms" data-card>
+          <div class="ck">
+            <span class="label" data-i18n="hud.western">Western Layer</span>
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          </div>
+          <div class="v" id="hud-western">—<small data-i18n="hud.idle">IDLE</small></div>
+        </div>
+
+        <div class="card glow" style="--rd:1280ms" data-card>
+          <div class="ck">
+            <span class="label" data-i18n="hud.bazi">BaZi Layer</span>
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </div>
+          <div class="v" id="hud-bazi">—<small data-i18n="hud.idle">IDLE</small></div>
+        </div>
+
+        <div class="card glow" style="--rd:1360ms" data-card>
+          <div class="ck">
+            <span class="label" data-i18n="hud.wuxing">Wu-Xing Layer</span>
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l9 6-3.5 11h-11L3 9z"/></svg>
+          </div>
+          <div class="v" id="hud-wuxing">—<small data-i18n="hud.idle">IDLE</small></div>
+        </div>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div>© 2026 Bazodiac · FuFirE Engine</div>
+    <div class="links">
+      <span data-i18n="footer.l1">Auditierbar. Berechnet. Reflektierend.</span>
+      <span data-i18n="footer.l2">Kein Schicksal. Eine Signatur.</span>
+    </div>
+  </footer>
+</div>
+
+<!-- Report Modal -->
+<div class="modal-root" id="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-back" data-close-modal></div>
+  <div class="modal-card" role="document">
+    <div class="modal-head">
+      <div>
+        <h2 id="modal-title" data-i18n="modal.title">Fusion-Deutung</h2>
+        <p data-i18n="modal.sub">Computed Alignment · Powered by Gemini</p>
+      </div>
+      <button class="modal-close" id="modal-close" aria-label="Schließen">×</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="modal-state loading" id="m-loading">
+        <div class="icon" aria-hidden="true"></div>
+        <p data-i18n="modal.loading">Gemini decodiert deine Fusion-Signatur …</p>
+      </div>
+
+      <div class="modal-state error" id="m-error" hidden>
+        <div class="icon" aria-hidden="true">!</div>
+        <p data-i18n="modal.error.line1">Die Fusion-Deutung konnte nicht geladen werden.</p>
+        <p data-i18n="modal.error.line2">Der Backend-Endpunkt ist noch nicht verbunden.</p>
+        <span class="code" id="modal-err-code">INTERPRETATION_UNAVAILABLE</span>
+        <button class="btn btn-ghost" data-magnetic id="btn-retry-interp" style="margin-top:.4rem">
+          <span data-i18n="action.retry">Erneut versuchen</span>
+        </button>
+      </div>
+
+      <div class="modal-state" id="m-success" hidden style="display:flex;flex-direction:column;gap:1.25rem;align-items:stretch;text-align:left">
+        <div class="interpretation" id="interpretation-block"></div>
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      <p class="note" data-i18n="modal.note">Privater Reflexionsbericht · Berechnet aus deiner temporalen Signatur.</p>
+      <div class="acts">
+        <button class="btn btn-ghost" data-magnetic id="btn-dl-txt" disabled>
+          <span data-i18n="action.dlTxt">Als TXT</span>
+        </button>
+        <button class="btn btn-ghost" data-magnetic id="btn-dl-pdf" disabled>
+          <span data-i18n="action.dlPdf">Als PDF</span>
+        </button>
+        <button class="btn btn-primary" data-magnetic id="btn-go-newsletter" style="padding:.7rem .9rem;font-size:10px">
+          <span data-i18n="action.toNl">Updates erhalten</span> →
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   MOTION PROFILE MANAGER
+   ----------------------------------------------------------
+   Breakpoint-based motion tiers. Sets <html data-motion="..."> so
+   CSS can branch, and exports window.MotionProfile.has(feature)
+   for JS-side gating of expensive effects.
+
+   Tiers:
+     desktop ≥1100px : hover_preview, image_trail, custom_cursor,
+                       sticky_scroll, webgl, parallax, magnetic,
+                       cursor_glow, ambient_drift
+     tablet 720-1099 : hover lite (no cursor_glow / image_trail
+                       / custom_cursor), no parallax, simple reveals
+     mobile <720px   : no image_trail, no custom_cursor, no webgl,
+                       no parallax, no magnetic; mask-reveal +
+                       staggered fade/translate only
+     reduced (PRM)   : everything off, simple opacity fades
+   ============================================================ */
+window.MotionProfile = (function(){
+  const root = document.documentElement;
+  const mqReduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const mqHover  = window.matchMedia('(hover:hover) and (pointer:fine)');
+  const mqTablet = window.matchMedia('(min-width:720px) and (max-width:1099px)');
+  const mqMobile = window.matchMedia('(max-width:719px)');
+
+  const FEATURES = {
+    desktop: new Set([
+      'hover_preview','image_trail','custom_cursor','sticky_scroll','webgl',
+      'parallax','magnetic','cursor_glow','ambient_drift','mask_reveal',
+      'staggered_fade','line_draw','clip_reveal'
+    ]),
+    tablet: new Set([
+      'hover_preview','sticky_scroll','magnetic','ambient_drift',
+      'mask_reveal','staggered_fade','line_draw'
+    ]),
+    mobile: new Set([
+      'mask_reveal','staggered_fade'
+    ]),
+    reduced: new Set([])
+  };
+
+  let current = 'desktop';
+  const subs = new Set();
+
+  function compute(){
+    if (mqReduce.matches) return 'reduced';
+    if (mqMobile.matches) return 'mobile';
+    if (mqTablet.matches || !mqHover.matches) return 'tablet';
+    return 'desktop';
+  }
+
+  function apply(){
+    const next = compute();
+    if (next === current && root.getAttribute('data-motion') === next) return;
+    current = next;
+    root.setAttribute('data-motion', next);
+    try { console.debug('[motion]', 'profile_changed', { profile: next }); } catch(_){}
+    subs.forEach(fn => { try { fn(next); } catch(_){} });
+  }
+
+  // initial sync (before paint)
+  current = compute();
+  root.setAttribute('data-motion', current);
+
+  [mqReduce, mqHover, mqTablet, mqMobile].forEach(mq => {
+    if (mq.addEventListener) mq.addEventListener('change', apply);
+    else if (mq.addListener) mq.addListener(apply);
+  });
+
+  return {
+    get current(){ return current; },
+    has(feature){ return FEATURES[current].has(feature); },
+    onChange(fn){ subs.add(fn); return () => subs.delete(fn); }
+  };
+})();
+
+/* ============================================================
+   ENTRANCE TRIGGER (with multiple fallbacks)
+   ============================================================ */
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function __triggerShell(){ document.body && document.body.classList.add('shell-in'); }
+function __triggerReady(){
+  document.body && document.body.classList.add('shell-in');
+  // tiny gap so the shell fade-in registers before the staggered children begin
+  setTimeout(()=>{ document.body && document.body.classList.add('ready'); }, reduceMotion ? 0 : 120);
+}
+__triggerShell();
+__triggerReady();
+document.addEventListener('DOMContentLoaded', __triggerReady);
+window.addEventListener('load', __triggerReady);
+setTimeout(__triggerReady, 50);
+
+/* ============================================================
+   THEME TOGGLE — light/dark with persistence + system default
+   ============================================================ */
+(function(){
+  const KEY = 'bazodiac.theme';
+  const root = document.documentElement;
+  let stored = null;
+  try { stored = localStorage.getItem(KEY); } catch(_){}
+  const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+  const initial = stored || (prefersLight ? 'light' : 'dark');
+  if (initial === 'light') root.setAttribute('data-theme','light');
+  const btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    if (next === 'light') root.setAttribute('data-theme','light');
+    else root.removeAttribute('data-theme');
+    try { localStorage.setItem(KEY, next); } catch(_){}
+    try { console.debug("[analytics]", 'theme_changed', { theme: next }); } catch(_){}
+  });
+})();
+
+/* ============================================================
+   I18N
+   ============================================================ */
+const I18N = {
+  de: {
+    "header.beta": "Pre-Release · FuFirE Fusion Preview",
+    "hero.eyebrow": "FuFirE Fusion Preview",
+    "hero.h1": "Berechne dein echtes",
+    "hero.h2": "Bazodiac Fusion-Chart.",
+    "hero.lead": "Bazodiac verbindet westliche Astrologie, chinesisches BaZi und Wu-Xing zu einer auditierbaren Cosmic Signature — powered by FuFirE.",
+    "hero.disclaimer": "Kein Horoskop-Versprechen. Ein Reflexionsmodell aus echten Chartdaten.",
+    "form.title": "Geburtsdaten",
+    "form.sub": "Schritt 01 · Temporale Signatur",
+    "form.engine": "FuFirE Engine · Vorbereitet",
+    "form.date": "Geburtsdatum",
+    "form.time": "Geburtszeit",
+    "form.unknownTime": "Ich kenne meine Geburtszeit nicht",
+    "form.place": "Geburtsort",
+    "form.cta": "Fusion-Chart berechnen",
+    "status.idle": "Bereit",
+    "status.validating": "Eingaben werden geprüft…",
+    "status.calculating": "FuFirE berechnet…",
+    "status.success": "Chart berechnet",
+    "status.error": "Berechnung fehlgeschlagen",
+    "error.required.date": "Bitte gib dein Geburtsdatum ein.",
+    "error.required.time": "Für eine präzise Berechnung wird die Geburtszeit benötigt.",
+    "error.required.place": "Bitte gib deinen Geburtsort ein.",
+    "error.format.date": "Format JJJJ-MM-TT erwartet.",
+    "error.format.time": "Format HH:MM erwartet.",
+    "error.required.email": "Bitte gib eine gültige E-Mail-Adresse ein.",
+    "error.required.consent": "Einwilligung erforderlich.",
+    "error.fufireUnavailable": "Die FuFirE-Berechnung ist im Frontend vorbereitet. Der Backend-Endpunkt ist noch nicht verbunden.",
+    "error.nlUnavailable": "Die Newsletter-Anmeldung ist vorbereitet. Der Backend-Endpunkt ist noch nicht verbunden.",
+    "chart.title": "Fusion-Chart",
+    "chart.sub": "FuFirE Engine Output",
+    "chart.empty.line1": "Dein Fusion-Chart erscheint hier.",
+    "chart.empty.line2": "Western Layer · BaZi Layer · Wu-Xing Vector",
+    "chart.loading.title": "FuFirE berechnet dein Fusion-Chart …",
+    "chart.loading.l1": "Western Chart Layer",
+    "chart.loading.l2": "BaZi Timing Layer",
+    "chart.loading.l3": "Wu-Xing Vector",
+    "chart.error.line1": "Die FuFirE-Berechnung konnte nicht abgeschlossen werden.",
+    "chart.error.line2": "Bitte prüfe deine Eingaben oder versuche es später erneut.",
+    "chart.k.sun": "Sonne","chart.k.moon": "Mond","chart.k.asc": "Aszendent",
+    "chart.k.animal": "BaZi Jahrestier","chart.k.day": "Tagesmeister","chart.k.dom": "Dominantes Element",
+    "chart.wuxing": "Wu-Xing Vector",
+    "chart.coh": "Coherence Index",
+    "action.retry": "Erneut versuchen",
+    "action.openReport": "Fusion-Deutung öffnen",
+    "action.dlTxt": "Als TXT",
+    "action.dlPdf": "Als PDF",
+    "action.toNl": "Updates erhalten",
+    "hud.engine": "FuFirE Engine","hud.engineSub": "VORBEREITET",
+    "hud.western": "Western Layer","hud.bazi": "BaZi Layer","hud.wuxing": "Wu-Xing Layer","hud.idle": "IDLE",
+    "footer.l1": "Auditierbar. Berechnet. Reflektierend.",
+    "footer.l2": "Kein Schicksal. Eine Signatur.",
+    "nl.title": "Updates erhalten","nl.sub": "Bazodiac Pre-Release · Quartalstransmission",
+    "nl.back": "← Zurück",
+    "nl.lead": "Wir halten dich über das Bazodiac Release auf dem Laufenden. Kein Horoskop-Newsletter. Kein Marketing-Lärm.",
+    "nl.frequency": "~4 Mails pro Jahr · DSGVO · Abmeldung jederzeit",
+    "nl.email": "E-Mail","nl.name": "Name (optional)",
+    "nl.consent": "Ich willige ein, Updates zu Bazodiac per E-Mail zu erhalten.",
+    "nl.cta": "Auf die Update-Liste setzen",
+    "nl.success.l1": "Du bist auf der Update-Liste.",
+    "nl.success.l2": "Wir halten dich über Bazodiac auf dem Laufenden.",
+    "modal.title": "Fusion-Deutung",
+    "modal.sub": "Computed Alignment · Powered by Gemini",
+    "modal.loading": "Gemini decodiert deine Fusion-Signatur …",
+    "modal.error.line1": "Die Fusion-Deutung konnte nicht geladen werden.",
+    "modal.error.line2": "Der Backend-Endpunkt ist noch nicht verbunden.",
+    "modal.note": "Privater Reflexionsbericht · Berechnet aus deiner temporalen Signatur."
+  },
+  en: {
+    "header.beta": "Pre-Release · FuFirE Fusion Preview",
+    "hero.eyebrow": "FuFirE Fusion Preview",
+    "hero.h1": "Compute your real",
+    "hero.h2": "Bazodiac Fusion Chart.",
+    "hero.lead": "Bazodiac fuses Western astrology, Chinese BaZi and Wu-Xing into one auditable Cosmic Signature — powered by FuFirE.",
+    "hero.disclaimer": "Not a horoscope promise. A reflection model from real chart data.",
+    "form.title": "Birth Data",
+    "form.sub": "Step 01 · Temporal Signature",
+    "form.engine": "FuFirE Engine · Prepared",
+    "form.date": "Date of Birth",
+    "form.time": "Time of Birth",
+    "form.unknownTime": "I don't know my birth time",
+    "form.place": "Place of Birth",
+    "form.cta": "Calculate Fusion Chart",
+    "status.idle": "Ready",
+    "status.validating": "Validating…",
+    "status.calculating": "FuFirE calculating…",
+    "status.success": "Chart computed",
+    "status.error": "Calculation failed",
+    "error.required.date": "Please enter your date of birth.",
+    "error.required.time": "An accurate computation requires the birth time.",
+    "error.required.place": "Please enter your place of birth.",
+    "error.format.date": "Expected format YYYY-MM-DD.",
+    "error.format.time": "Expected format HH:MM.",
+    "error.required.email": "Please enter a valid email address.",
+    "error.required.consent": "Consent required.",
+    "error.fufireUnavailable": "The FuFirE computation is prepared on the frontend. The backend endpoint is not yet connected.",
+    "error.nlUnavailable": "The newsletter signup is prepared. The backend endpoint is not yet connected.",
+    "chart.title": "Fusion Chart",
+    "chart.sub": "FuFirE Engine Output",
+    "chart.empty.line1": "Your Fusion Chart will appear here.",
+    "chart.empty.line2": "Western Layer · BaZi Layer · Wu-Xing Vector",
+    "chart.loading.title": "FuFirE is computing your Fusion Chart …",
+    "chart.loading.l1": "Western Chart Layer",
+    "chart.loading.l2": "BaZi Timing Layer",
+    "chart.loading.l3": "Wu-Xing Vector",
+    "chart.error.line1": "The FuFirE computation could not complete.",
+    "chart.error.line2": "Please check your input or try again later.",
+    "chart.k.sun": "Sun","chart.k.moon": "Moon","chart.k.asc": "Ascendant",
+    "chart.k.animal": "BaZi Year Animal","chart.k.day": "Daymaster","chart.k.dom": "Dominant Element",
+    "chart.wuxing": "Wu-Xing Vector",
+    "chart.coh": "Coherence Index",
+    "action.retry": "Retry",
+    "action.openReport": "Open Fusion Report",
+    "action.dlTxt": "As TXT",
+    "action.dlPdf": "As PDF",
+    "action.toNl": "Get Updates",
+    "hud.engine": "FuFirE Engine","hud.engineSub": "PREPARED",
+    "hud.western": "Western Layer","hud.bazi": "BaZi Layer","hud.wuxing": "Wu-Xing Layer","hud.idle": "IDLE",
+    "footer.l1": "Auditable. Computed. Reflective.",
+    "footer.l2": "Not destiny. A signature.",
+    "nl.title": "Get Updates","nl.sub": "Bazodiac Pre-Release · Quarterly Transmission",
+    "nl.back": "← Back",
+    "nl.lead": "We'll keep you posted about the Bazodiac release. No horoscope newsletter. No marketing noise.",
+    "nl.frequency": "~4 emails / year · GDPR · Unsubscribe anytime",
+    "nl.email": "Email","nl.name": "Name (optional)",
+    "nl.consent": "I consent to receive Bazodiac updates by email.",
+    "nl.cta": "Add me to the update list",
+    "nl.success.l1": "You're on the update list.",
+    "nl.success.l2": "We'll keep you posted about Bazodiac.",
+    "modal.title": "Fusion Report",
+    "modal.sub": "Computed Alignment · Powered by Gemini",
+    "modal.loading": "Gemini is decoding your fusion signature …",
+    "modal.error.line1": "The fusion interpretation could not load.",
+    "modal.error.line2": "The backend endpoint is not yet connected.",
+    "modal.note": "Private reflection report · Computed from your temporal signature."
+  }
+};
+let lang = "de";
+document.documentElement.lang = lang;
+
+function applyI18n(){
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = (I18N[lang] && I18N[lang][key]) || key;
+    el.textContent = val;
+  });
+  // placeholders
+  document.querySelectorAll('input[data-placeholder-de], input[data-placeholder-en]').forEach(el => {
+    const k = lang === 'de' ? 'data-placeholder-de' : 'data-placeholder-en';
+    const v = el.getAttribute(k);
+    if (v) el.placeholder = v;
+  });
+  document.documentElement.lang = lang;
+}
+applyI18n();
+
+document.querySelectorAll('.lang-toggle button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    lang = btn.dataset.lang;
+    document.querySelectorAll('.lang-toggle button').forEach(b => {
+      b.classList.toggle('active', b === btn);
+      b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+    });
+    applyI18n();
+    trackEvent('language_changed', { lang });
+  });
+});
+
+/* ============================================================
+   ANALYTICS STUB (frontend only)
+   ============================================================ */
+function trackEvent(name, payload){
+  // DEV-only console debug
+  try { console.debug("[analytics]", name, payload || {}); } catch(_){}
+}
+
+/* ============================================================
+   API CLIENT — real fetch to /api/public/* (no mocks)
+   When backend is unreachable, calls reject and UI shows honest errors.
+   ============================================================ */
+const API_BASE_URL = ""; // VITE_PUBLIC_API_BASE_URL — empty string = same origin
+
+async function postJson(path, payload){
+  const res = await fetch(API_BASE_URL + path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+  // Treat any non-OK as backend error
+  if (!res.ok){
+    let body = null;
+    try { body = await res.json(); } catch(_) {}
+    const code = body && body.error && body.error.code ? body.error.code : ("HTTP_" + res.status);
+    const msg = body && body.error && body.error.message ? body.error.message : ("HTTP " + res.status);
+    const err = new Error(msg);
+    err.code = code;
+    throw err;
+  }
+  return res.json();
+}
+
+async function requestFusionChart(payload){
+  return postJson("/api/public/fusion-chart", payload);
+}
+async function requestFusionInterpretation(payload){
+  return postJson("/api/public/fusion-interpretation", payload);
+}
+async function submitNewsletterSignup(payload){
+  return postJson("/api/public/newsletter-signup", payload);
+}
+
+/* ============================================================
+   STATE MACHINE
+   ============================================================ */
+const STATE = {
+  step: "idle",         // idle | validating | calculating | chart_ready | report_loading | report_open | newsletter_prompt | submitting_newsletter | subscribed | error
+  chart: null,
+  chartSessionId: null,
+  interpretation: null,
+  lastBirthData: null,
+  lastError: null
+};
+
+const $ = (id) => document.getElementById(id);
+const liveStatus = $('live-status');
+
+function setStep(next){ STATE.step = next; }
+function announce(msg){ liveStatus.textContent = msg; }
+
+function setStatus(state, labelKey, metaText){
+  const row = $('status-row');
+  row.classList.remove('loading','success','error');
+  if (state) row.classList.add(state);
+  $('status-label').textContent = (I18N[lang] && I18N[lang][labelKey]) || labelKey;
+  if (metaText) $('status-meta').textContent = metaText;
+}
+
+function showChartState(name){
+  ['empty','loading','error','success'].forEach(s => {
+    const el = $('state-'+s);
+    if (s === name){ el.removeAttribute('hidden'); el.style.display = 'flex'; }
+    else { el.setAttribute('hidden',''); el.style.display = 'none'; }
+  });
+  $('chart-state-label').textContent = name.toUpperCase();
+}
+
+/* ============================================================
+   FORM VALIDATION
+   ============================================================ */
+function clearErrors(form){
+  form.querySelectorAll('.err').forEach(e => e.textContent = '');
+  form.querySelectorAll('input').forEach(i => i.classList.remove('error'));
+  $('form-err-banner').hidden = true;
+}
+
+function setFieldError(inputId, errId, key){
+  const inp = $(inputId), err = $(errId);
+  inp.classList.add('error');
+  err.textContent = I18N[lang][key] || key;
+}
+
+function validateBirthData(){
+  clearErrors($('birthdata-form'));
+  const date = $('bd-date').value.trim();
+  const time = $('bd-time').value.trim();
+  const place = $('bd-place').value.trim();
+  const unknownTime = $('bd-unknown-time').checked;
+
+  let ok = true;
+  if (!date){ setFieldError('bd-date','err-date','error.required.date'); ok = false; }
+  else if (!/^\d{4}-\d{2}-\d{2}$/.test(date)){ setFieldError('bd-date','err-date','error.format.date'); ok = false; }
+  if (!unknownTime){
+    if (!time){ setFieldError('bd-time','err-time','error.required.time'); ok = false; }
+    else if (!/^\d{1,2}:\d{2}$/.test(time)){ setFieldError('bd-time','err-time','error.format.time'); ok = false; }
+  }
+  if (!place){ setFieldError('bd-place','err-place','error.required.place'); ok = false; }
+  return ok ? { date, time: unknownTime ? null : time, place, unknownTime } : null;
+}
+
+/* ============================================================
+   FORM SUBMIT — call real API, render honest error if it fails
+   ============================================================ */
+$('birthdata-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  trackEvent('birthdata_submitted');
+  setStep('validating');
+  setStatus('', 'status.validating', 'FuFirE · validating');
+  const data = validateBirthData();
+  if (!data){
+    setStatus('error','status.error','validation_failed');
+    setStep('idle');
+    return;
+  }
+
+  STATE.lastBirthData = data;
+  setStep('calculating');
+  setStatus('loading','status.calculating','FuFirE · live');
+  showChartState('loading');
+  announce(I18N[lang]['chart.loading.title']);
+  trackEvent('fusion_chart_requested');
+
+  try {
+    const resp = await requestFusionChart({
+      birthDate: data.date,
+      birthTime: data.time,
+      birthPlace: data.place,
+      timezone: null,
+      language: lang
+    });
+    if (!resp || !resp.ok || !resp.chart){
+      const code = (resp && resp.error && resp.error.code) || 'FUFIRE_UNAVAILABLE';
+      throw Object.assign(new Error('chart-failed'), { code });
+    }
+    STATE.chart = resp.chart;
+    STATE.chartSessionId = resp.chartSessionId || null;
+    renderChart(resp.chart);
+    setStep('chart_ready');
+    setStatus('success','status.success','FuFirE · ok');
+    trackEvent('fusion_chart_succeeded');
+  } catch (err){
+    STATE.lastError = err;
+    showChartError(err.code || 'FUFIRE_UNAVAILABLE');
+    setStep('error');
+    setStatus('error','status.error', (err.code || 'FUFIRE_UNAVAILABLE'));
+    $('form-err-banner').hidden = false;
+    $('form-err-code').textContent = err.code || 'FUFIRE_UNAVAILABLE';
+    $('form-err-msg').textContent = I18N[lang]['error.fufireUnavailable'];
+    trackEvent('fusion_chart_failed', { code: err.code });
+  }
+});
+
+$('btn-retry-chart').addEventListener('click', () => {
+  $('birthdata-form').dispatchEvent(new Event('submit', { cancelable:true }));
+});
+
+function showChartError(code){
+  showChartState('error');
+  $('chart-err-code').textContent = code;
+}
+
+function renderChart(chart){
+  showChartState('success');
+  $('r-sun').textContent = chart.sunSign || '—';
+  $('r-moon').textContent = chart.moonSign || '—';
+  $('r-asc').textContent = chart.ascendant || '—';
+  $('r-animal').textContent = chart.baziYearAnimal || '—';
+  $('r-day').textContent = chart.baziDaymaster || '—';
+  $('r-dom').textContent = chart.dominantElement || '—';
+  $('r-coh').textContent = (chart.coherenceIndex != null) ? Number(chart.coherenceIndex).toFixed(4) : '—';
+
+  $('hud-western').firstChild.nodeValue = chart.sunSign || '—';
+  $('hud-western').querySelector('small').textContent = lang === 'de' ? 'AKTIV' : 'ACTIVE';
+  $('hud-bazi').firstChild.nodeValue = chart.baziYearAnimal || '—';
+  $('hud-bazi').querySelector('small').textContent = lang === 'de' ? 'AKTIV' : 'ACTIVE';
+  $('hud-wuxing').firstChild.nodeValue = chart.dominantElement || '—';
+  $('hud-wuxing').querySelector('small').textContent = lang === 'de' ? 'AKTIV' : 'ACTIVE';
+
+  // wuxing bars
+  const wx = chart.wuXing || {};
+  ['wood','fire','earth','metal','water'].forEach(el => {
+    const bar = document.querySelector('[data-el="'+el+'"]');
+    const v = wx[el];
+    bar.style.width = (v == null) ? '0%' : Math.max(0, Math.min(100, Number(v))) + '%';
+  });
+
+  announce((I18N[lang]['status.success']||'Chart computed'));
+}
+
+/* ============================================================
+   MODAL — fusion interpretation
+   ============================================================ */
+const modal = $('modal');
+let lastFocused = null;
+
+function showModalState(name){
+  ['loading','error','success'].forEach(s => {
+    const el = $('m-'+s);
+    if (s === name){ el.removeAttribute('hidden'); el.style.display = 'flex'; }
+    else { el.setAttribute('hidden',''); el.style.display = 'none'; }
+  });
+}
+
+function openModal(){
+  if (!STATE.chart){ return; } // never open without real chart data
+  lastFocused = document.activeElement;
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden','false');
+  document.body.style.overflow = 'hidden';
+  setStep('report_loading');
+  trackEvent('fusion_report_opened');
+  loadInterpretation();
+  // focus the close button
+  setTimeout(()=>{ $('modal-close').focus(); }, 50);
+}
+function closeModal(){
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden','true');
+  document.body.style.overflow = '';
+  if (lastFocused) { try { lastFocused.focus(); } catch(_){} }
+  if (STATE.chart) setStep('chart_ready');
+}
+
+async function loadInterpretation(){
+  showModalState('loading');
+  $('btn-dl-txt').disabled = true;
+  $('btn-dl-pdf').disabled = true;
+  try {
+    const resp = await requestFusionInterpretation({
+      language: lang,
+      chart: STATE.chart,
+      chartSessionId: STATE.chartSessionId
+    });
+    if (!resp || !resp.ok || !resp.interpretation){
+      const code = (resp && resp.error && resp.error.code) || 'INTERPRETATION_UNAVAILABLE';
+      throw Object.assign(new Error('interp-failed'), { code });
+    }
+    STATE.interpretation = resp.interpretation;
+    renderInterpretation(resp.interpretation);
+    showModalState('success');
+    setStep('report_open');
+    $('btn-dl-txt').disabled = false;
+    $('btn-dl-pdf').disabled = false;
+  } catch (err){
+    STATE.lastError = err;
+    $('modal-err-code').textContent = err.code || 'INTERPRETATION_UNAVAILABLE';
+    showModalState('error');
+    setStep('error');
+    trackEvent('fusion_report_failed', { code: err.code });
+  }
+}
+
+function renderInterpretation(text){
+  // simple markdown-ish: split paragraphs by double newline; **strong**
+  const block = $('interpretation-block');
+  block.innerHTML = '';
+  const h = document.createElement('h3');
+  h.textContent = (lang === 'de' ? '◇ Fusion-Deutung' : '◇ Fusion Interpretation');
+  block.appendChild(h);
+  String(text).split(/\n{2,}/).forEach(part => {
+    const p = document.createElement('p');
+    p.innerHTML = part.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    block.appendChild(p);
+  });
+}
+
+$('modal-close').addEventListener('click', closeModal);
+document.querySelectorAll('[data-close-modal]').forEach(el => el.addEventListener('click', closeModal));
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+});
+$('btn-open-report').addEventListener('click', openModal);
+$('btn-retry-interp').addEventListener('click', loadInterpretation);
+
+/* ============================================================
+   DOWNLOADS — gated on real interpretation
+   ============================================================ */
+function buildReportText(){
+  const c = STATE.chart || {};
+  const interp = STATE.interpretation || '';
+  return [
+    'BAZODIAC · FUSION REPORT',
+    '------------------------------------',
+    'Sun:        ' + (c.sunSign || '—'),
+    'Moon:       ' + (c.moonSign || '—'),
+    'Ascendant:  ' + (c.ascendant || '—'),
+    'BaZi Animal:' + (c.baziYearAnimal || '—'),
+    'Daymaster:  ' + (c.baziDaymaster || '—'),
+    'Dominant:   ' + (c.dominantElement || '—'),
+    '',
+    'INTERPRETATION',
+    interp
+  ].join('\n');
+}
+
+$('btn-dl-txt').addEventListener('click', () => {
+  if (!STATE.interpretation) return;
+  const blob = new Blob([buildReportText()], { type:'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'bazodiac-fusion-report.txt'; a.click();
+  URL.revokeObjectURL(url);
+  trackEvent('fusion_report_download_txt');
+});
+
+$('btn-dl-pdf').addEventListener('click', () => {
+  if (!STATE.interpretation) return;
+  trackEvent('fusion_report_download_pdf');
+  window.print();
+});
+
+/* ============================================================
+   NEWSLETTER FLOW
+   ============================================================ */
+$('btn-go-newsletter').addEventListener('click', () => {
+  closeModal();
+  switchToNewsletter();
+});
+
+function switchToNewsletter(){
+  $('birthdata-form').hidden = true;
+  $('newsletter-form').hidden = false;
+  setStep('newsletter_prompt');
+  trackEvent('newsletter_prompt_viewed');
+  $('nl-email').focus();
+}
+
+function switchToBirthdata(){
+  $('newsletter-form').hidden = true;
+  $('birthdata-form').hidden = false;
+  if (STATE.chart) setStep('chart_ready');
+  else setStep('idle');
+}
+$('btn-back-to-chart').addEventListener('click', switchToBirthdata);
+
+$('newsletter-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  // clear errors
+  document.querySelectorAll('#newsletter-form .err').forEach(el => el.textContent = '');
+  $('nl-email').classList.remove('error');
+  $('nl-err-banner').hidden = true;
+
+  const email = $('nl-email').value.trim();
+  const name = $('nl-name').value.trim();
+  const consent = $('nl-consent').checked;
+  const row = $('nl-status-row');
+  const setNlStatus = (state, key, meta) => {
+    row.classList.remove('loading','success','error');
+    if (state) row.classList.add(state);
+    $('nl-status-label').textContent = I18N[lang][key] || key;
+    if (meta) $('nl-status-meta').textContent = meta;
+  };
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    $('nl-email').classList.add('error');
+    $('err-nl-email').textContent = I18N[lang]['error.required.email'];
+    setNlStatus('error','status.error','validation_failed');
+    return;
+  }
+  if (!consent){
+    setNlStatus('error','status.error','consent_required');
+    return;
+  }
+
+  setStep('submitting_newsletter');
+  setNlStatus('loading','status.validating','Newsletter · live');
+  trackEvent('newsletter_submitted');
+
+  try {
+    const resp = await submitNewsletterSignup({
+      email, name: name || null,
+      language: lang,
+      consent: true,
+      chartSessionId: STATE.chartSessionId
+    });
+    if (!resp || !resp.ok){
+      const code = (resp && resp.error && resp.error.code) || 'NEWSLETTER_UNAVAILABLE';
+      throw Object.assign(new Error('nl-failed'), { code });
+    }
+    setStep('subscribed');
+    setNlStatus('success','status.success','Newsletter · ok');
+    trackEvent('newsletter_confirmed');
+    // Replace form with confirmation block
+    const form = $('newsletter-form');
+    const ok1 = I18N[lang]['nl.success.l1'];
+    const ok2 = I18N[lang]['nl.success.l2'];
+    form.innerHTML = `
+      <div class="form-head">
+        <div>
+          <h2 data-i18n="nl.title">${I18N[lang]['nl.title']}</h2>
+          <p class="form-sub">${I18N[lang]['nl.sub']}</p>
+        </div>
+      </div>
+      <p class="lead"><strong>${ok1}</strong><br/><span class="small">${ok2}</span></p>`;
+  } catch (err){
+    setNlStatus('error','status.error', err.code || 'NEWSLETTER_UNAVAILABLE');
+    $('nl-err-banner').hidden = false;
+    $('nl-err-code').textContent = err.code || 'NEWSLETTER_UNAVAILABLE';
+    $('nl-err-msg').textContent = I18N[lang]['error.nlUnavailable'];
+    trackEvent('newsletter_failed', { code: err.code });
+  }
+});
+
+/* ============================================================
+   EFFECT 2 — CARD HOVER GLOW (cursor-tracked)
+   Gated by MotionProfile.has('cursor_glow') — desktop only
+   ============================================================ */
+(function(){
+  const cards = document.querySelectorAll('[data-card]');
+  const handlers = new WeakMap();
+
+  function onMove(card){
+    return function(e){
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mouse-x', ((e.clientX - r.left) / r.width * 100) + '%');
+      card.style.setProperty('--mouse-y', ((e.clientY - r.top) / r.height * 100) + '%');
+    };
+  }
+  function onLeave(card){
+    return function(){
+      card.style.setProperty('--mouse-x','50%');
+      card.style.setProperty('--mouse-y','50%');
+    };
+  }
+  function attach(){
+    cards.forEach(card => {
+      if (handlers.has(card)) return;
+      const m = onMove(card), l = onLeave(card);
+      card.addEventListener('pointermove', m);
+      card.addEventListener('pointerleave', l);
+      handlers.set(card, { m, l });
+    });
+  }
+  function detach(){
+    cards.forEach(card => {
+      const h = handlers.get(card);
+      if (!h) return;
+      card.removeEventListener('pointermove', h.m);
+      card.removeEventListener('pointerleave', h.l);
+      handlers.delete(card);
+      card.style.setProperty('--mouse-x','50%');
+      card.style.setProperty('--mouse-y','50%');
+    });
+  }
+  function sync(){
+    if (window.MotionProfile && window.MotionProfile.has('cursor_glow')) attach();
+    else detach();
+  }
+  sync();
+  window.MotionProfile && window.MotionProfile.onChange(sync);
+})();
+
+/* ============================================================
+   EFFECT 2 — MAGNETIC BUTTONS (capped 4px)
+   Gated by MotionProfile.has('magnetic') — desktop + tablet
+   ============================================================ */
+(function(){
+  const btns = document.querySelectorAll('[data-magnetic]');
+  const handlers = new WeakMap();
+  function attach(){
+    btns.forEach(btn => {
+      if (handlers.has(btn)) return;
+      const m = (e) => {
+        const r = btn.getBoundingClientRect();
+        const dx = (e.clientX - r.left - r.width/2) / r.width;
+        const dy = (e.clientY - r.top - r.height/2) / r.height;
+        btn.style.transform = `translate(${dx*4}px, ${dy*4}px)`;
+      };
+      const l = () => { btn.style.transform = ''; };
+      btn.addEventListener('pointermove', m);
+      btn.addEventListener('pointerleave', l);
+      handlers.set(btn, { m, l });
+    });
+  }
+  function detach(){
+    btns.forEach(btn => {
+      const h = handlers.get(btn);
+      if (!h) return;
+      btn.removeEventListener('pointermove', h.m);
+      btn.removeEventListener('pointerleave', h.l);
+      handlers.delete(btn);
+      btn.style.transform = '';
+    });
+  }
+  function sync(){
+    if (window.MotionProfile && window.MotionProfile.has('magnetic')) attach();
+    else detach();
+  }
+  sync();
+  window.MotionProfile && window.MotionProfile.onChange(sync);
+})();
+
+/* ============================================================
+   EFFECT 3 — Bounded scroll parallax
+   Gated by MotionProfile.has('parallax') — desktop only
+   ============================================================ */
+(function(){
+  const layer = document.querySelector('.constellation');
+  if (!layer) return;
+  let raf = 0, attached = false;
+  const update = () => {
+    const y = Math.min(Math.max(window.scrollY, 0), 200);
+    layer.style.setProperty('--scroll-y', y + 'px');
+    raf = 0;
+  };
+  const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+  function attach(){
+    if (attached) return;
+    window.addEventListener('scroll', onScroll, { passive:true });
+    attached = true;
+    update();
+  }
+  function detach(){
+    if (!attached) return;
+    window.removeEventListener('scroll', onScroll);
+    attached = false;
+    layer.style.setProperty('--scroll-y','0px');
+  }
+  function sync(){
+    if (window.MotionProfile && window.MotionProfile.has('parallax')) attach();
+    else detach();
+  }
+  sync();
+  window.MotionProfile && window.MotionProfile.onChange(sync);
+})();
+
+/* ============================================================
+   STUB HOOKS — Image Trail / Custom Cursor / Sticky Scroll / WebGL
+   ----------------------------------------------------------
+   These features aren't built into this prototype yet, but the
+   profile system gates them so future implementations auto-disable
+   on the right tiers. Each hook checks MotionProfile.has(feature)
+   before initializing and re-checks on profile change.
+   ============================================================ */
+(function(){
+  const features = ['image_trail','custom_cursor','sticky_scroll','webgl'];
+  function sync(){
+    if (!window.MotionProfile) return;
+    const state = {};
+    features.forEach(f => state[f] = window.MotionProfile.has(f));
+    document.documentElement.dataset.motionFeatures = features
+      .filter(f => state[f]).join(' ') || 'none';
+  }
+  sync();
+  window.MotionProfile && window.MotionProfile.onChange(sync);
+})();
+
+/* ============================================================
+   Track unknown-time toggle
+   ============================================================ */
+$('bd-unknown-time').addEventListener('change', (e) => {
+  const t = $('bd-time');
+  t.disabled = e.target.checked;
+  if (e.target.checked){
+    t.value = '';
+    $('err-time').textContent = '';
+    t.classList.remove('error');
+  }
+});
+
+/* ============================================================
+   CURSOR FX — dot + ring + nebula + vortex (gravitational stars)
+   Gated by MotionProfile + (hover:hover) + (pointer:fine)
+   ============================================================ */
+(function(){
+  const fineHover = window.matchMedia('(hover:hover) and (pointer:fine)');
+  const reduceMQ  = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const smallMQ   = window.matchMedia('(max-width:720px)');
+
+  const dot    = document.querySelector('.cursorfx-dot');
+  const ring   = document.querySelector('.cursorfx-ring');
+  const nebula = document.querySelector('.cursorfx-nebula-lens');
+  const canvas = document.querySelector('.cursorfx-vortex');
+  if (!dot || !ring || !nebula || !canvas) return;
+
+  let enabled = false;
+  let mx = window.innerWidth/2, my = window.innerHeight/2;
+  let rx = mx, ry = my;
+  let nx = mx, ny = my;
+  let pointerInside = false;
+  let raf = 0;
+
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  let dpr = 1;
+
+  function resizeCanvas(){
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width  = Math.floor(window.innerWidth * dpr);
+    canvas.height = Math.floor(window.innerHeight * dpr);
+    canvas.style.width  = window.innerWidth + 'px';
+    canvas.style.height = window.innerHeight + 'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function seedStars(){
+    stars = [];
+    const W = window.innerWidth, H = window.innerHeight;
+    const density = Math.min(1, (W*H) / (1600*900));
+    const count = Math.round(110 * density);
+    for (let i=0;i<count;i++){
+      const angle = Math.random()*Math.PI*2;
+      const orbit = 4 + Math.random()*22;
+      stars.push({
+        ax: Math.random()*W, ay: Math.random()*H,
+        a: angle, ar: orbit,
+        as: (0.0003 + Math.random()*0.0009)*(Math.random()<.5?-1:1),
+        x:0,y:0,
+        r: 0.5 + Math.random()*1.5,
+        col: Math.random() < 0.78
+              ? `rgba(212,175,55,${0.35 + Math.random()*0.45})`
+              : (Math.random()<.5
+                  ? `rgba(255,255,255,${0.30 + Math.random()*0.30})`
+                  : `rgba(99,102,241,${0.30 + Math.random()*0.35})`)
+      });
+    }
+  }
+  function drawVortex(){
+    const W = window.innerWidth, H = window.innerHeight;
+    ctx.clearRect(0,0,W,H);
+    const R = 240, R2 = R*R;
+    for (const s of stars){
+      s.a += s.as * 16;
+      let tx = s.ax + Math.cos(s.a)*s.ar;
+      let ty = s.ay + Math.sin(s.a)*s.ar;
+      if (pointerInside){
+        const ddx = mx - tx, ddy = my - ty;
+        const d2 = ddx*ddx + ddy*ddy;
+        if (d2 < R2 && d2 > 1){
+          const d = Math.sqrt(d2);
+          const force = (1 - d/R);
+          const nxn = ddx/d, nyn = ddy/d;
+          const tnx = -nyn, tny = nxn;
+          tx += nxn * force * 22 + tnx * force * 14;
+          ty += nyn * force * 22 + tny * force * 14;
+        }
+      }
+      s.x += (tx - s.x) * 0.12;
+      s.y += (ty - s.y) * 0.12;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fillStyle = s.col;
+      ctx.fill();
+    }
+    if (pointerInside){
+      ctx.lineWidth = 0.5;
+      for (let i=0;i<stars.length;i++){
+        const s = stars[i];
+        const dxc = s.x - mx, dyc = s.y - my;
+        const d2c = dxc*dxc + dyc*dyc;
+        if (d2c < R2*0.6){
+          ctx.strokeStyle = `rgba(212,175,55,${0.18 * (1 - Math.sqrt(d2c)/R)})`;
+          ctx.beginPath();
+          ctx.moveTo(s.x, s.y);
+          ctx.lineTo(mx, my);
+          ctx.stroke();
+        }
+      }
+    }
+  }
+  function loop(){
+    rx += (mx - rx) * 0.18;
+    ry += (my - ry) * 0.18;
+    nx += (mx - nx) * 0.06;
+    ny += (my - ny) * 0.06;
+    dot.style.transform    = `translate3d(${mx}px, ${my}px, 0) translate(-50%, -50%)`;
+    ring.style.transform   = `translate3d(${rx}px, ${ry}px, 0) translate(-50%, -50%)`;
+    nebula.style.transform = `translate3d(${nx}px, ${ny}px, 0) translate(-50%, -50%)`;
+    drawVortex();
+    raf = requestAnimationFrame(loop);
+  }
+  function onMove(e){
+    mx = e.clientX; my = e.clientY;
+    pointerInside = true;
+    document.documentElement.style.setProperty('--cursorfx-x', (mx/window.innerWidth*100)+'%');
+    document.documentElement.style.setProperty('--cursorfx-y', (my/window.innerHeight*100)+'%');
+    if (dot.style.opacity !== '1'){
+      dot.style.opacity = '1';
+      ring.style.opacity = '1';
+      nebula.style.opacity = '1';
+    }
+  }
+  function onLeave(){
+    pointerInside = false;
+    dot.style.opacity = '0';
+    ring.style.opacity = '0';
+    nebula.style.opacity = '0';
+  }
+  function onEnter(){ pointerInside = true; }
+  const interactiveSel = 'a, button, [role="button"], .interactive, label, input, textarea, select';
+  function onOver(e){ if (e.target.closest && e.target.closest(interactiveSel)) ring.classList.add('is-active'); }
+  function onOut(e){ if (e.target.closest && e.target.closest(interactiveSel)) ring.classList.remove('is-active'); }
+  function onResize(){ resizeCanvas(); seedStars(); }
+
+  function attach(){
+    if (enabled) return;
+    enabled = true;
+    document.documentElement.classList.add('cursorfx-enabled');
+    resizeCanvas(); seedStars();
+    window.addEventListener('pointermove', onMove, { passive:true });
+    window.addEventListener('pointerleave', onLeave);
+    window.addEventListener('pointerenter', onEnter);
+    document.addEventListener('mouseover', onOver);
+    document.addEventListener('mouseout', onOut);
+    window.addEventListener('resize', onResize);
+    if (!raf) raf = requestAnimationFrame(loop);
+  }
+  function detach(){
+    if (!enabled) return;
+    enabled = false;
+    document.documentElement.classList.remove('cursorfx-enabled');
+    window.removeEventListener('pointermove', onMove);
+    window.removeEventListener('pointerleave', onLeave);
+    window.removeEventListener('pointerenter', onEnter);
+    document.removeEventListener('mouseover', onOver);
+    document.removeEventListener('mouseout', onOut);
+    window.removeEventListener('resize', onResize);
+    if (raf) { cancelAnimationFrame(raf); raf = 0; }
+    ctx && ctx.clearRect(0,0,canvas.width,canvas.height);
+    dot.style.opacity = '0'; ring.style.opacity = '0'; nebula.style.opacity = '0';
+  }
+  function shouldEnable(){
+    if (reduceMQ.matches) return false;
+    if (smallMQ.matches) return false;
+    if (!fineHover.matches) return false;
+    if (window.MotionProfile){
+      const p = window.MotionProfile.current;
+      if (p === 'mobile' || p === 'reduced') return false;
+    }
+    return true;
+  }
+  function sync(){ shouldEnable() ? attach() : detach(); }
+  sync();
+  [fineHover, reduceMQ, smallMQ].forEach(mq => {
+    if (mq.addEventListener) mq.addEventListener('change', sync);
+    else if (mq.addListener) mq.addListener(sync);
+  });
+  window.MotionProfile && window.MotionProfile.onChange(sync);
+})();
+
+/* ============================================================
+   Track form-started event
+   ============================================================ */
+let formStartedFired = false;
+['bd-date','bd-time','bd-place'].forEach(id => {
+  $(id).addEventListener('focus', () => {
+    if (!formStartedFired){
+      trackEvent('birthdata_started');
+      formStartedFired = true;
+    }
+  });
+});
+</script>
+
+</body>
+</html>

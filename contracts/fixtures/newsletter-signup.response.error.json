@@ -1,0 +1,8 @@
+{
+  "ok": false,
+  "error": {
+    "code": "CONSENT_REQUIRED",
+    "message": "Consent must be granted before subscribing.",
+    "field": "consent"
+  }
+}

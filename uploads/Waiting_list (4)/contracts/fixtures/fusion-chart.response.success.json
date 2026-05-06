@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "chartSessionId": "fc_2719ae",
+  "chart": {
+    "sunSign": "Aries",
+    "moonSign": "Scorpio",
+    "ascendant": "Cancer",
+    "baziYearAnimal": "Horse",
+    "baziDaymaster": "Geng",
+    "dominantElement": "Fire",
+    "coherenceIndex": 0.82,
+    "wuXing": {
+      "wood": 0.08,
+      "fire": 0.42,
+      "earth": 0.18,
+      "metal": 0.12,
+      "water": 0.20
+    },
+    "cosmicSignature": "FU-2719-AE",
+    "computedAt": "2026-05-06T12:00:00Z"
+  }
+}
