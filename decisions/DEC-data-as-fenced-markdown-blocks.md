@@ -6,7 +6,7 @@
 
 **Scope**: system-wide (data-as-document policy artefacts)
 
-**Source**: [REQ-USA-editorial-framing-reflection](../1-spec/requirements/REQ-USA-editorial-framing-reflection.md), [DEC-zero-runtime-deps](DEC-zero-runtime-deps.md)
+**Source**: [REQ-USA-editorial-framing-reflection](../1-spec/requirements/REQ-USA-editorial-framing-reflection.md)
 
 **Last updated**: 2026-05-07
 
@@ -34,7 +34,7 @@ The Markdown document is the source of truth — both for editorial reviewers (w
 - The data file is a Markdown document under `4-deploy/runbooks/` (or another stable path documented in the consuming script).
 - Each list lives in a fenced code block with a deterministic language tag of the form `<class>-<lang>` or `<class>` if language-neutral.
 - Block content is line-delimited; one entry per line; empty lines and lines starting with `#` are ignored by the parser.
-- The parser is a zero-deps Node script (per `DEC-zero-runtime-deps`) that uses simple regex (` ```<tag>\n([\s\S]*?)``` `) to extract each block.
+- The parser is a zero-deps Node script (per `DEC-zero-runtime-deps`) that uses simple regex (` ```<tag>\n([\s\S]*?)``` ` where `<tag>` is the block's language identifier, e.g., `forbidden-de`) to extract each block.
 - The parser **MUST fail loudly** with a non-zero exit code and a clear error message if any expected block is missing, malformed, or empty. A check that silently loads zero entries and reports "no issues" is a worse failure mode than no check at all.
 
 ### Required checks
