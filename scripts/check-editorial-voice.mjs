@@ -24,7 +24,7 @@ function parseArgs(argv) {
 }
 
 function extractWatchwords(voiceMd) {
-  const re = /^## Watchwords\s*$([\s\S]*?)(?=^## |\Z)/m;
+  const re = /^## Watchwords\s*$([\s\S]*?)(?=^## |(?![\s\S]))/m;
   const match = voiceMd.match(re);
   if (!match) {
     throw new Error("editorial-voice doc is missing a `## Watchwords` heading");

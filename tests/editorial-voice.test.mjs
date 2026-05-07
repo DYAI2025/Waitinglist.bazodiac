@@ -96,3 +96,17 @@ test('exits 2 when Watchwords section is empty', async () => {
 
   await rm(dir, { recursive: true });
 });
+
+test('extracts watchwords when ## Watchwords is the last section in the doc', async () => {
+  const { dir, voice, target } = await setupFixtures(
+    `# Doc\n\n## Other\n\nSome prose.\n\n## Watchwords\n\n- Horoskop\n- Schicksal\n`,
+    `<p>Kein Horoskop hier.</p>\n<p>Schicksalsanker.</p>\n`,
+  );
+
+  const { code, stdout } = await runScript(['--voice', voice, '--target', target]);
+  assert.equal(code, 0);
+  assert.match(stdout, /watchword: "Horoskop"/);
+  assert.match(stdout, /watchword: "Schicksal"/);
+
+  await rm(dir, { recursive: true });
+});
