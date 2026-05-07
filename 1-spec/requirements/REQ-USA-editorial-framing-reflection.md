@@ -27,3 +27,7 @@ The covered surfaces are: hero copy, the six chart tile tooltips and ARIA labels
 
 - [CON-active-frontend-public-index](../constraints/CON-active-frontend-public-index.md) — the editorial review applies to the single active frontend; archive variants are not in scope.
 - [CON-no-synthesized-data-in-prod](../constraints/CON-no-synthesized-data-in-prod.md) — editorial framing reinforces the no-synthesis posture by avoiding deterministic claims about chart outputs.
+
+## Implementation
+
+The canonical DE+EN phrase lists and the editorial review process live in [`4-deploy/runbooks/editorial-framing-lexicon.md`](../../4-deploy/runbooks/editorial-framing-lexicon.md). The mechanical check is implemented in `scripts/check-editorial-framing.mjs` (planned in `TASK-implement-check-editorial-framing`). Both are governed by [`DEC-data-as-fenced-markdown-blocks`](../../decisions/DEC-data-as-fenced-markdown-blocks.md).
