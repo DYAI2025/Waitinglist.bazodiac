@@ -18,6 +18,10 @@ This phase defines **how** we're building the system. Focus on architecture, dat
 
 | File | Title | Trigger |
 |------|-------|---------|
+| [DEC-layered-adapter](../decisions/DEC-layered-adapter.md) | Layered adapter with stub-mode short-circuit at service layer | When adding a new endpoint, modifying provider boundaries, or proposing a new fallback mechanism. |
+| [DEC-zero-runtime-deps](../decisions/DEC-zero-runtime-deps.md) | Zero runtime dependencies (Node built-ins only) | When proposing a new HTTP framework, runtime dependency, or build-tool integration. |
+| [DEC-frozen-error-codes](../decisions/DEC-frozen-error-codes.md) | Frozen ALL_CAPS error code set as contract surface | When adding or changing an error code in `api-design.md` or `data-model.md`. |
+| [DEC-same-origin-monolith](../decisions/DEC-same-origin-monolith.md) | Same-origin Node monolith (static + API in one process) | When proposing component boundaries, deployment topology, or a CDN integration. |
 <!-- Add rows as decisions are recorded. File column: [DEC-kebab-name](../decisions/DEC-kebab-name.md) -->
 
 ---

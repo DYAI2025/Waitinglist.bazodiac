@@ -92,6 +92,12 @@ When an artifact (goal, user story, requirement) is no longer relevant:
 
 | File | Priority | Status | Summary |
 |------|----------|--------|---------|
+| [GOAL-pre-launch-preview](goals/GOAL-pre-launch-preview.md) | Must-have | Approved | Deployable contract-stable preview running end-to-end without upstream services. |
+| [GOAL-bilingual-experience](goals/GOAL-bilingual-experience.md) | Must-have | Approved | Full DE/EN content + UI parity with live language switching. |
+| [GOAL-collect-waitlist-signups](goals/GOAL-collect-waitlist-signups.md) | Must-have | Approved | Consenting newsletter signup with stable error codes for missing consent / invalid email. |
+| [GOAL-honest-reflection-framing](goals/GOAL-honest-reflection-framing.md) | Must-have | Approved | No fabricated data in production; copy frames reflection, not prediction. |
+| [GOAL-real-provider-integration](goals/GOAL-real-provider-integration.md) | Should-have | Approved | Drop-in switch to live providers without contract or frontend changes. |
+| [GOAL-accessible-chart-tiles](goals/GOAL-accessible-chart-tiles.md) | Should-have | Approved | Keyboard + screen-reader access for the six chart tiles. |
 <!-- Add rows as goals are created. File column: [GOAL-kebab-name](goals/GOAL-kebab-name.md) -->
 
 ---
@@ -100,6 +106,15 @@ When an artifact (goal, user story, requirement) is no longer relevant:
 
 | File | Role | Priority | Status | Summary |
 |------|------|----------|--------|---------|
+| [US-compute-cosmic-signature](user-stories/US-compute-cosmic-signature.md) | Prospective user | Must-have | Approved | Enter birth data and receive the full Fusion Chart (six tiles + Wu-Xing). |
+| [US-provisional-without-birth-time](user-stories/US-provisional-without-birth-time.md) | Prospective user | Must-have | Approved | Submit without birth time; ascendant rendered as provisional. |
+| [US-read-fusion-interpretation](user-stories/US-read-fusion-interpretation.md) | Prospective user | Must-have | Approved | Open the interpretation modal with headline, stats, body markdown, and downloads. |
+| [US-switch-language](user-stories/US-switch-language.md) | Prospective user | Must-have | Approved | Switch DE ↔ EN at any point with live ARIA + tooltip update. |
+| [US-subscribe-with-consent](user-stories/US-subscribe-with-consent.md) | Newsletter subscriber | Must-have | Approved | Submit email + consent and receive a localized confirmation envelope. |
+| [US-keyboard-explore-tiles](user-stories/US-keyboard-explore-tiles.md) | Prospective user (keyboard / AT) | Should-have | Approved | Tab through the six chart tiles; localized ARIA + tooltip; Escape dismiss. |
+| [US-operator-deploy-preview](user-stories/US-operator-deploy-preview.md) | Project owner | Must-have | Approved | Deploy preview to Railway and pass `PUBLIC_API_BASE_URL=… npm run smoke`. |
+| [US-operator-flip-to-live](user-stories/US-operator-flip-to-live.md) | Project owner | Should-have | Approved | Flip to live providers via env-only configuration; envelope unchanged. |
+| [US-honest-failure-on-outage](user-stories/US-honest-failure-on-outage.md) | Privacy / compliance owner | Must-have | Approved | Production upstream failures surface as structured errors, never silent fixture fallback. |
 <!-- Add rows as user stories are created. File column: [US-kebab-name](user-stories/US-kebab-name.md) -->
 
 ---
@@ -108,6 +123,29 @@ When an artifact (goal, user story, requirement) is no longer relevant:
 
 | File | Type | Priority | Status | Summary |
 |------|------|----------|--------|---------|
+| [REQ-F-stable-error-envelope](requirements/REQ-F-stable-error-envelope.md) | Functional | Must-have | Approved | `{ok, error?:{code,message,field?}}` envelope with stable ALL_CAPS codes. |
+| [REQ-F-fusion-chart-endpoint](requirements/REQ-F-fusion-chart-endpoint.md) | Functional | Must-have | Approved | `POST /api/public/fusion-chart` returns the contract chart envelope. |
+| [REQ-F-fusion-interpretation-endpoint](requirements/REQ-F-fusion-interpretation-endpoint.md) | Functional | Must-have | Approved | `POST /api/public/fusion-interpretation` returns the contract interpretation envelope. |
+| [REQ-F-newsletter-signup-endpoint](requirements/REQ-F-newsletter-signup-endpoint.md) | Functional | Must-have | Approved | `POST /api/public/newsletter-signup` confirms a consenting subscription. |
+| [REQ-F-null-birth-time-accepted](requirements/REQ-F-null-birth-time-accepted.md) | Functional | Must-have | Approved | Chart endpoint accepts `birthTime: null` and renders ascendant as provisional. |
+| [REQ-F-fufire-chart-mapping](requirements/REQ-F-fufire-chart-mapping.md) | Functional | Must-have | Approved | FuFirE provider maps the chart contract to the upstream `/chart` schema exactly. |
+| [REQ-F-stub-mode-toggle](requirements/REQ-F-stub-mode-toggle.md) | Functional | Must-have | Approved | `PUBLIC_API_STUB_MODE` switches between fixture and live modes by env-var only. |
+| [REQ-F-config-validation-live](requirements/REQ-F-config-validation-live.md) | Functional | Must-have | Approved | Missing live env vars fail startup with `CONFIGURATION_ERROR` listing every variable. |
+| [REQ-F-envelope-byte-compat](requirements/REQ-F-envelope-byte-compat.md) | Functional | Should-have | Approved | Stub-mode and live-mode envelopes are byte-compatible in shape. |
+| [REQ-F-no-fixture-fallback-in-prod](requirements/REQ-F-no-fixture-fallback-in-prod.md) | Functional | Must-have | Approved | Service layer must not return fixture data when `stubMode === false`. |
+| [REQ-F-language-toggle-live](requirements/REQ-F-language-toggle-live.md) | Functional | Must-have | Approved | Language toggle updates the entire UI live, without page reload. |
+| [REQ-F-idempotent-newsletter-signup](requirements/REQ-F-idempotent-newsletter-signup.md) | Functional | Should-have | Approved | Repeated signup with same email is graceful; no duplicate records. |
+| [REQ-REL-explicit-provider-failure](requirements/REQ-REL-explicit-provider-failure.md) | Reliability | Must-have | Approved | Production provider failures surface as structured errors, never silently. |
+| [REQ-SEC-consent-required](requirements/REQ-SEC-consent-required.md) | Security | Must-have | Approved | Newsletter signup requires explicit `consent: true`. |
+| [REQ-SEC-no-pii-in-logs](requirements/REQ-SEC-no-pii-in-logs.md) | Security | Must-have | Approved | Logs and `error.message` strings must not contain user PII. |
+| [REQ-USA-i18n-de-en-parity](requirements/REQ-USA-i18n-de-en-parity.md) | Usability | Must-have | Approved | All visible UI text exists in both DE and EN with full parity. |
+| [REQ-USA-error-code-rendered-verbatim](requirements/REQ-USA-error-code-rendered-verbatim.md) | Usability | Must-have | Approved | Frontend renders backend `error.code` verbatim; no synthesized fallback. |
+| [REQ-USA-keyboard-accessible-tiles](requirements/REQ-USA-keyboard-accessible-tiles.md) | Usability | Should-have | Approved | Six chart tiles are keyboard-focusable with live-localized ARIA + Escape dismiss. |
+| [REQ-USA-no-8px-essential-text](requirements/REQ-USA-no-8px-essential-text.md) | Usability | Should-have | Approved | No essential UI text uses `font-size: 8px`. |
+| [REQ-USA-editorial-framing-reflection](requirements/REQ-USA-editorial-framing-reflection.md) | Usability | Must-have | Approved | Frontend microcopy uses reflection-oriented phrasing, not prediction-asserting; verified via forbidden-phrase grep + manual editorial review. |
+| [REQ-MNT-railway-deploy-conformance](requirements/REQ-MNT-railway-deploy-conformance.md) | Maintainability | Must-have | Approved | Server complies with Railway deployment conventions (`PORT`, `HOST`, `/healthz`, single process). |
+| [REQ-MNT-smoke-against-public-url](requirements/REQ-MNT-smoke-against-public-url.md) | Maintainability | Should-have | Approved | Smoke harness can target a deployed URL via `PUBLIC_API_BASE_URL`. |
+| [REQ-COMP-stub-mode-prod-disabled](requirements/REQ-COMP-stub-mode-prod-disabled.md) | Compliance | Must-have | Approved | Production environments must not run with `PUBLIC_API_STUB_MODE=true`. |
 <!-- Add rows as requirements are created. File column: [REQ-CLASS-kebab-name](requirements/REQ-CLASS-kebab-name.md) -->
 
 ---
@@ -116,6 +154,11 @@ When an artifact (goal, user story, requirement) is no longer relevant:
 
 | File | Category | Status | Risk | Summary |
 |------|----------|--------|------|---------|
+| [ASM-fufire-api-available](assumptions/ASM-fufire-api-available.md) | Technology | Unverified | High | FuFirE/BAFE chart engine reachable with documented `/chart` schema at launch. |
+| [ASM-interpretation-vendor-selectable](assumptions/ASM-interpretation-vendor-selectable.md) | Business | Unverified | Medium | A Gemini or equivalent proxy interpretation vendor will be procurable at acceptable terms. |
+| [ASM-newsletter-vendor-gdpr-compliant](assumptions/ASM-newsletter-vendor-gdpr-compliant.md) | Regulatory | Unverified | Medium | A GDPR-compliant newsletter vendor with double opt-in + JSON API will be selected before launch. |
+| [ASM-geocoding-vendor-affordable](assumptions/ASM-geocoding-vendor-affordable.md) | Business | Unverified | Medium | A geocoding + timezone vendor will be affordable at expected pre-launch traffic. |
+| [ASM-de-en-covers-target-audience](assumptions/ASM-de-en-covers-target-audience.md) | Business | Unverified | Low | German + English together cover the pre-launch / early-launch audience. |
 <!-- Add rows as assumptions are created. File column: [ASM-kebab-name](assumptions/ASM-kebab-name.md) -->
 
 ---
@@ -124,4 +167,11 @@ When an artifact (goal, user story, requirement) is no longer relevant:
 
 | File | Category | Status | Summary |
 |------|----------|--------|---------|
+| [CON-active-frontend-public-index](constraints/CON-active-frontend-public-index.md) | Technical | Active | Single active frontend in `public/index.html`; no bundler or module split. |
+| [CON-react-archive-inactive](constraints/CON-react-archive-inactive.md) | Technical | Active | `archive/` is reference-only and not build-ready. |
+| [CON-stub-mode-dev-only](constraints/CON-stub-mode-dev-only.md) | Operational | Active | `PUBLIC_API_STUB_MODE=true` is dev/preview only; production must set `false` explicitly. |
+| [CON-no-synthesized-data-in-prod](constraints/CON-no-synthesized-data-in-prod.md) | Operational | Active | Production must not synthesize astrology, interpretation, or signup data. |
+| [CON-fufire-chart-endpoint](constraints/CON-fufire-chart-endpoint.md) | Technical | Active | FuFirE engine reached at exactly `POST {FUFIRE_BASE_URL}/chart` with frozen payload + response mapping. |
+| [CON-no-silent-provider-fallback](constraints/CON-no-silent-provider-fallback.md) | Technical | Active | Production fails closed with a structured error; stub mode is the only allowed fixture path. |
+| [CON-same-origin-node-deployment](constraints/CON-same-origin-node-deployment.md) | Operational | Active | Preferred deployment for this iteration: single Node process serving static + API same-origin. |
 <!-- Add rows as constraints are created. File column: [CON-kebab-name](constraints/CON-kebab-name.md) -->

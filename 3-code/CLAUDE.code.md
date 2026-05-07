@@ -8,7 +8,17 @@ This phase contains the **implementation**. Focus on clean, tested, maintainable
 
 ## Components
 
-<!-- Add an entry for each component/codebase -->
+### Frontend
+
+- **Directory**: [`frontend/`](frontend/)
+- **Technology**: Single-file HTML/CSS/JS (`public/index.html`); no build step
+- **Responsibility**: Bilingual (DE/EN) preview landing experience — chart submission UI, six chart tiles, consent-gated newsletter signup, live language toggle. Renders backend `error.code` verbatim.
+
+### Adapter
+
+- **Directory**: [`adapter/`](adapter/)
+- **Technology**: Node.js, built-ins only (`node:http`/`fs`/`path`/`url`/`crypto`); zero runtime dependencies
+- **Responsibility**: HTTP server providing the public Bazodiac contract surface — bootstrap + dispatch + routes + services + providers, with stub-vs-live mode short-circuit at the service layer. Serves the static frontend, exposes `/healthz`, and orchestrates the three POST endpoints.
 
 ---
 

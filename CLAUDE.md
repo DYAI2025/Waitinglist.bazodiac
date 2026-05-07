@@ -33,25 +33,34 @@ Stakeholders + collaborators are to be modeled in `1-spec/stakeholders.md` once 
 
 ### Current State
 
-**Phase: Code — Iteration 1 deployed; Iteration 2 reported but not present in this repository.**
+**Phase: Design (retrospective / code-derived baseline).**
 
-**Iteration 1 (committed to `origin/main`):**
-- Monolithic `server.mjs` (~220 LOC, all three public POST handlers inline; static + SPA fallback; CORS preflight; download endpoints).
-- Static checks (`npm run check`): inline-script syntax, duplicate HTML IDs, `node --check server.mjs`.
-- End-to-end smoke (`npm run smoke`): boots server on `127.0.0.1:4173`, posts every fixture, asserts `CONSENT_REQUIRED`, `MALFORMED_JSON`, and CORS preflight.
-- Railway-ready via `railway.json` (Nixpacks, healthcheck `/healthz`, retry on failure).
+**Code-derived baseline note.** The Specification phase is being populated *after* implementation, not before. Iteration 1 + Iteration 2 are committed to `origin/main` (commit `7737da9`) and pass all quality gates (`npm run check`, `npm test` — 33 tests, `npm run smoke`). The committed code, `contracts/public-api.md`, `contracts/SMOKE_CHECKLIST.md`, and the two Iteration-2 reports (`BAZODIAC_BACKEND_ITERATION_2_REPORT.md`, `test_results_npm_run_check_passed_npm_test_pa.md`) are the source of truth that artifacts in `1-spec/`, `2-design/`, and `decisions/` document. Treat these artifacts as descriptions of an *existing* system, not as a forward plan — later modifications must not assume the spec preceded the code.
 
-**Iteration 2** (described in two external reports — `~/Downloads/BAZODIAC_BACKEND_ITERATION_2_REPORT.md` and a FlashDocs MD export — but **not in the repository** as of this commit):
-- Modular decomposition under `src/`: `app.mjs`, `config.mjs`, `errors.mjs`, `http.mjs`, `validation.mjs`, `fixtures.mjs`, `routes/publicApi.mjs`, `services/*`, `providers/*`.
-- `tests/` directory with 23 tests (`fixtures`, `public-api`, `fufire-provider`, `frontend-compatibility`) plus an `npm test` script.
-- Real provider boundaries: FuFirE (`POST {FUFIRE_BASE_URL}/chart`, header `X-API-Key`), geocoding/timezone, Gemini interpretation, newsletter.
-- `.env.example` covering `PUBLIC_API_STUB_MODE`, `FUFIRE_*`, `GEOCODING_API_*`, `TIMEZONE_API_*`, `INTERPRETATION_API_*`, `GEMINI_API_KEY`, `NEWSLETTER_API_*`.
-- Frontend fixes: scrolling unblock (`body`, `.shell`), opt-in rich cursor FX via `localStorage.setItem('bazodiac.effects', 'rich')`, contrast tokens (`--fg-muted`, `--fg-subtle`), keyboard-accessible chart-tile tooltips (DE/EN ARIA), provisional ascendant when birth time unknown.
-- `archive/uploads-reference/*` consolidation.
+**Implemented baseline (committed to `origin/main`):**
+- Modular adapter under `src/{config,errors,http,validation,fixtures,routes/publicApi,services/*,providers/*}.mjs`; thin `server.mjs` bootstrap. Zero runtime dependencies (`node:http`, `node:fs`, `node:path` only).
+- Provider boundaries: FuFirE (`POST {FUFIRE_BASE_URL}/chart`, header `X-API-Key`), geocoding + timezone, Gemini interpretation, newsletter — generic, stub-mode-default.
+- Stable error envelope `{ok: bool, error?: {code, message, field?}}` with 13 ALL_CAPS error codes.
+- Frontend fixes in `public/index.html`: scrolling unblock, opt-in rich cursor FX (`localStorage.bazodiac.effects=='rich'`), contrast tokens, keyboard-accessible chart-tile tooltips (DE/EN ARIA), provisional ascendant when birth time unknown.
+- `archive/uploads-reference/*` consolidates legacy uploads; `.env.example` documents the full provider env-var set.
+- Railway-ready via `railway.json` (Nixpacks, healthcheck `/healthz`).
 
-**Open block:** the Iteration 2 source code has not been located — not in this repository, not in the (already merged) `codex/review-architecture-and-fix-bugs` branch, not in `Waiting_list (5).zip`, and not in either source report (both contain only narrative status, no `*.mjs` files). Resolving where this code lives — another machine, an unpushed branch, or work that has not actually been executed yet — is a precondition for accurately populating Specification and Code-phase artifacts.
+**Specification phase summary** (extended approval round 2026-05-07).
+- Stakeholders: 6 defined. Constraints: 7 Active. Assumptions: 5 (1 High-risk, 3 Medium, 1 Low; all Unverified).
+- Goals: **6 Approved (all)** — 4 Must-have + 2 Should-have. User Stories: **9 Approved (all)** — 7 Must-have + 2 Should-have. Requirements: **23 Approved (all)** — 18 Must-have + 5 Should-have (Distribution: 12 F, 1 REL, 2 SEC, 5 USA, 2 MNT, 1 COMP).
+- New requirement created 2026-05-07: [`REQ-USA-editorial-framing-reflection`](1-spec/requirements/REQ-USA-editorial-framing-reflection.md) — formalizes the editorial intent of `GOAL-honest-reflection-framing` via forbidden-phrase + reflection-token review. Closes prior gap finding `I-1`.
+- Approval rationale: code-derived baseline — Approved requirements describe behaviour already shipped in `origin/main` commit `7737da9` and verified by the 33-test suite, except (a) `REQ-USA-editorial-framing-reflection` (formalizes existing copy + adds a forward `scripts/check-editorial-framing.mjs` task) and (b) Should-have reqs under `GOAL-real-provider-integration` (`REQ-F-envelope-byte-compat`, `REQ-F-idempotent-newsletter-signup`) which describe the live-mode contract that has not yet been exercised against real providers.
+- Gap analysis (2026-05-07, post-approval): **0 Critical, 1 Important, 4 Minor.** Important: `ASM-fufire-api-available` (High-risk Unverified) — verification requires live FuFirE engine, which is the inherent subject of `GOAL-real-provider-integration` (next iteration). Minor: 3 Medium-risk Unverified vendor assumptions + 1 Low-risk assumption. Prior `I-1` editorial-framing finding is **closed** by `REQ-USA-editorial-framing-reflection`.
 
-**SDLC scaffold installed:** `1-spec/`, `2-design/`, `3-code/`, `4-deploy/`, `decisions/` are populated with the pangon/ai-sdlc-scaffold template skeleton (only `_template.md`, `PROCEDURES.md`, and `CLAUDE.<phase>.md` index files). Next step: `/SDLC-elicit` to populate the Specification phase, once the Iteration 2 code disconnect is resolved with the user.
+**Design phase progress.**
+- Architecture (`2-design/architecture.md`): drafted 2026-05-07, **coverage updated 2026-05-07 (v2)** for newly-Approved Should-haves + `REQ-USA-editorial-framing-reflection`. Documents the as-built two-mode (stub/live) same-origin Node adapter with three internal layers (route → service → provider). All 23 Approved requirements mapped to implementation files; all 7 Active constraints respected; 4 Unverified assumptions flagged as design risks; `## Architectural Decisions` section indexes the 4 recorded DECs.
+- Data Model (`2-design/data-model.md`): drafted 2026-05-07. No persistence — system is a DTO-catalog with invariants. Documents `ChartRequest`, `FusionChart`, `WuXing`, `InterpretationRequest`, `FusionInterpretation`, `NewsletterSignupRequest`, `NewsletterSubscription`, `ErrorEnvelope`; the Public ↔ FuFirE schema mapping; identifier conventions; lifecycle. No update needed in v2 (new reqs are Microcopy/CSS/test-infra, not DTO-shape).
+- API Design (`2-design/api-design.md`): drafted 2026-05-07, **updated 2026-05-07 (v2)** with `## Smoke Testing` section + 3 new Coverage rows. References `contracts/public-api.md` as authoritative schema; documents HTTP conventions, envelope discriminator (`ok`), status-code-to-error-code mapping, idempotency profiles, versioning policy, validation rules, provider-failure semantics, smoke testing, analytics, rate-limiting policy.
+- Decisions: 4 Active recorded — [`DEC-layered-adapter`](decisions/DEC-layered-adapter.md), [`DEC-zero-runtime-deps`](decisions/DEC-zero-runtime-deps.md), [`DEC-frozen-error-codes`](decisions/DEC-frozen-error-codes.md), [`DEC-same-origin-monolith`](decisions/DEC-same-origin-monolith.md). Indexed in `2-design/CLAUDE.design.md` (4 entries), `4-deploy/CLAUDE.deploy.md` (2 entries), and per-component `CLAUDE.component.md` files (frontend: 2; adapter: all 4).
+- Component decomposition: **2 components** — [`frontend`](3-code/frontend/CLAUDE.component.md) (HTML/CSS/JS in `public/index.html`, 7 reqs after editorial-framing addition) + [`adapter`](3-code/adapter/CLAUDE.component.md) (Node.js zero-deps, 17 reqs). All component req tables now show Approved status (Draft annotations removed in v2).
+- **Completeness assessment (2026-05-07 v2): 0 Critical, 1 Important, 1 Minor.** Important: `ASM-fufire-api-available` (High, Unverified) — verification requires live FuFirE engine = subject of `GOAL-real-provider-integration` next iteration. Minor: 3 Medium-risk Unverified vendor assumptions (interpretation, newsletter, geocoding) — verification follows vendor selection. Design → Code gate **fully open**. Next step: `/SDLC-implementation-plan` (substantial forward scope now available).
+
+**SDLC scaffold:** pangon/ai-sdlc-scaffold installed in `1-spec/`, `2-design/`, `3-code/`, `4-deploy/`, `decisions/`.
 
 ---
 
