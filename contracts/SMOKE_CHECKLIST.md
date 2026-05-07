@@ -110,7 +110,7 @@ A failing item blocks the iteration. Do not "mostly pass" this checklist.
 ### Optional fields
 
 - [ ] Omitting `name` returns HTTP 200 (name is optional).
-- [ ] Omitting `chartSessionId` returns HTTP 200 (signup is allowed independent of a chart).
+- [ ] Omitting `chartSessionId` returns HTTP 4xx with `error.field: "chartSessionId"` because the current frontend only exposes signup after a chart session exists.
 
 ---
 
@@ -124,7 +124,7 @@ A failing item blocks the iteration. Do not "mostly pass" this checklist.
 ### Content negotiation
 
 - [ ] Sending non-JSON content type returns HTTP 4xx with a stable error code (e.g. `UNSUPPORTED_MEDIA_TYPE`).
-- [ ] Sending malformed JSON returns HTTP 4xx with `error.code: "MALFORMED_JSON"` (or equivalent stable code).
+- [ ] Sending malformed JSON returns HTTP 4xx with `error.code: "MALFORMED_JSON"`.
 
 ### Rate limits (if implemented)
 
