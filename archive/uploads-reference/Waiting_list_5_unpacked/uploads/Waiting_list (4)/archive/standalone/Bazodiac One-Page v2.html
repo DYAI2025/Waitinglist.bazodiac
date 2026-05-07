@@ -28,79 +28,39 @@
     --earth:#B98B5A;
     --wood:#65C18C;
     --metal:#C9D4E2;
-    --header-bg:rgba(5,5,10,0.8);
-    --footer-bg:rgba(5,5,10,0.8);
-    --modal-back:rgba(5,5,10,0.92);
-    --field-bg:#080A12;
-    --field-bg-focus:#070a14;
-    --interp-bg:rgba(5,5,10,0.5);
     --ease-celestial: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-cinema:    cubic-bezier(0.22, 1, 0.36, 1);
   }
-  [data-theme="light"]{
-    --bg-0:#F2EEE3;
-    --bg-1:#EAE4D2;
-    --bg-2:#E4DCC4;
-    --gold:#9B7B2C;
-    --gold-soft:#7C5F19;
-    --gold-line:rgba(155,123,44,0.28);
-    --gold-glow:rgba(155,123,44,0.14);
-    --fg:#1a1812;
-    --fg-2:#5a574d;
-    --fg-30:rgba(26,24,18,0.45);
-    --fg-10:rgba(26,24,18,0.16);
-    --glass:rgba(255,253,247,0.65);
-    --glass-2:rgba(255,253,247,0.4);
-    --border-dark:#c8bfa6;
-    --water:#1F6FB0;
-    --fire:#B0341B;
-    --earth:#7C5A33;
-    --wood:#3F8054;
-    --metal:#5C6B7A;
-    --header-bg:rgba(242,238,227,0.85);
-    --footer-bg:rgba(242,238,227,0.85);
-    --modal-back:rgba(242,238,227,0.92);
-    --field-bg:#EAE4D2;
-    --field-bg-focus:#E6DEC7;
-    --interp-bg:rgba(234,228,210,0.6);
-  }
   *,*::before,*::after{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:var(--bg-0);color:var(--fg);transition:background-color .55s var(--ease-cinema), color .55s var(--ease-cinema)}
+  html,body{margin:0;padding:0;background:var(--bg-0);color:var(--fg)}
   body{
     font-family:"Inter", ui-sans-serif, system-ui, sans-serif;
     font-weight:300;
     -webkit-font-smoothing:antialiased;
     min-height:100dvh;
     overflow-x:hidden;
-    overflow-y:auto;
+    overflow:hidden;
   }
-
-  /* ============== PAGE SHELL ENTRANCE BEAT ============== */
-  /* shell fades in first; everything else gated on .ready */
-  body{ opacity:0; transition:opacity .55s var(--ease-cinema), background-color .55s var(--ease-cinema), color .55s var(--ease-cinema) }
-  body.shell-in{ opacity:1 }
+  @media (max-width:1100px){ body{ overflow-y:auto } }
   ::selection{background:var(--gold);color:var(--bg-0)}
   .mono{font-family:"JetBrains Mono", ui-monospace, monospace}
 
   /* ============== SHELL ============== */
   .shell{
     position:relative;min-height:100dvh;display:flex;flex-direction:column;
-    border:4px solid var(--border-dark);overflow-x:hidden;overflow-y:visible;isolation:isolate;
+    border:4px solid var(--border-dark);overflow:hidden;isolation:isolate;
   }
   .film-grain{
     position:fixed;inset:0;pointer-events:none;z-index:60;opacity:.025;
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   }
-  [data-theme="light"] .film-grain{opacity:.04}
   .ambience{
     position:fixed;top:50%;left:50%;width:760px;height:760px;
     transform:translate(-50%,-50%);
-    background:radial-gradient(circle, var(--gold-glow), transparent 60%);
+    background:radial-gradient(circle, rgba(216,183,106,0.06), transparent 60%);
     filter:blur(80px);border-radius:50%;pointer-events:none;z-index:0;
     animation:pulse-glow 16s ease-in-out infinite;
-    opacity:0;transition:opacity 1s var(--ease-cinema);
   }
-  body.shell-in .ambience{opacity:1}
   @keyframes pulse-glow{
     0%,100%{opacity:.45;transform:translate(-50%,-50%) scale(1)}
     50%{opacity:.7;transform:translate(-50%,-50%) scale(1.06)}
@@ -121,9 +81,9 @@
   .constellation .star.water{fill:var(--water)}
   .constellation .star.wood{fill:var(--wood)}
   .constellation .line{
-    stroke:var(--gold-line);stroke-width:.6;fill:none;
+    stroke:rgba(216,183,106,0.18);stroke-width:.6;fill:none;
     stroke-dasharray:600;stroke-dashoffset:600;
-    animation:line-draw 2.4s var(--ease-celestial) forwards;animation-delay:1.4s;
+    animation:line-draw 2.4s var(--ease-celestial) forwards;animation-delay:.6s;
   }
   @keyframes line-draw{ to{stroke-dashoffset:0} }
   .ready .constellation-inner{ animation:ambient-drift 28s ease-in-out infinite alternate; transform-origin:50% 50%; }
@@ -134,28 +94,22 @@
 
   /* ============== HEADER ============== */
   .header{
-    padding:1.1rem 1.5rem;
+    padding:1.1rem 1.5rem;border-bottom:1px solid var(--gold-line);
     display:flex;justify-content:space-between;align-items:center;
-    background:var(--header-bg);backdrop-filter:blur(10px);position:relative;z-index:40;
+    background:rgba(5,5,10,0.8);backdrop-filter:blur(10px);position:relative;z-index:40;
   }
-  /* drawn baseline under header */
-  .header::after{
-    content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
-    background:var(--gold-line);transform-origin:left center;transform:scaleX(0);
-    transition:transform 1.1s var(--ease-celestial);transition-delay:240ms;
-  }
-  .ready .header::after{transform:scaleX(1)}
   .logo{display:flex;align-items:center;gap:.75rem}
   .logo .ring{ width:32px;height:32px;border-radius:50%;border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;padding:4px }
   .logo .ring-inner{ width:100%;height:100%;border:1px solid rgba(216,183,106,0.4);border-radius:50%; animation:ring-pulse 4s ease-in-out infinite }
   @keyframes ring-pulse{0%,100%{opacity:.6}50%{opacity:1}}
   .logo .name{ font-size:11px;letter-spacing:.5em;font-weight:300;text-transform:uppercase;color:var(--gold) }
   .header-meta{display:flex;align-items:center;gap:1rem;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase}
-  /* (header-meta beta/sep colors live on theme vars) */
+  .header-meta .beta{color:rgba(216,183,106,0.6)}
+  .header-meta .sep{height:14px;width:1px;background:rgba(216,183,106,0.2)}
 
   /* language toggle */
   .lang-toggle{
-    display:inline-flex;border:1px solid var(--gold-line);border-radius:2px;
+    display:inline-flex;border:1px solid rgba(216,183,106,0.25);border-radius:2px;
     overflow:hidden;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;
   }
   .lang-toggle button{
@@ -211,51 +165,33 @@
   .card{
     position:relative;background:var(--glass);border:1px solid var(--fg-10);
     border-radius:3px;
-    opacity:0;clip-path:inset(0 100% 0 0);transform:translateY(10px);
-    transition-property:opacity, clip-path, transform, border-color, background, box-shadow;
-    transition-duration:.9s, 1.1s, .65s, .5s, .55s, .65s;
-    transition-timing-function:var(--ease-celestial), var(--ease-celestial), cubic-bezier(.2,.8,.2,1), var(--ease-cinema), var(--ease-cinema), cubic-bezier(.2,.8,.2,1);
-    transition-delay:var(--rd, 0ms), var(--rd, 0ms), var(--rd, 0ms), 0ms, 0ms, 0ms;
-    will-change: transform, box-shadow;
-    box-shadow: 0 0 0 0 rgba(0,0,0,0);
+    transition:transform .5s var(--ease-cinema), border-color .5s var(--ease-cinema);
+    opacity:0;clip-path:inset(12% 0 0 0);transform:translateY(12px);
+    transition-property:opacity, clip-path, transform, border-color;
+    transition-duration:1s, 1s, 1s, .5s;
+    transition-timing-function:var(--ease-celestial), var(--ease-celestial), var(--ease-celestial), var(--ease-cinema);
+    transition-delay:var(--rd, 0ms), var(--rd, 0ms), var(--rd, 0ms), 0ms;
   }
-  .ready .card{opacity:1;clip-path:inset(0 0 0 0);transform:translateY(0)}
-  /* drawn top line on every card */
+  .ready .card{opacity:1;clip-path:inset(0);transform:translateY(0)}
   .card::before{
-    content:"";position:absolute;left:0;top:0;height:1px;width:100%;
-    background:linear-gradient(to right, transparent, var(--gold), transparent);
-    transform-origin:left center;transform:scaleX(0);
-    transition:transform 1.1s var(--ease-celestial); transition-delay:calc(var(--rd, 0ms) + 80ms);
-    pointer-events:none;opacity:.55;
+    content:"";position:absolute;left:0;bottom:-1px;height:1px;width:0;
+    background:linear-gradient(to right, transparent, rgba(216,183,106,0.55), transparent);
+    transition:width 1.2s var(--ease-celestial); transition-delay:calc(var(--rd, 0ms) + 200ms);
+    pointer-events:none;
   }
-  .ready .card::before{transform:scaleX(1)}
+  .ready .card::before{width:100%}
   .card::after{
     content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
     background:radial-gradient(260px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), var(--gold-glow), transparent 38%);
     opacity:0;transition:opacity .5s var(--ease-cinema);z-index:1;
   }
-  .ready .card.glow:hover{
-    transform: translateY(-7px) scale(1.012);
-    border-color: var(--gold);
-    box-shadow:
-      0 24px 60px -18px rgba(0,0,0,0.55),
-      0 8px 20px -10px rgba(212,175,55,0.18),
-      0 1px 0 0 rgba(255,255,255,0.04) inset;
-  }
+  .ready .card.glow:hover{ transform:translateY(-5px); border-color:rgba(216,183,106,0.4) }
   .card.glow:hover::after{opacity:1}
   .card > *{position:relative;z-index:2}
   @media (hover:none){
-    .card.glow:active{ transform:translateY(-2px); border-color:var(--gold) }
+    .card.glow:active{ transform:translateY(-2px); border-color:rgba(216,183,106,0.4) }
     .card.glow:active::after{opacity:.6}
   }
-
-  /* generic drawn line utility */
-  .draw-line{
-    position:relative;height:1px;background:var(--gold-line);
-    transform-origin:left center;transform:scaleX(0);
-    transition:transform 1s var(--ease-celestial);
-  }
-  .draw-line.in{transform:scaleX(1)}
 
   /* ============== FORM CARD ============== */
   .form-card{padding:1.5rem 1.5rem 1.25rem;min-width:0}
@@ -267,20 +203,20 @@
   .field{display:flex;flex-direction:column;gap:.4rem;min-width:0}
   .field.full{grid-column:1/-1}
   .field label{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:rgba(216,183,106,0.6)}
-  .field input::placeholder{color:var(--fg-30)}
-  .field input:focus{border-color:var(--gold);background:var(--field-bg-focus)}
   .field input{
-    width:100%;background:var(--field-bg);border:1px solid var(--fg-10);color:var(--fg);
+    width:100%;background:var(--bg-1);border:1px solid var(--fg-10);color:var(--fg);
     padding:.75rem .9rem;font-family:"JetBrains Mono",monospace;font-size:13px;letter-spacing:.05em;
     border-radius:0;outline:none;
     transition:border-color .25s var(--ease-cinema), background .25s var(--ease-cinema);
     min-height:48px;
   }
+  .field input::placeholder{color:rgba(247,243,232,0.25)}
+  .field input:focus{border-color:var(--gold);background:#070a14}
   .field input:focus-visible{outline:1px solid rgba(216,183,106,0.3);outline-offset:2px}
   .field input.error{border-color:var(--fire)}
   .field .err{ font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--fire);min-height:14px;letter-spacing:.06em; }
   .field-check{display:flex;align-items:center;gap:.6rem;cursor:pointer;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--fg-2);grid-column:1/-1;padding:.4rem 0}
-  .field-check input{appearance:none;width:16px;height:16px;border:1px solid var(--fg-10);background:var(--field-bg);position:relative;cursor:pointer;min-height:0}
+  .field-check input{appearance:none;width:16px;height:16px;border:1px solid var(--fg-10);background:var(--bg-1);position:relative;cursor:pointer;min-height:0}
   .field-check input:checked{background:var(--gold);border-color:var(--gold)}
   .field-check input:checked::after{content:"";position:absolute;inset:3px;background:var(--bg-0)}
   .field-check input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
@@ -295,23 +231,17 @@
   }
   .btn:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
   .btn[disabled]{opacity:.4;cursor:not-allowed;pointer-events:none}
-  .btn-primary{background:var(--gold);color:var(--bg-0);font-weight:600;box-shadow:0 4px 18px var(--gold-glow);flex:1;min-width:200px}
-  .btn-primary:hover{background:var(--gold-soft);box-shadow:0 8px 30px var(--gold-glow)}
-  .btn-ghost{background:transparent;color:var(--gold);border-color:var(--gold-line)}
-  .btn-ghost:hover{border-color:var(--gold);background:var(--gold-glow)}
+  .btn-primary{background:var(--gold);color:var(--bg-0);font-weight:600;box-shadow:0 4px 18px rgba(216,183,106,0.18);flex:1;min-width:200px}
+  .btn-primary:hover{background:var(--gold-soft);box-shadow:0 8px 30px rgba(216,183,106,0.28)}
+  .btn-ghost{background:transparent;color:var(--gold);border-color:rgba(216,183,106,0.3)}
+  .btn-ghost:hover{border-color:var(--gold);background:rgba(216,183,106,0.06)}
 
   /* status pill */
   .status-row{
-    margin-top:1rem;padding-top:1rem;
+    margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(216,183,106,0.08);
     font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--fg-30);
-    display:flex;justify-content:space-between;align-items:center;gap:1rem;min-height:22px;position:relative;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;min-height:22px;
   }
-  .status-row::before{
-    content:"";position:absolute;left:0;right:0;top:0;height:1px;background:var(--gold-line);
-    transform-origin:left center;transform:scaleX(0);
-    transition:transform 1s var(--ease-celestial);transition-delay:calc(var(--rd, 0ms) + 240ms);
-  }
-  .ready .status-row::before{transform:scaleX(1)}
   .status-row .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:rgba(247,243,232,0.2);margin-right:.6rem;transition:background .3s, box-shadow .3s}
   .status-row.loading .dot{background:var(--gold);animation:dot-pulse 1.2s infinite ease-in-out}
   .status-row.success .dot{background:var(--gold);box-shadow:0 0 10px var(--gold)}
@@ -365,45 +295,19 @@
 
   .chart-success{display:flex;flex-direction:column;gap:.85rem}
   .chart-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.7rem .9rem}
-  .stat{display:flex;flex-direction:column;gap:.2rem;min-width:0;position:relative;outline:none}
-  .stat[tabindex]{cursor:help}
-  .stat:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:2px}
-  .stat .tip{
-    position:absolute;left:0;top:calc(100% + .35rem);z-index:30;
-    width:max-content;max-width:260px;
-    background:rgba(5,5,10,0.95);border:1px solid var(--gold-line);border-radius:3px;
-    padding:.55rem .7rem;font-family:"Inter",ui-sans-serif,system-ui,sans-serif;
-    font-size:11px;line-height:1.5;color:var(--fg);font-weight:300;letter-spacing:.01em;text-transform:none;
-    box-shadow:0 6px 22px rgba(0,0,0,0.55);
-    opacity:0;visibility:hidden;transform:translateY(-2px);
-    transition:opacity .15s ease, transform .15s ease, visibility 0s linear .15s;
-    pointer-events:none;
-  }
-  .stat:hover .tip:not([hidden]),
-  .stat:focus-within .tip:not([hidden]){
-    opacity:1;visibility:visible;transform:translateY(0);transition-delay:0s;
-  }
-  .stat .tip strong{display:block;color:var(--gold);font-weight:500;margin-bottom:.25rem;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase}
-  [data-theme="light"] .stat .tip{background:rgba(255,251,239,0.96);color:var(--fg)}
-  .stat[data-provisional="true"] .v{color:var(--fg-muted, var(--fg-2));font-style:italic}
-  .stat .k{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--fg-muted, rgba(216,183,106,0.78))}
+  .stat{display:flex;flex-direction:column;gap:.2rem;min-width:0}
+  .stat .k{font-family:"JetBrains Mono",monospace;font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:rgba(216,183,106,0.55)}
   .stat .v{font-family:"JetBrains Mono",monospace;font-size:13px;text-transform:uppercase;color:var(--fg);letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .stat.highlight .v{color:var(--gold);font-weight:500}
 
   .wuxing-vec{
     display:flex;flex-direction:column;gap:.5rem;
-    padding-top:.85rem;position:relative;
+    border-top:1px solid rgba(216,183,106,0.08);padding-top:.85rem;
   }
-  .wuxing-vec::before{
-    content:"";position:absolute;left:0;right:0;top:0;height:1px;background:var(--gold-line);
-    transform-origin:left center;transform:scaleX(0);
-    transition:transform 1s var(--ease-celestial);transition-delay:calc(var(--rd, 0ms) + 320ms);
-  }
-  .ready .wuxing-vec::before{transform:scaleX(1)}
-  .wuxing-vec .lab{ font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--fg-muted, rgba(216,183,106,0.78)) }
+  .wuxing-vec .lab{ font-family:"JetBrains Mono",monospace;font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:rgba(216,183,106,0.55) }
   .wuxing-bars{display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem}
   .wuxing-bars .el{display:flex;flex-direction:column;gap:.3rem;align-items:flex-start}
-  .wuxing-bars .el .name{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--fg-subtle, var(--fg-2))}
+  .wuxing-bars .el .name{font-family:"JetBrains Mono",monospace;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--fg-2)}
   .wuxing-bars .el .track{ width:100%;height:3px;background:rgba(247,243,232,0.06);position:relative;overflow:hidden }
   .wuxing-bars .el .track > span{position:absolute;left:0;top:0;bottom:0;width:0;transition:width 1s var(--ease-celestial)}
   .wuxing-bars .wood .track > span{background:var(--wood)}
@@ -412,13 +316,7 @@
   .wuxing-bars .metal .track > span{background:var(--metal)}
   .wuxing-bars .water .track > span{background:var(--water)}
 
-  .chart-cta{display:flex;justify-content:space-between;align-items:center;gap:.6rem;padding-top:.85rem;flex-wrap:wrap;position:relative}
-  .chart-cta::before{
-    content:"";position:absolute;left:0;right:0;top:0;height:1px;background:var(--gold-line);
-    transform-origin:left center;transform:scaleX(0);
-    transition:transform 1s var(--ease-celestial);transition-delay:calc(var(--rd, 0ms) + 380ms);
-  }
-  .ready .chart-cta::before{transform:scaleX(1)}
+  .chart-cta{display:flex;justify-content:space-between;align-items:center;gap:.6rem;border-top:1px solid rgba(216,183,106,0.08);padding-top:.85rem;flex-wrap:wrap}
   .chart-cta .vec{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--fg-30)}
   .chart-cta .vec b{color:var(--gold);font-weight:500}
 
@@ -427,11 +325,11 @@
   .bento .card{padding:.95rem;min-height:96px;display:flex;flex-direction:column;justify-content:space-between}
   .bento .card.span2{grid-column:span 2}
   .bento .ck{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
-  .bento .ck .label{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--fg-muted, rgba(216,183,106,0.78))}
+  .bento .ck .label{font-family:"JetBrains Mono",monospace;font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:rgba(216,183,106,0.5)}
   .bento .ck .ico{width:14px;height:14px;color:rgba(216,183,106,0.3);transition:color .3s}
   .bento .card:hover .ck .ico{color:var(--gold)}
   .bento .v{font-family:"JetBrains Mono",monospace;font-size:14px;text-transform:uppercase;color:var(--fg);letter-spacing:.05em}
-  .bento .v small{font-size:10px;color:var(--fg-subtle, var(--fg-30));letter-spacing:.18em;margin-left:.4rem}
+  .bento .v small{font-size:8px;color:var(--fg-30);letter-spacing:.2em;margin-left:.4rem}
 
   /* ============== NEWSLETTER (replaces left card) ============== */
   .newsletter h2{
@@ -448,17 +346,11 @@
 
   /* ============== FOOTER ============== */
   .footer{
-    padding:1rem 1.5rem;
+    padding:1rem 1.5rem;border-top:1px solid var(--gold-line);
     display:flex;justify-content:space-between;align-items:center;
     font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--fg-30);
-    background:var(--footer-bg);backdrop-filter:blur(10px);position:relative;z-index:40;
+    background:rgba(5,5,10,0.8);backdrop-filter:blur(10px);position:relative;z-index:40;
   }
-  .footer::before{
-    content:"";position:absolute;left:0;right:0;top:0;height:1px;background:var(--gold-line);
-    transform-origin:right center;transform:scaleX(0);
-    transition:transform 1.2s var(--ease-celestial);transition-delay:1300ms;
-  }
-  .ready .footer::before{transform:scaleX(1)}
   .footer .links{display:flex;gap:1.5rem}
   @media (max-width:720px){
     .footer{flex-direction:column;gap:.6rem;text-align:center}
@@ -468,7 +360,7 @@
   /* ============== MODAL ============== */
   .modal-root{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:1.25rem;pointer-events:none}
   .modal-root.open{pointer-events:auto}
-  .modal-back{position:absolute;inset:0;background:var(--modal-back);backdrop-filter:blur(18px);opacity:0;transition:opacity .35s var(--ease-cinema)}
+  .modal-back{position:absolute;inset:0;background:rgba(5,5,10,0.92);backdrop-filter:blur(18px);opacity:0;transition:opacity .35s var(--ease-cinema)}
   .modal-root.open .modal-back{opacity:1}
   .modal-card{
     position:relative;width:100%;max-width:760px;max-height:90vh;
@@ -494,161 +386,25 @@
   .modal-state.error p{color:#ffb3a6}
   .modal-state .code{font-size:9px;color:rgba(255,90,61,0.65);letter-spacing:.25em;text-transform:uppercase}
 
-  .interpretation{padding:1.1rem;background:var(--interp-bg);border:1px solid var(--gold-line);position:relative}
-  .interpretation::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--gold);opacity:.5}
+  .interpretation{padding:1.1rem;background:rgba(5,5,10,0.5);border:1px solid rgba(216,183,106,0.07);position:relative}
+  .interpretation::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:rgba(216,183,106,0.25)}
   .interpretation h3{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin:0 0 .8rem 0}
-  .interpretation h4{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-soft);margin:1rem 0 .45rem}
-  .interpretation .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.55rem;margin:0 0 1rem}
-  .interpretation .kv{padding:.65rem;border:1px solid var(--gold-line);background:var(--glass-2)}
-  .interpretation .kv span{display:block;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--fg-muted, var(--fg-30));margin-bottom:.35rem}
-  .interpretation .kv strong{display:block;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--gold-soft);font-weight:400}
-  .interpretation p{font-size:13px;color:var(--fg);opacity:.88;line-height:1.7;margin:0 0 .75rem 0;font-weight:300}
+  .interpretation p{font-size:13px;color:rgba(247,243,232,0.85);line-height:1.7;margin:0 0 .75rem 0;font-weight:300}
   .interpretation p:last-child{margin-bottom:0}
   .interpretation p strong{color:var(--gold)}
 
   .modal-foot{padding:1rem 1.25rem;border-top:1px solid rgba(216,183,106,0.1);background:rgba(5,5,10,0.4);display:flex;justify-content:space-between;align-items:center;gap:.8rem;flex-wrap:wrap}
-  .modal-foot .note{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--fg-muted, var(--fg-30));max-width:320px;line-height:1.6}
+  .modal-foot .note{font-family:"JetBrains Mono",monospace;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--fg-30);max-width:320px;line-height:1.6}
   .modal-foot .acts{display:flex;gap:.5rem;flex-wrap:wrap}
   .modal-foot .btn{padding:.7rem .9rem;font-size:10px;min-width:auto;flex:0 0 auto}
 
   /* live region (visually hidden but accessible) */
   .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
-  /* ==========================================================
-     MOTION PROFILES — breakpoint-based remapping
-     ----------------------------------------------------------
-     [data-motion="desktop"]  ≥1100px : full motion stack
-     [data-motion="tablet"]    720–1099px : reduced hover deps,
-                                            simplified reveals
-     [data-motion="mobile"]    <720px : no trail/cursor/WebGL,
-                                        mask-reveal + simple fade/translate
-     [data-motion="reduced"]   prefers-reduced-motion: reduce
-     ========================================================== */
-
-  /* ---------- TABLET PROFILE ---------- */
-  html[data-motion="tablet"] body .card.glow:hover{ transform:translateY(-2px) }
-  html[data-motion="tablet"] body .card.glow::after{ display:none } /* drop cursor-tracked glow */
-  html[data-motion="tablet"] body .constellation .star.extra,
-  html[data-motion="tablet"] body .constellation .line.extra{ display:none }
-  html[data-motion="tablet"] body .constellation-parallax{ transform:none !important }
-  html[data-motion="tablet"] body .ready .reveal-line > span{
-    transition: transform .55s cubic-bezier(0.16,1,0.3,1), opacity .45s linear !important;
-  }
-  html[data-motion="tablet"] body .ready .card{
-    transition: opacity .55s linear, transform .55s cubic-bezier(0.16,1,0.3,1) !important;
-    clip-path: none !important;
-  }
-  html[data-motion="tablet"] body .ambience{ animation-duration: 26s }
-
-  /* ---------- MOBILE PROFILE ----------
-     Image trail / custom cursor / heavy WebGL are gated off in JS.
-     Entrance switches to a simple mask-reveal + staggered fade/translate. */
-  html[data-motion="mobile"] body .ambience{ display:none }
-  html[data-motion="mobile"] body .constellation .star.extra,
-  html[data-motion="mobile"] body .constellation .line.extra{ display:none }
-  html[data-motion="mobile"] body .constellation-parallax{ transform:none !important }
-  html[data-motion="mobile"] body .card.glow::after{ display:none }
-  html[data-motion="mobile"] body .ready .reveal-line > span{
-    /* simple mask reveal — flat translate, no expo curve */
-    transition: transform .5s ease-out, opacity .35s linear !important;
-  }
-  html[data-motion="mobile"] body .ready .card{
-    /* fade + small translate, no clip-path mask, no stagger spread */
-    transition: opacity .5s linear, transform .5s ease-out !important;
-    clip-path: none !important;
-    transform: translateY(0) !important;
-  }
-  html[data-motion="mobile"] body .reveal-fade{
-    transition: opacity .5s linear, transform .5s ease-out !important;
-  }
-  html[data-motion="mobile"] body .card::before,
-  html[data-motion="mobile"] body .draw-line,
-  html[data-motion="mobile"] body .eyebrow .rule,
-  html[data-motion="mobile"] body .header::after,
-  html[data-motion="mobile"] body .footer::before,
-  html[data-motion="mobile"] body .status-row::before,
-  html[data-motion="mobile"] body .wuxing-vec::before,
-  html[data-motion="mobile"] body .chart-cta::before{
-    transition: opacity .35s linear !important;
-    transform: scaleX(1) !important;
-    opacity: 0;
-  }
-  html[data-motion="mobile"] body.ready .card::before,
-  html[data-motion="mobile"] body.ready .draw-line,
-  html[data-motion="mobile"] body.ready .eyebrow .rule,
-  html[data-motion="mobile"] body.ready .header::after,
-  html[data-motion="mobile"] body.ready .footer::before,
-  html[data-motion="mobile"] body.ready .status-row::before,
-  html[data-motion="mobile"] body.ready .wuxing-vec::before,
-  html[data-motion="mobile"] body.ready .chart-cta::before{ opacity:1 }
-
-  /* ============== CURSOR FX (BAZODIAC) ============== */
-  :root {
-    --cursorfx-bg: #05070a;
-    --cursorfx-gold: #D4AF37;
-    --cursorfx-indigo-rgb: 99, 102, 241;
-    --cursorfx-gold-rgb: 212, 175, 55;
-    --cursorfx-x: 50%;
-    --cursorfx-y: 50%;
-  }
-  .cursorfx-enabled,
-  .cursorfx-enabled a,
-  .cursorfx-enabled button,
-  .cursorfx-enabled [role="button"],
-  .cursorfx-enabled .interactive { cursor: none; }
-  .cursorfx-enabled input,
-  .cursorfx-enabled textarea,
-  .cursorfx-enabled select,
-  .cursorfx-enabled label { cursor: text; }
-  .cursorfx-film-grain{
-    position:fixed;inset:0;pointer-events:none;z-index:9996;opacity:.025;
-    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-  }
-  .cursorfx-vignette{
-    position:fixed;inset:0;pointer-events:none;z-index:9997;
-    background:radial-gradient(circle at var(--cursorfx-x,50%) var(--cursorfx-y,50%),transparent 20%,rgba(5,7,10,.40) 100%);
-  }
-  .cursorfx-nebula-lens{
-    position:fixed;left:0;top:0;width:600px;height:600px;border-radius:50%;
-    background:radial-gradient(circle, rgba(var(--cursorfx-indigo-rgb),.04) 0%, transparent 70%);
-    filter:blur(50px);pointer-events:none;z-index:1;opacity:0;
-    will-change:transform,opacity;
-    transform:translate3d(-9999px,-9999px,0) translate(-50%,-50%);
-  }
-  .cursorfx-dot{
-    position:fixed;left:0;top:0;width:4px;height:4px;border-radius:50%;
-    background:#fff;pointer-events:none;z-index:9999;opacity:0;mix-blend-mode:difference;
-    will-change:transform,opacity;transform:translate3d(-9999px,-9999px,0) translate(-50%,-50%);
-  }
-  .cursorfx-ring{
-    position:fixed;left:0;top:0;width:40px;height:40px;pointer-events:none;
-    z-index:9998;opacity:0;will-change:transform,opacity;
-    transform:translate3d(-9999px,-9999px,0) translate(-50%,-50%);
-  }
-  .cursorfx-ring::before{
-    content:"";position:absolute;inset:0;
-    border:1px solid rgba(var(--cursorfx-gold-rgb),0);border-radius:50%;
-    transform:scale(.55);
-    transition:transform .4s cubic-bezier(.16,1,.3,1), border-color .4s ease;
-  }
-  .cursorfx-ring.is-active::before{
-    transform:scale(1.2);border-color:rgba(var(--cursorfx-gold-rgb),1);
-  }
-  .cursorfx-vortex{
-    position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;
-  }
-  @media (pointer:coarse),(max-width:720px),(prefers-reduced-motion:reduce){
-    .cursorfx-enabled,.cursorfx-enabled a,.cursorfx-enabled button,
-    .cursorfx-enabled [role="button"],.cursorfx-enabled .interactive{ cursor:auto; }
-    .cursorfx-dot,.cursorfx-ring,.cursorfx-nebula-lens,.cursorfx-vignette,
-    .cursorfx-film-grain,.cursorfx-vortex{ display:none !important; }
-  }
-
   /* ============== REDUCED MOTION ============== */
   @media (prefers-reduced-motion: reduce){
-    body{transition:opacity .3s linear !important;opacity:1 !important}
     .reveal-line > span,.card,.reveal-fade{transition:opacity .4s linear !important;transform:none !important;clip-path:none !important}
-    .card::before,.draw-line,.eyebrow .rule,.header::after,.footer::before,.status-row::before,.wuxing-vec::before,.chart-cta::before{transition:none !important;transform:scaleX(1) !important}
+    .card::before{transition:none !important;width:100% !important}
     .constellation,.ready .constellation{transition:opacity .4s linear !important}
     .ready .constellation .star{animation:none !important;opacity:.45 !important}
     .ready .constellation .star.dim{opacity:.18 !important}
@@ -677,13 +433,6 @@
 
 <div class="film-grain" aria-hidden="true"></div>
 <div class="ambience" aria-hidden="true"></div>
-
-<!-- Cursor FX layers -->
-<div class="cursorfx-vignette" aria-hidden="true"></div>
-<canvas class="cursorfx-vortex" aria-hidden="true"></canvas>
-<div class="cursorfx-nebula-lens" aria-hidden="true"></div>
-<div class="cursorfx-ring" aria-hidden="true"></div>
-<div class="cursorfx-dot" aria-hidden="true"></div>
 
 <!-- Constellation Layer -->
 <div class="constellation" aria-hidden="true">
@@ -743,13 +492,8 @@
       <div class="ring" aria-hidden="true"><div class="ring-inner"></div></div>
       <span class="name">Bazodiac</span>
     </div>
-    <div class="header-meta reveal-fade" style="--rd:200ms">
+    <div class="header-meta reveal-fade" style="--rd:140ms">
       <span class="beta" data-i18n="header.beta">Pre-Release · FuFirE Fusion Preview</span>
-      <span class="sep"></span>
-      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme" title="Toggle theme">
-        <svg class="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-        <svg class="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-      </button>
       <span class="sep"></span>
       <div class="lang-toggle" role="tablist" aria-label="Language">
         <button role="tab" aria-selected="true" data-lang="de" class="active">DE</button>
@@ -765,17 +509,17 @@
     <section class="col-hero">
 
       <div>
-        <div class="eyebrow reveal-fade" style="--rd:340ms">
+        <div class="eyebrow reveal-fade" style="--rd:180ms">
           <span class="rule"></span>
           <span class="label" data-i18n="hero.eyebrow">FuFirE Fusion Preview</span>
         </div>
 
         <h1 class="headline" style="margin-top:1rem">
-          <span class="reveal-line"><span style="--rd:440ms" data-i18n="hero.h1">Berechne dein echtes</span></span>
-          <span class="reveal-line"><span style="--rd:560ms" data-i18n="hero.h2" class="accent">Bazodiac Fusion-Chart.</span></span>
+          <span class="reveal-line"><span style="--rd:260ms" data-i18n="hero.h1">Berechne dein echtes</span></span>
+          <span class="reveal-line"><span style="--rd:340ms" data-i18n="hero.h2" class="accent">Bazodiac Fusion-Chart.</span></span>
         </h1>
 
-        <p class="sub reveal-fade" style="--rd:740ms;margin-top:1.1rem">
+        <p class="sub reveal-fade" style="--rd:520ms;margin-top:1.1rem">
           <span data-i18n="hero.lead">Bazodiac verbindet westliche Astrologie, chinesisches BaZi und Wu-Xing zu einer auditierbaren Cosmic Signature — powered by FuFirE.</span>
           <span class="small" data-i18n="hero.disclaimer">Kein Horoskop-Versprechen. Ein Reflexionsmodell aus echten Chartdaten.</span>
         </p>
@@ -785,7 +529,7 @@
       <div id="left-panel">
 
         <!-- BirthDataForm -->
-        <form class="card glow form-card" id="birthdata-form" novalidate style="--rd:880ms" data-card data-panel="birthdata">
+        <form class="card glow form-card" id="birthdata-form" novalidate style="--rd:620ms" data-card data-panel="birthdata">
           <div class="form-head">
             <div>
               <h2 class="form-title" data-i18n="form.title">Geburtsdaten</h2>
@@ -893,7 +637,7 @@
     <aside class="col-side">
 
       <!-- Fusion Chart Card -->
-      <div class="card glow chart-card" style="--rd:1000ms" data-card aria-live="polite">
+      <div class="card glow chart-card" style="--rd:700ms" data-card aria-live="polite">
         <div class="chart-head">
           <div>
             <div class="form-title" style="margin-bottom:.2rem" data-i18n="chart.title">Fusion-Chart</div>
@@ -934,12 +678,12 @@
         <!-- success (only filled by real response) -->
         <div class="chart-state chart-success" id="state-success" hidden>
           <div class="chart-stats">
-            <div class="stat" data-tile="sun" tabindex="0" role="group" aria-labelledby="lbl-sun"><span class="k" id="lbl-sun" data-i18n="chart.k.sun">Sonne</span><span class="v" id="r-sun">—</span><span class="tip" role="tooltip" hidden></span></div>
-            <div class="stat" data-tile="moon" tabindex="0" role="group" aria-labelledby="lbl-moon"><span class="k" id="lbl-moon" data-i18n="chart.k.moon">Mond</span><span class="v" id="r-moon">—</span><span class="tip" role="tooltip" hidden></span></div>
-            <div class="stat" data-tile="asc" tabindex="0" role="group" aria-labelledby="lbl-asc"><span class="k" id="lbl-asc" data-i18n="chart.k.asc">Aszendent</span><span class="v" id="r-asc">—</span><span class="tip" role="tooltip" hidden></span></div>
-            <div class="stat" data-tile="animal" tabindex="0" role="group" aria-labelledby="lbl-animal"><span class="k" id="lbl-animal" data-i18n="chart.k.animal">BaZi Jahrestier</span><span class="v" id="r-animal">—</span><span class="tip" role="tooltip" hidden></span></div>
-            <div class="stat" data-tile="day" tabindex="0" role="group" aria-labelledby="lbl-day"><span class="k" id="lbl-day" data-i18n="chart.k.day">Tagesmeister</span><span class="v" id="r-day">—</span><span class="tip" role="tooltip" hidden></span></div>
-            <div class="stat highlight" data-tile="dom" tabindex="0" role="group" aria-labelledby="lbl-dom"><span class="k" id="lbl-dom" data-i18n="chart.k.dom">Dominantes Element</span><span class="v" id="r-dom">—</span><span class="tip" role="tooltip" hidden></span></div>
+            <div class="stat"><span class="k" data-i18n="chart.k.sun">Sonne</span><span class="v" id="r-sun">—</span></div>
+            <div class="stat"><span class="k" data-i18n="chart.k.moon">Mond</span><span class="v" id="r-moon">—</span></div>
+            <div class="stat"><span class="k" data-i18n="chart.k.asc">Aszendent</span><span class="v" id="r-asc">—</span></div>
+            <div class="stat"><span class="k" data-i18n="chart.k.animal">BaZi Jahrestier</span><span class="v" id="r-animal">—</span></div>
+            <div class="stat"><span class="k" data-i18n="chart.k.day">Tagesmeister</span><span class="v" id="r-day">—</span></div>
+            <div class="stat highlight"><span class="k" data-i18n="chart.k.dom">Dominantes Element</span><span class="v" id="r-dom">—</span></div>
           </div>
 
           <div class="wuxing-vec">
@@ -964,7 +708,7 @@
 
       <!-- HUD Bento -->
       <div class="bento">
-        <div class="card glow" style="--rd:1120ms" data-card>
+        <div class="card glow" style="--rd:780ms" data-card>
           <div class="ck">
             <span class="label" data-i18n="hud.engine">FuFirE Engine</span>
             <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>
@@ -972,7 +716,7 @@
           <div class="v">v1<small data-i18n="hud.engineSub">VORBEREITET</small></div>
         </div>
 
-        <div class="card glow" style="--rd:1200ms" data-card>
+        <div class="card glow" style="--rd:840ms" data-card>
           <div class="ck">
             <span class="label" data-i18n="hud.western">Western Layer</span>
             <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
@@ -980,7 +724,7 @@
           <div class="v" id="hud-western">—<small data-i18n="hud.idle">IDLE</small></div>
         </div>
 
-        <div class="card glow" style="--rd:1280ms" data-card>
+        <div class="card glow" style="--rd:900ms" data-card>
           <div class="ck">
             <span class="label" data-i18n="hud.bazi">BaZi Layer</span>
             <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
@@ -988,7 +732,7 @@
           <div class="v" id="hud-bazi">—<small data-i18n="hud.idle">IDLE</small></div>
         </div>
 
-        <div class="card glow" style="--rd:1360ms" data-card>
+        <div class="card glow" style="--rd:960ms" data-card>
           <div class="ck">
             <span class="label" data-i18n="hud.wuxing">Wu-Xing Layer</span>
             <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l9 6-3.5 11h-11L3 9z"/></svg>
@@ -1062,128 +806,14 @@
 
 <script>
 /* ============================================================
-   MOTION PROFILE MANAGER
-   ----------------------------------------------------------
-   Breakpoint-based motion tiers. Sets <html data-motion="..."> so
-   CSS can branch, and exports window.MotionProfile.has(feature)
-   for JS-side gating of expensive effects.
-
-   Tiers:
-     desktop ≥1100px : hover_preview, image_trail, custom_cursor,
-                       sticky_scroll, webgl, parallax, magnetic,
-                       cursor_glow, ambient_drift
-     tablet 720-1099 : hover lite (no cursor_glow / image_trail
-                       / custom_cursor), no parallax, simple reveals
-     mobile <720px   : no image_trail, no custom_cursor, no webgl,
-                       no parallax, no magnetic; mask-reveal +
-                       staggered fade/translate only
-     reduced (PRM)   : everything off, simple opacity fades
-   ============================================================ */
-window.MotionProfile = (function(){
-  const root = document.documentElement;
-  const mqReduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const mqHover  = window.matchMedia('(hover:hover) and (pointer:fine)');
-  const mqTablet = window.matchMedia('(min-width:720px) and (max-width:1099px)');
-  const mqMobile = window.matchMedia('(max-width:719px)');
-  const mqSmallVp = window.matchMedia('(max-height:640px), (max-width:900px)');
-  // Rich cursor / canvas FX is opt-in only. The default desktop profile
-  // dropped image_trail, custom_cursor and cursor_glow because they
-  // wedged scrolling on small windows and made low-power machines stutter.
-  // Set localStorage.bazodiac.effects = 'rich' to bring them back.
-  let richFx = false;
-  try { richFx = localStorage.getItem('bazodiac.effects') === 'rich'; } catch(_){}
-
-  const desktopBase = [
-    'hover_preview','sticky_scroll','webgl',
-    'parallax','magnetic','ambient_drift','mask_reveal',
-    'staggered_fade','line_draw','clip_reveal'
-  ];
-  const richExtras = ['image_trail','custom_cursor','cursor_glow'];
-
-  const FEATURES = {
-    desktop: new Set(richFx ? desktopBase.concat(richExtras) : desktopBase),
-    tablet: new Set([
-      'hover_preview','sticky_scroll','magnetic','ambient_drift',
-      'mask_reveal','staggered_fade','line_draw'
-    ]),
-    mobile: new Set([
-      'mask_reveal','staggered_fade'
-    ]),
-    reduced: new Set([])
-  };
-
-  let current = 'desktop';
-  const subs = new Set();
-
-  function compute(){
-    if (mqReduce.matches) return 'reduced';
-    if (mqMobile.matches) return 'mobile';
-    if (mqTablet.matches || !mqHover.matches) return 'tablet';
-    return 'desktop';
-  }
-
-  function apply(){
-    const next = compute();
-    if (next === current && root.getAttribute('data-motion') === next) return;
-    current = next;
-    root.setAttribute('data-motion', next);
-    try { console.debug('[motion]', 'profile_changed', { profile: next }); } catch(_){}
-    subs.forEach(fn => { try { fn(next); } catch(_){} });
-  }
-
-  // initial sync (before paint)
-  current = compute();
-  root.setAttribute('data-motion', current);
-
-  [mqReduce, mqHover, mqTablet, mqMobile].forEach(mq => {
-    if (mq.addEventListener) mq.addEventListener('change', apply);
-    else if (mq.addListener) mq.addListener(apply);
-  });
-
-  return {
-    get current(){ return current; },
-    has(feature){ return FEATURES[current].has(feature); },
-    onChange(fn){ subs.add(fn); return () => subs.delete(fn); }
-  };
-})();
-
-/* ============================================================
    ENTRANCE TRIGGER (with multiple fallbacks)
    ============================================================ */
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-function __triggerShell(){ document.body && document.body.classList.add('shell-in'); }
-function __triggerReady(){
-  document.body && document.body.classList.add('shell-in');
-  // tiny gap so the shell fade-in registers before the staggered children begin
-  setTimeout(()=>{ document.body && document.body.classList.add('ready'); }, reduceMotion ? 0 : 120);
-}
-__triggerShell();
+function __triggerReady(){ document.body && document.body.classList.add('ready'); }
 __triggerReady();
 document.addEventListener('DOMContentLoaded', __triggerReady);
 window.addEventListener('load', __triggerReady);
 setTimeout(__triggerReady, 50);
-
-/* ============================================================
-   THEME TOGGLE — light/dark with persistence + system default
-   ============================================================ */
-(function(){
-  const KEY = 'bazodiac.theme';
-  const root = document.documentElement;
-  let stored = null;
-  try { stored = localStorage.getItem(KEY); } catch(_){}
-  const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-  const initial = stored || (prefersLight ? 'light' : 'dark');
-  if (initial === 'light') root.setAttribute('data-theme','light');
-  const btn = document.getElementById('theme-toggle');
-  if (!btn) return;
-  btn.addEventListener('click', () => {
-    const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-    if (next === 'light') root.setAttribute('data-theme','light');
-    else root.removeAttribute('data-theme');
-    try { localStorage.setItem(KEY, next); } catch(_){}
-    try { console.debug("[analytics]", 'theme_changed', { theme: next }); } catch(_){}
-  });
-})();
 
 /* ============================================================
    I18N
@@ -1328,57 +958,6 @@ const I18N = {
 };
 let lang = "de";
 document.documentElement.lang = lang;
-
-/* ============================================================
-   CHART TILE TOOLTIPS — keyboard focus + hover, DE/EN, ARIA
-   Six chart tiles (sun, moon, asc, animal, day, dom) get an
-   aria-label + a hover/focus tooltip in the active language.
-   The ascendant tile flips to a provisional explanation when
-   the user did not supply a birth time.
-   ============================================================ */
-const TIP_STRINGS = {
-  de: {
-    sun:    { label:'Sonne', text:'Tropisches Sonnenzeichen aus dem Geburtsdatum.' },
-    moon:   { label:'Mond', text:'Mondzeichen — emotionaler Grundton der Charta.' },
-    asc:    { label:'Aszendent', text:'Aufsteigendes Zeichen am Osthorizont zur Geburtszeit.' },
-    asc_provisional: { label:'Aszendent (provisorisch)', text:'Ohne genaue Geburtszeit ist der Aszendent nicht zuverlässig berechenbar — wir zeigen daher keinen Wert.' },
-    animal: { label:'BaZi Jahrestier', text:'Zwölf-Jahres-Tierzyklus aus dem chinesischen BaZi-System, basierend auf dem Geburtsjahr.' },
-    day:    { label:'Tagesmeister', text:'Himmlischer Stamm des Geburtstags — innere Identitätsachse im BaZi.' },
-    dom:    { label:'Dominantes Element', text:'Stärkste der fünf Wandelphasen (Wu-Xing) im Fusionsmodell.' }
-  },
-  en: {
-    sun:    { label:'Sun', text:'Tropical sun sign computed from birth date.' },
-    moon:   { label:'Moon', text:'Moon sign — emotional baseline of the chart.' },
-    asc:    { label:'Ascendant', text:'Rising sign at the eastern horizon at the time of birth.' },
-    asc_provisional: { label:'Ascendant (provisional)', text:'Without an exact birth time, the ascendant cannot be computed reliably — no value shown.' },
-    animal: { label:'BaZi year animal', text:'Twelve-year animal cycle from the Chinese BaZi system, based on the birth year.' },
-    day:    { label:'Day master', text:'Heavenly stem of the birth day — the inner identity axis in BaZi.' },
-    dom:    { label:'Dominant element', text:'Strongest of the five Wu-Xing phases in the fused model.' }
-  }
-};
-function syncStatTooltips(){
-  const dict = TIP_STRINGS[(document.documentElement.lang === 'en') ? 'en' : 'de'];
-  document.querySelectorAll('.chart-stats .stat[data-tile]').forEach(stat => {
-    const tile = stat.dataset.tile;
-    const isAscProvisional = tile === 'asc' && stat.dataset.provisional === 'true';
-    const entry = (isAscProvisional ? dict.asc_provisional : dict[tile]) || null;
-    if (!entry) return;
-    stat.setAttribute('aria-label', entry.label + ': ' + entry.text);
-    const tip = stat.querySelector('.tip');
-    if (tip) {
-      tip.innerHTML = '<strong>' + entry.label + '</strong>' + entry.text;
-      tip.removeAttribute('hidden');
-    }
-  });
-}
-document.addEventListener('keydown', (e) => {
-  if (e.key !== 'Escape') return;
-  const a = document.activeElement;
-  if (a && a.classList && a.classList.contains('stat') && a.matches('.chart-stats .stat')) a.blur();
-});
-new MutationObserver(syncStatTooltips).observe(document.documentElement, { attributes:true, attributeFilter:['lang'] });
-document.addEventListener('DOMContentLoaded', syncStatTooltips);
-syncStatTooltips();
 
 function applyI18n(){
   document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -1588,10 +1167,6 @@ function renderChart(chart){
   $('r-animal').textContent = chart.baziYearAnimal || '—';
   $('r-day').textContent = chart.baziDaymaster || '—';
   $('r-dom').textContent = chart.dominantElement || '—';
-  // Provisional ascendant: backend returns null when birth time is unknown.
-  const ascStat = document.querySelector('.chart-stats .stat[data-tile="asc"]');
-  if (ascStat) ascStat.dataset.provisional = (chart.ascendant == null || chart.ascendant === '') ? 'true' : 'false';
-  if (typeof syncStatTooltips === 'function') syncStatTooltips();
   $('r-coh').textContent = (chart.coherenceIndex != null) ? Number(chart.coherenceIndex).toFixed(4) : '—';
 
   $('hud-western').firstChild.nodeValue = chart.sunSign || '—';
@@ -1606,9 +1181,7 @@ function renderChart(chart){
   ['wood','fire','earth','metal','water'].forEach(el => {
     const bar = document.querySelector('[data-el="'+el+'"]');
     const v = wx[el];
-    const numeric = Number(v);
-    const percent = Number.isFinite(numeric) ? (numeric <= 1 ? numeric * 100 : numeric) : 0;
-    bar.style.width = Math.max(0, Math.min(100, percent)) + '%';
+    bar.style.width = (v == null) ? '0%' : Math.max(0, Math.min(100, Number(v))) + '%';
   });
 
   announce((I18N[lang]['status.success']||'Chart computed'));
@@ -1677,46 +1250,18 @@ async function loadInterpretation(){
   }
 }
 
-function renderMarkdownish(markdown){
-  const fragment = document.createDocumentFragment();
-  String(markdown || '').split(/\n{2,}/).forEach(part => {
-    const trimmed = part.trim();
-    if (!trimmed) return;
-    const lines = trimmed.split(/\n/);
-    const tag = trimmed.startsWith('## ') ? 'h4' : 'p';
-    const el = document.createElement(tag);
-    const text = tag === 'h4' ? trimmed.replace(/^##\s+/, '') : lines.join('\n');
-    el.textContent = text;
-    el.innerHTML = el.innerHTML.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-    fragment.appendChild(el);
-  });
-  return fragment;
-}
-
-function renderInterpretation(interpretation){
+function renderInterpretation(text){
+  // simple markdown-ish: split paragraphs by double newline; **strong**
   const block = $('interpretation-block');
   block.innerHTML = '';
   const h = document.createElement('h3');
-  h.textContent = interpretation.headline || (lang === 'de' ? '◇ Fusion-Deutung' : '◇ Fusion Interpretation');
+  h.textContent = (lang === 'de' ? '◇ Fusion-Deutung' : '◇ Fusion Interpretation');
   block.appendChild(h);
-
-  if (Array.isArray(interpretation.stats) && interpretation.stats.length){
-    const stats = document.createElement('div');
-    stats.className = 'stat-grid';
-    interpretation.stats.forEach(item => {
-      const tile = document.createElement('div');
-      tile.className = 'kv';
-      const label = document.createElement('span');
-      label.textContent = item.label || '—';
-      const value = document.createElement('strong');
-      value.textContent = item.value || '—';
-      tile.append(label, value);
-      stats.appendChild(tile);
-    });
-    block.appendChild(stats);
-  }
-
-  block.appendChild(renderMarkdownish(interpretation.body || ''));
+  String(text).split(/\n{2,}/).forEach(part => {
+    const p = document.createElement('p');
+    p.innerHTML = part.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    block.appendChild(p);
+  });
 }
 
 $('modal-close').addEventListener('click', closeModal);
@@ -1732,8 +1277,7 @@ $('btn-retry-interp').addEventListener('click', loadInterpretation);
    ============================================================ */
 function buildReportText(){
   const c = STATE.chart || {};
-  const interp = STATE.interpretation || {};
-  const body = typeof interp === 'string' ? interp : (interp.body || '');
+  const interp = STATE.interpretation || '';
   return [
     'BAZODIAC · FUSION REPORT',
     '------------------------------------',
@@ -1745,7 +1289,7 @@ function buildReportText(){
     'Dominant:   ' + (c.dominantElement || '—'),
     '',
     'INTERPRETATION',
-    body
+    interp
   ].join('\n');
 }
 
@@ -1859,146 +1403,57 @@ $('newsletter-form').addEventListener('submit', async (e) => {
 
 /* ============================================================
    EFFECT 2 — CARD HOVER GLOW (cursor-tracked)
-   Gated by MotionProfile.has('cursor_glow') — desktop only
    ============================================================ */
 (function(){
   const cards = document.querySelectorAll('[data-card]');
-  const handlers = new WeakMap();
-
-  function onMove(card){
-    return function(e){
+  if (!window.matchMedia('(hover:hover)').matches) return;
+  if (reduceMotion){
+    cards.forEach(c=>{ c.style.setProperty('--mouse-x','50%'); c.style.setProperty('--mouse-y','50%'); });
+    return;
+  }
+  cards.forEach(card => {
+    card.addEventListener('pointermove', (e) => {
       const r = card.getBoundingClientRect();
       card.style.setProperty('--mouse-x', ((e.clientX - r.left) / r.width * 100) + '%');
       card.style.setProperty('--mouse-y', ((e.clientY - r.top) / r.height * 100) + '%');
-    };
-  }
-  function onLeave(card){
-    return function(){
-      card.style.setProperty('--mouse-x','50%');
-      card.style.setProperty('--mouse-y','50%');
-    };
-  }
-  function attach(){
-    cards.forEach(card => {
-      if (handlers.has(card)) return;
-      const m = onMove(card), l = onLeave(card);
-      card.addEventListener('pointermove', m);
-      card.addEventListener('pointerleave', l);
-      handlers.set(card, { m, l });
     });
-  }
-  function detach(){
-    cards.forEach(card => {
-      const h = handlers.get(card);
-      if (!h) return;
-      card.removeEventListener('pointermove', h.m);
-      card.removeEventListener('pointerleave', h.l);
-      handlers.delete(card);
-      card.style.setProperty('--mouse-x','50%');
-      card.style.setProperty('--mouse-y','50%');
+    card.addEventListener('pointerleave', () => {
+      card.style.setProperty('--mouse-x', '50%');
+      card.style.setProperty('--mouse-y', '50%');
     });
-  }
-  function sync(){
-    if (window.MotionProfile && window.MotionProfile.has('cursor_glow')) attach();
-    else detach();
-  }
-  sync();
-  window.MotionProfile && window.MotionProfile.onChange(sync);
+  });
 })();
 
 /* ============================================================
    EFFECT 2 — MAGNETIC BUTTONS (capped 4px)
-   Gated by MotionProfile.has('magnetic') — desktop + tablet
    ============================================================ */
 (function(){
-  const btns = document.querySelectorAll('[data-magnetic]');
-  const handlers = new WeakMap();
-  function attach(){
-    btns.forEach(btn => {
-      if (handlers.has(btn)) return;
-      const m = (e) => {
-        const r = btn.getBoundingClientRect();
-        const dx = (e.clientX - r.left - r.width/2) / r.width;
-        const dy = (e.clientY - r.top - r.height/2) / r.height;
-        btn.style.transform = `translate(${dx*4}px, ${dy*4}px)`;
-      };
-      const l = () => { btn.style.transform = ''; };
-      btn.addEventListener('pointermove', m);
-      btn.addEventListener('pointerleave', l);
-      handlers.set(btn, { m, l });
+  if (reduceMotion) return;
+  if (!window.matchMedia('(hover:hover)').matches) return;
+  document.querySelectorAll('[data-magnetic]').forEach(btn => {
+    btn.addEventListener('pointermove', (e) => {
+      const r = btn.getBoundingClientRect();
+      const dx = (e.clientX - r.left - r.width/2) / r.width;
+      const dy = (e.clientY - r.top - r.height/2) / r.height;
+      btn.style.transform = `translate(${dx*4}px, ${dy*4}px)`;
     });
-  }
-  function detach(){
-    btns.forEach(btn => {
-      const h = handlers.get(btn);
-      if (!h) return;
-      btn.removeEventListener('pointermove', h.m);
-      btn.removeEventListener('pointerleave', h.l);
-      handlers.delete(btn);
-      btn.style.transform = '';
-    });
-  }
-  function sync(){
-    if (window.MotionProfile && window.MotionProfile.has('magnetic')) attach();
-    else detach();
-  }
-  sync();
-  window.MotionProfile && window.MotionProfile.onChange(sync);
+    btn.addEventListener('pointerleave', () => { btn.style.transform = ''; });
+  });
 })();
 
 /* ============================================================
    EFFECT 3 — Bounded scroll parallax
-   Gated by MotionProfile.has('parallax') — desktop only
    ============================================================ */
 (function(){
+  if (reduceMotion) return;
   const layer = document.querySelector('.constellation');
-  if (!layer) return;
-  let raf = 0, attached = false;
+  let raf = 0;
   const update = () => {
     const y = Math.min(Math.max(window.scrollY, 0), 200);
     layer.style.setProperty('--scroll-y', y + 'px');
     raf = 0;
   };
-  const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
-  function attach(){
-    if (attached) return;
-    window.addEventListener('scroll', onScroll, { passive:true });
-    attached = true;
-    update();
-  }
-  function detach(){
-    if (!attached) return;
-    window.removeEventListener('scroll', onScroll);
-    attached = false;
-    layer.style.setProperty('--scroll-y','0px');
-  }
-  function sync(){
-    if (window.MotionProfile && window.MotionProfile.has('parallax')) attach();
-    else detach();
-  }
-  sync();
-  window.MotionProfile && window.MotionProfile.onChange(sync);
-})();
-
-/* ============================================================
-   STUB HOOKS — Image Trail / Custom Cursor / Sticky Scroll / WebGL
-   ----------------------------------------------------------
-   These features aren't built into this prototype yet, but the
-   profile system gates them so future implementations auto-disable
-   on the right tiers. Each hook checks MotionProfile.has(feature)
-   before initializing and re-checks on profile change.
-   ============================================================ */
-(function(){
-  const features = ['image_trail','custom_cursor','sticky_scroll','webgl'];
-  function sync(){
-    if (!window.MotionProfile) return;
-    const state = {};
-    features.forEach(f => state[f] = window.MotionProfile.has(f));
-    document.documentElement.dataset.motionFeatures = features
-      .filter(f => state[f]).join(' ') || 'none';
-  }
-  sync();
-  window.MotionProfile && window.MotionProfile.onChange(sync);
+  window.addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(update); }, { passive:true });
 })();
 
 /* ============================================================
@@ -2013,185 +1468,6 @@ $('bd-unknown-time').addEventListener('change', (e) => {
     t.classList.remove('error');
   }
 });
-
-/* ============================================================
-   CURSOR FX — dot + ring + nebula + vortex (gravitational stars)
-   Gated by MotionProfile + (hover:hover) + (pointer:fine)
-   ============================================================ */
-(function(){
-  const fineHover = window.matchMedia('(hover:hover) and (pointer:fine)');
-  const reduceMQ  = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const smallMQ   = window.matchMedia('(max-width:720px)');
-
-  const dot    = document.querySelector('.cursorfx-dot');
-  const ring   = document.querySelector('.cursorfx-ring');
-  const nebula = document.querySelector('.cursorfx-nebula-lens');
-  const canvas = document.querySelector('.cursorfx-vortex');
-  if (!dot || !ring || !nebula || !canvas) return;
-
-  let enabled = false;
-  let mx = window.innerWidth/2, my = window.innerHeight/2;
-  let rx = mx, ry = my;
-  let nx = mx, ny = my;
-  let pointerInside = false;
-  let raf = 0;
-
-  const ctx = canvas.getContext('2d');
-  let stars = [];
-  let dpr = 1;
-
-  function resizeCanvas(){
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width  = Math.floor(window.innerWidth * dpr);
-    canvas.height = Math.floor(window.innerHeight * dpr);
-    canvas.style.width  = window.innerWidth + 'px';
-    canvas.style.height = window.innerHeight + 'px';
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-  }
-  function seedStars(){
-    stars = [];
-    const W = window.innerWidth, H = window.innerHeight;
-    const density = Math.min(1, (W*H) / (1600*900));
-    const count = Math.round(110 * density);
-    for (let i=0;i<count;i++){
-      const angle = Math.random()*Math.PI*2;
-      const orbit = 4 + Math.random()*22;
-      stars.push({
-        ax: Math.random()*W, ay: Math.random()*H,
-        a: angle, ar: orbit,
-        as: (0.0003 + Math.random()*0.0009)*(Math.random()<.5?-1:1),
-        x:0,y:0,
-        r: 0.5 + Math.random()*1.5,
-        col: Math.random() < 0.78
-              ? `rgba(212,175,55,${0.35 + Math.random()*0.45})`
-              : (Math.random()<.5
-                  ? `rgba(255,255,255,${0.30 + Math.random()*0.30})`
-                  : `rgba(99,102,241,${0.30 + Math.random()*0.35})`)
-      });
-    }
-  }
-  function drawVortex(){
-    const W = window.innerWidth, H = window.innerHeight;
-    ctx.clearRect(0,0,W,H);
-    const R = 240, R2 = R*R;
-    for (const s of stars){
-      s.a += s.as * 16;
-      let tx = s.ax + Math.cos(s.a)*s.ar;
-      let ty = s.ay + Math.sin(s.a)*s.ar;
-      if (pointerInside){
-        const ddx = mx - tx, ddy = my - ty;
-        const d2 = ddx*ddx + ddy*ddy;
-        if (d2 < R2 && d2 > 1){
-          const d = Math.sqrt(d2);
-          const force = (1 - d/R);
-          const nxn = ddx/d, nyn = ddy/d;
-          const tnx = -nyn, tny = nxn;
-          tx += nxn * force * 22 + tnx * force * 14;
-          ty += nyn * force * 22 + tny * force * 14;
-        }
-      }
-      s.x += (tx - s.x) * 0.12;
-      s.y += (ty - s.y) * 0.12;
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
-      ctx.fillStyle = s.col;
-      ctx.fill();
-    }
-    if (pointerInside){
-      ctx.lineWidth = 0.5;
-      for (let i=0;i<stars.length;i++){
-        const s = stars[i];
-        const dxc = s.x - mx, dyc = s.y - my;
-        const d2c = dxc*dxc + dyc*dyc;
-        if (d2c < R2*0.6){
-          ctx.strokeStyle = `rgba(212,175,55,${0.18 * (1 - Math.sqrt(d2c)/R)})`;
-          ctx.beginPath();
-          ctx.moveTo(s.x, s.y);
-          ctx.lineTo(mx, my);
-          ctx.stroke();
-        }
-      }
-    }
-  }
-  function loop(){
-    rx += (mx - rx) * 0.18;
-    ry += (my - ry) * 0.18;
-    nx += (mx - nx) * 0.06;
-    ny += (my - ny) * 0.06;
-    dot.style.transform    = `translate3d(${mx}px, ${my}px, 0) translate(-50%, -50%)`;
-    ring.style.transform   = `translate3d(${rx}px, ${ry}px, 0) translate(-50%, -50%)`;
-    nebula.style.transform = `translate3d(${nx}px, ${ny}px, 0) translate(-50%, -50%)`;
-    drawVortex();
-    raf = requestAnimationFrame(loop);
-  }
-  function onMove(e){
-    mx = e.clientX; my = e.clientY;
-    pointerInside = true;
-    document.documentElement.style.setProperty('--cursorfx-x', (mx/window.innerWidth*100)+'%');
-    document.documentElement.style.setProperty('--cursorfx-y', (my/window.innerHeight*100)+'%');
-    if (dot.style.opacity !== '1'){
-      dot.style.opacity = '1';
-      ring.style.opacity = '1';
-      nebula.style.opacity = '1';
-    }
-  }
-  function onLeave(){
-    pointerInside = false;
-    dot.style.opacity = '0';
-    ring.style.opacity = '0';
-    nebula.style.opacity = '0';
-  }
-  function onEnter(){ pointerInside = true; }
-  const interactiveSel = 'a, button, [role="button"], .interactive, label, input, textarea, select';
-  function onOver(e){ if (e.target.closest && e.target.closest(interactiveSel)) ring.classList.add('is-active'); }
-  function onOut(e){ if (e.target.closest && e.target.closest(interactiveSel)) ring.classList.remove('is-active'); }
-  function onResize(){ resizeCanvas(); seedStars(); }
-
-  function attach(){
-    if (enabled) return;
-    enabled = true;
-    document.documentElement.classList.add('cursorfx-enabled');
-    resizeCanvas(); seedStars();
-    window.addEventListener('pointermove', onMove, { passive:true });
-    window.addEventListener('pointerleave', onLeave);
-    window.addEventListener('pointerenter', onEnter);
-    document.addEventListener('mouseover', onOver);
-    document.addEventListener('mouseout', onOut);
-    window.addEventListener('resize', onResize);
-    if (!raf) raf = requestAnimationFrame(loop);
-  }
-  function detach(){
-    if (!enabled) return;
-    enabled = false;
-    document.documentElement.classList.remove('cursorfx-enabled');
-    window.removeEventListener('pointermove', onMove);
-    window.removeEventListener('pointerleave', onLeave);
-    window.removeEventListener('pointerenter', onEnter);
-    document.removeEventListener('mouseover', onOver);
-    document.removeEventListener('mouseout', onOut);
-    window.removeEventListener('resize', onResize);
-    if (raf) { cancelAnimationFrame(raf); raf = 0; }
-    ctx && ctx.clearRect(0,0,canvas.width,canvas.height);
-    dot.style.opacity = '0'; ring.style.opacity = '0'; nebula.style.opacity = '0';
-  }
-  function shouldEnable(){
-    if (reduceMQ.matches) return false;
-    if (smallMQ.matches) return false;
-    if (!fineHover.matches) return false;
-    if (window.MotionProfile){
-      const p = window.MotionProfile.current;
-      if (p === 'mobile' || p === 'reduced') return false;
-    }
-    return true;
-  }
-  function sync(){ shouldEnable() ? attach() : detach(); }
-  sync();
-  [fineHover, reduceMQ, smallMQ].forEach(mq => {
-    if (mq.addEventListener) mq.addEventListener('change', sync);
-    else if (mq.addListener) mq.addListener(sync);
-  });
-  window.MotionProfile && window.MotionProfile.onChange(sync);
-})();
 
 /* ============================================================
    Track form-started event

@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "interpretation": {
+    "id": "int_2719ae_de",
+    "chartSessionId": "fc_2719ae",
+    "language": "de",
+    "headline": "Feuer dominant — Geng-Wu Pfad",
+    "body": "Dein Cosmic Signature **FU-2719-AE** verbindet das westliche Sonnenzeichen Widder mit der BaZi-Säule Geng-Wu. Das dominierende Element Feuer (42%) prägt deinen Antrieb; Wasser (20%) hält Tiefe und Reflexion bereit. Der Kohärenzindex von 0.82 deutet auf eine klare innere Linie hin.\n\n## Empfehlungen\n\n- Erde (18%) als Stabilisator pflegen.\n- Holz (8%) gezielt aktivieren, um Wachstumsphasen zu öffnen.",
+    "stats": [
+      { "label": "Cosmic Signature", "value": "FU-2719-AE" },
+      { "label": "Dominant Element", "value": "Fire" },
+      { "label": "Western", "value": "Aries" },
+      { "label": "BaZi Pillar", "value": "Geng-Wu" },
+      { "label": "Coherence Index", "value": "0.82" }
+    ],
+    "downloads": {
+      "txt": "/api/public/fusion-interpretation/int_2719ae_de/download.txt",
+      "pdf": "/api/public/fusion-interpretation/int_2719ae_de/download.pdf"
+    },
+    "generatedAt": "2026-05-06T12:00:01Z"
+  }
+}

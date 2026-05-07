@@ -1,0 +1,1300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bazodiac · Fused Firmaments</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --obsidian:#05070a;
+    --obsidian-2:#0a0d12;
+    --gold:#D4AF37;
+    --gold-soft:rgba(212,175,55,0.4);
+    --gold-line:rgba(212,175,55,0.15);
+    --gold-glow:rgba(216,183,106,0.16);
+    --fg:#f8f9fa;
+    --fg-50:rgba(248,249,250,0.5);
+    --fg-30:rgba(248,249,250,0.3);
+    --fg-10:rgba(248,249,250,0.1);
+    --border-dark:#1a1c20;
+    --wuxing-fire:#c9533a;
+    --wuxing-water:#4f7da6;
+    --wuxing-wood:#6e8b5e;
+    --ease-celestial: cubic-bezier(0.16, 1, 0.3, 1);   /* expo-out */
+    --ease-cinema:    cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--obsidian);color:var(--fg);}
+  html{height:100%}
+  body{
+    font-family:"Inter", ui-sans-serif, system-ui, sans-serif;
+    font-weight:300;
+    -webkit-font-smoothing:antialiased;
+    min-height:100dvh;
+    overflow-x:hidden;
+    overflow-y:auto;
+  }
+  ::selection{background:var(--gold);color:var(--obsidian)}
+  .mono{font-family:"JetBrains Mono", ui-monospace, monospace}
+
+  /* ================= LAYOUT ================= */
+  .shell{
+    position:relative;
+    min-height:100dvh;
+    display:flex;
+    flex-direction:column;
+    border:4px solid var(--border-dark);
+    overflow:hidden;
+    isolation:isolate;
+  }
+  /* film grain */
+  .film-grain{
+    position:fixed;inset:0;pointer-events:none;z-index:60;opacity:0.025;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+  /* central ambience */
+  .ambience{
+    position:fixed;top:50%;left:50%;width:800px;height:800px;
+    transform:translate(-50%,-50%);
+    background:radial-gradient(circle, rgba(212,175,55,0.06), transparent 60%);
+    filter:blur(80px);
+    border-radius:50%;
+    pointer-events:none;z-index:0;
+    animation:pulse-glow 15s ease-in-out infinite;
+  }
+  @keyframes pulse-glow{
+    0%,100%{opacity:.45;transform:translate(-50%,-50%) scale(1)}
+    50%{opacity:.7;transform:translate(-50%,-50%) scale(1.08)}
+  }
+
+  /* ================= CONSTELLATION SCROLL LAYER (Effect 3) ================= */
+  .constellation{
+    position:fixed;inset:0;pointer-events:none;z-index:1;
+    opacity:0; /* faded in by entrance */
+    transition:opacity 1.4s var(--ease-celestial);
+  }
+  .ready .constellation{opacity:.9}
+  .constellation svg{width:100%;height:100%;display:block}
+  .constellation .star{
+    fill:var(--gold);
+    opacity:0;
+    animation:star-fade-in 1.2s var(--ease-celestial) forwards;
+  }
+  .ready .constellation .star{animation-play-state:running}
+  @keyframes star-fade-in{
+    0%{opacity:0;transform:scale(.4)}
+    100%{opacity:.55;transform:scale(1)}
+  }
+  .constellation .star.dim{animation-name:star-fade-dim}
+  @keyframes star-fade-dim{
+    0%{opacity:0}
+    100%{opacity:.22}
+  }
+  .constellation .star.fire{fill:var(--wuxing-fire)}
+  .constellation .star.water{fill:var(--wuxing-water)}
+  .constellation .star.wood{fill:var(--wuxing-wood)}
+  .constellation .line{
+    stroke:rgba(212,175,55,0.18);
+    stroke-width:0.6;
+    fill:none;
+    stroke-dasharray:600;
+    stroke-dashoffset:600;
+    animation:line-draw 2.4s var(--ease-celestial) forwards;
+    animation-delay:.6s;
+  }
+  @keyframes line-draw{ to { stroke-dashoffset:0; } }
+  /* ambient drift — very small */
+  .ready .constellation-inner{
+    animation:ambient-drift 28s ease-in-out infinite alternate;
+    transform-origin:50% 50%;
+  }
+  @keyframes ambient-drift{
+    0%{transform:translate3d(0,0,0)}
+    50%{transform:translate3d(4px,-6px,0)}
+    100%{transform:translate3d(-3px,5px,0)}
+  }
+  /* parallax: tracked via JS-set var(--scroll-y), bounded ±8px */
+  .constellation-parallax{
+    transform:translate3d(0,calc(var(--scroll-y, 0px) * -0.08), 0);
+    will-change:transform;
+  }
+
+  /* ================= HEADER ================= */
+  .header{
+    padding:1.25rem 1.5rem;
+    border-bottom:1px solid var(--gold-line);
+    display:flex;justify-content:space-between;align-items:center;
+    background:rgba(5,7,10,0.8);
+    backdrop-filter:blur(10px);
+    position:relative;z-index:40;
+  }
+  .logo{display:flex;align-items:center;gap:.75rem}
+  .logo .ring{
+    width:32px;height:32px;border-radius:50%;
+    border:1px solid var(--gold);
+    display:flex;align-items:center;justify-content:center;padding:4px;
+  }
+  .logo .ring-inner{
+    width:100%;height:100%;border:1px solid var(--gold-soft);border-radius:50%;
+    animation:ring-pulse 4s ease-in-out infinite;
+  }
+  @keyframes ring-pulse{0%,100%{opacity:.6}50%{opacity:1}}
+  .logo .name{
+    font-size:11px;letter-spacing:.5em;font-weight:300;text-transform:uppercase;color:var(--gold);
+  }
+  .header-meta{display:flex;align-items:center;gap:1rem;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+  .header-meta .sep{height:14px;width:1px;background:rgba(212,175,55,0.2)}
+  .header-meta .beta{color:rgba(212,175,55,0.55)}
+  .header-meta .region{color:rgba(248,249,250,0.4)}
+  @media (max-width:720px){
+    .header-meta .region,.header-meta .sep,.header-meta .beta{display:none}
+  }
+
+  /* ================= MAIN GRID ================= */
+  .main{
+    flex:1;
+    display:grid;
+    grid-template-columns:repeat(12, 1fr);
+    gap:3rem;
+    padding:2.5rem 3rem;
+    position:relative;
+    z-index:10;
+  }
+  @media (max-width:1100px){
+    .main{padding:2rem 1.5rem;gap:2rem;grid-template-columns:1fr}
+  }
+  .col-hero{grid-column:span 8;display:flex;flex-direction:column;justify-content:center;gap:3rem}
+  .col-side{grid-column:span 4;display:flex;flex-direction:column;align-items:flex-end}
+  @media (max-width:1100px){
+    .col-hero,.col-side{grid-column:1/-1}
+    .col-side{align-items:stretch}
+  }
+
+  /* ================= HERO ================= */
+  .eyebrow{
+    display:flex;align-items:center;gap:1rem;
+  }
+  .eyebrow .rule{height:1px;width:48px;background:var(--gold-soft)}
+  .eyebrow .label{
+    font-family:"JetBrains Mono",monospace;font-size:11px;
+    letter-spacing:.4em;text-transform:uppercase;color:var(--gold);
+    white-space:nowrap;
+  }
+  .headline{
+    font-size:clamp(2.5rem, 6vw, 4.5rem);
+    line-height:1.05;
+    font-weight:200;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin:0;
+    max-width:920px;
+    letter-spacing:-0.01em;
+  }
+  .headline .accent{color:#fff}
+  .sub{
+    color:var(--fg-50);
+    max-width:520px;
+    font-size:1rem;
+    line-height:1.6;
+    font-weight:300;
+    margin:0;
+  }
+
+  /* Split-Line Reveal (Effect 1 typography) */
+  .reveal-line{
+    overflow:hidden;
+    display:block;
+  }
+  .reveal-line > span{
+    display:block;
+    transform:translateY(110%);
+    opacity:0;
+    transition:transform .9s var(--ease-celestial), opacity .9s var(--ease-celestial);
+    transition-delay:var(--rd, 0ms);
+  }
+  .ready .reveal-line > span{transform:translateY(0);opacity:1}
+
+  .reveal-fade{
+    opacity:0;
+    transform:translateY(8px);
+    transition:opacity .8s var(--ease-celestial), transform .8s var(--ease-celestial);
+    transition-delay:var(--rd, 0ms);
+  }
+  .ready .reveal-fade{opacity:1;transform:none}
+
+  /* ================= CARDS ================= */
+  .card{
+    position:relative;
+    background:rgba(255,255,255,0.02);
+    border:1px solid var(--fg-10);
+    border-radius:2px;
+    transition:transform .5s var(--ease-cinema), border-color .5s var(--ease-cinema);
+
+    /* Card mask reveal (Effect 1) */
+    opacity:0;
+    clip-path:inset(12% 0 0 0);
+    transform:translateY(12px);
+    transition-property:opacity, clip-path, transform, border-color;
+    transition-duration:1s, 1s, 1s, .5s;
+    transition-timing-function:var(--ease-celestial), var(--ease-celestial), var(--ease-celestial), var(--ease-cinema);
+    transition-delay:var(--rd, 0ms), var(--rd, 0ms), var(--rd, 0ms), 0ms;
+  }
+  .ready .card{
+    opacity:1;
+    clip-path:inset(0);
+    transform:translateY(0);
+  }
+  /* border line draw — animated bottom rule */
+  .card::before{
+    content:"";
+    position:absolute;left:0;bottom:-1px;height:1px;
+    width:0;
+    background:linear-gradient(to right, transparent, rgba(212,175,55,0.55), transparent);
+    transition:width 1.2s var(--ease-celestial);
+    transition-delay:calc(var(--rd, 0ms) + 200ms);
+    pointer-events:none;
+  }
+  .ready .card::before{width:100%}
+
+  /* glow overlay (Effect 2) — cursor-tracked radial */
+  .card::after{
+    content:"";
+    position:absolute;inset:0;
+    pointer-events:none;
+    border-radius:inherit;
+    background:
+      radial-gradient(
+        260px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        var(--gold-glow), transparent 38%
+      );
+    opacity:0;
+    transition:opacity .5s var(--ease-cinema);
+    z-index:1;
+  }
+  .ready .card.glow:hover{
+    transform:translateY(-5px);
+    border-color:rgba(212,175,55,0.35);
+  }
+  .card.glow:hover::after{opacity:1}
+  .card > *{position:relative;z-index:2}
+
+  /* small inner stars */
+  .card-stars{
+    position:absolute;inset:0;pointer-events:none;z-index:1;
+    opacity:0;
+    transition:opacity .6s var(--ease-cinema);
+  }
+  .card.glow:hover .card-stars{opacity:.6}
+  .card-stars i{
+    position:absolute;width:2px;height:2px;border-radius:50%;
+    background:var(--gold);
+    box-shadow:0 0 6px rgba(212,175,55,0.5);
+    animation:tiny-twinkle 4s ease-in-out infinite;
+  }
+  @keyframes tiny-twinkle{
+    0%,100%{opacity:.25}
+    50%{opacity:.85}
+  }
+
+  /* Press state for touch */
+  @media (hover:none){
+    .card.glow:active{transform:translateY(-2px);border-color:rgba(212,175,55,0.35)}
+    .card.glow:active::after{opacity:.6}
+  }
+
+  /* ================= FORM CARD ================= */
+  .form-card{padding:1.75rem 1.75rem 1.5rem}
+  .form-head{
+    display:flex;justify-content:space-between;align-items:flex-start;
+    margin-bottom:1.5rem;
+  }
+  .form-title{
+    font-family:"JetBrains Mono",monospace;font-size:10px;
+    letter-spacing:.3em;text-transform:uppercase;color:var(--gold);
+    margin:0 0 .35rem 0;
+  }
+  .form-sub{
+    font-family:"JetBrains Mono",monospace;font-size:9px;
+    letter-spacing:.2em;text-transform:uppercase;color:var(--fg-30);
+    margin:0;
+  }
+  .form-step{
+    font-family:"JetBrains Mono",monospace;font-size:9px;
+    letter-spacing:.25em;color:var(--fg-30);text-transform:uppercase;
+  }
+  .form-step b{color:var(--gold);font-weight:500}
+
+  .field-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:.75rem 1rem;
+  }
+  .field{display:flex;flex-direction:column;gap:.4rem}
+  .field.full{grid-column:1/-1}
+  .field label{
+    font-family:"JetBrains Mono",monospace;font-size:9px;
+    letter-spacing:.25em;text-transform:uppercase;color:rgba(212,175,55,0.55);
+  }
+  .field input{
+    width:100%;
+    background:var(--obsidian-2);
+    border:1px solid var(--fg-10);
+    color:var(--fg);
+    padding:.75rem 1rem;
+    font-family:"JetBrains Mono",monospace;font-size:13px;
+    letter-spacing:.05em;
+    border-radius:0;
+    outline:none;
+    transition:border-color .25s var(--ease-cinema), background .25s var(--ease-cinema);
+  }
+  .field input::placeholder{color:rgba(248,249,250,0.25)}
+  .field input:focus{
+    border-color:var(--gold);
+    background:#070a0e;
+  }
+
+  .form-actions{
+    margin-top:1.25rem;
+    display:flex;gap:.75rem;align-items:stretch;
+  }
+  .btn{
+    position:relative;
+    display:inline-flex;align-items:center;justify-content:center;gap:.6rem;
+    padding:1rem 1.4rem;
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;letter-spacing:.25em;text-transform:uppercase;
+    border:1px solid transparent;
+    cursor:pointer;
+    transition:transform .35s var(--ease-cinema), background .25s var(--ease-cinema), color .25s var(--ease-cinema), border-color .25s var(--ease-cinema), box-shadow .35s var(--ease-cinema);
+    will-change:transform;
+    user-select:none;
+  }
+  .btn-primary{
+    background:var(--gold);color:var(--obsidian);font-weight:600;
+    box-shadow:0 4px 18px rgba(212,175,55,0.18);
+    flex:1;
+  }
+  .btn-primary:hover{background:#F1D18A;box-shadow:0 8px 30px rgba(212,175,55,0.28)}
+  .btn-ghost{
+    background:transparent;color:var(--gold);
+    border-color:rgba(212,175,55,0.3);
+  }
+  .btn-ghost:hover{border-color:var(--gold);background:rgba(212,175,55,0.06)}
+  .btn .arrow{font-family:"JetBrains Mono",monospace;display:inline-block}
+
+  /* status row — empty/loading/success/error */
+  .status-row{
+    margin-top:1rem;padding-top:1rem;
+    border-top:1px solid rgba(212,175,55,0.08);
+    font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--fg-30);
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+    min-height:22px;
+  }
+  .status-row .dot{
+    display:inline-block;width:6px;height:6px;border-radius:50%;
+    background:rgba(248,249,250,0.2);margin-right:.6rem;
+    transition:background .3s, box-shadow .3s;
+  }
+  .status-row.loading .dot{background:var(--gold);animation:dot-pulse 1.2s infinite ease-in-out}
+  .status-row.success .dot{background:var(--gold);box-shadow:0 0 10px var(--gold)}
+  .status-row.error .dot{background:var(--wuxing-fire);box-shadow:0 0 8px var(--wuxing-fire)}
+  @keyframes dot-pulse{0%,100%{opacity:.4;transform:scale(.9)}50%{opacity:1;transform:scale(1.2)}}
+
+  /* ================= FUSION CHART CARD ================= */
+  .chart-card{padding:1.5rem;display:flex;flex-direction:column;gap:1rem}
+  .chart-head{
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .chart-state{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    min-height:200px;gap:1rem;text-align:center;
+  }
+  .chart-state[hidden]{display:none}
+  .chart-empty .icon{
+    width:56px;height:56px;border-radius:50%;
+    border:1px dashed rgba(212,175,55,0.3);
+    display:flex;align-items:center;justify-content:center;color:var(--gold);
+    font-family:"JetBrains Mono",monospace;font-size:18px;
+  }
+  .chart-empty p{
+    font-family:"JetBrains Mono",monospace;font-size:10px;
+    letter-spacing:.25em;text-transform:uppercase;color:var(--fg-30);max-width:240px;
+    margin:0;line-height:1.6;
+  }
+  .chart-loading .ring-loader{
+    width:64px;height:64px;border-radius:50%;
+    border:1px solid rgba(212,175,55,0.15);
+    border-top-color:var(--gold);
+    animation:spin 1s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .chart-loading p{
+    font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--gold);margin:0;
+  }
+  .chart-error .icon{
+    width:56px;height:56px;border-radius:50%;
+    border:1px solid var(--wuxing-fire);color:var(--wuxing-fire);
+    display:flex;align-items:center;justify-content:center;font-family:"JetBrains Mono",monospace;font-size:20px;
+  }
+  .chart-error p{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--wuxing-fire);margin:0}
+
+  .chart-success{display:flex;flex-direction:column;gap:1rem}
+  .chart-stats{
+    display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem 1rem;
+  }
+  .stat{display:flex;flex-direction:column;gap:.2rem}
+  .stat .k{font-family:"JetBrains Mono",monospace;font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:rgba(212,175,55,0.5)}
+  .stat .v{font-family:"JetBrains Mono",monospace;font-size:13px;text-transform:uppercase;color:var(--fg);letter-spacing:.05em}
+  .stat.highlight .v{color:var(--gold);font-weight:500}
+
+  .chart-success .ring-vis{
+    height:120px;position:relative;display:flex;align-items:center;justify-content:center;
+    border-top:1px solid rgba(212,175,55,0.08);
+    padding-top:1rem;
+  }
+  .chart-success .ring-vis svg{height:100%}
+
+  .chart-cta{
+    display:flex;justify-content:space-between;align-items:center;gap:.75rem;
+    border-top:1px solid rgba(212,175,55,0.08);padding-top:1rem;
+  }
+  .chart-cta .vec{
+    font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.25em;
+    text-transform:uppercase;color:var(--fg-30);
+  }
+  .chart-cta .vec b{color:var(--gold);font-weight:500}
+
+  /* ================= BENTO HUD GRID ================= */
+  .bento{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;width:100%}
+  .bento .card{padding:1rem;min-height:140px;display:flex;flex-direction:column;justify-content:space-between}
+  .bento .card.span2{grid-column:span 2}
+  .bento .ck{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.6rem}
+  .bento .ck .label{
+    font-family:"JetBrains Mono",monospace;font-size:8px;letter-spacing:.25em;
+    text-transform:uppercase;color:rgba(212,175,55,0.45);
+  }
+  .bento .ck .ico{
+    width:14px;height:14px;color:rgba(212,175,55,0.25);
+    transition:color .3s;
+  }
+  .bento .card:hover .ck .ico{color:var(--gold)}
+  .bento .v{
+    font-family:"JetBrains Mono",monospace;font-size:20px;text-transform:uppercase;
+    color:var(--fg);display:flex;align-items:baseline;gap:.5rem;
+  }
+  .bento .v small{font-size:8px;color:var(--fg-30);letter-spacing:.2em}
+  .bento .extra{margin-top:.6rem}
+  .bar{
+    height:1.5px;width:100%;background:rgba(248,249,250,0.06);position:relative;overflow:hidden;
+  }
+  .bar > span{
+    position:absolute;left:0;top:0;bottom:0;background:var(--gold);
+    box-shadow:0 0 5px rgba(212,175,55,0.4);
+    width:0;
+    transition:width 1.2s var(--ease-celestial);
+    transition-delay:1.4s;
+  }
+  .ready .bar > span{width:var(--w, 17%)}
+
+  .tier-ring{
+    width:22px;height:22px;border-radius:50%;border:1px solid rgba(212,175,55,0.3);
+    display:inline-flex;align-items:center;justify-content:center;
+  }
+  .tier-ring.on{border-color:var(--gold)}
+  .tier-ring .dot{
+    width:8px;height:8px;border-radius:50%;border-top:2px solid var(--gold);
+    animation:spin 2s linear infinite;
+  }
+
+  .bento .card.engine .footer{
+    display:flex;justify-content:space-between;align-items:center;
+    padding-top:.6rem;margin-top:.6rem;border-top:1px solid rgba(248,249,250,0.05);
+    font-family:"JetBrains Mono",monospace;font-size:8px;letter-spacing:.2em;
+  }
+  .bento .card.engine .footer .left{color:var(--fg-30);font-style:italic;font-weight:300}
+  .bento .card.engine .footer .right{
+    background:rgba(212,175,55,0.1);color:var(--gold);
+    padding:2px 6px;text-transform:uppercase;
+  }
+
+  .net-meta{
+    margin-top:.5rem;
+    font-family:"JetBrains Mono",monospace;font-size:7px;
+    letter-spacing:.05em;color:var(--fg-30);text-transform:uppercase;
+  }
+
+  /* ================= NEWSLETTER ================= */
+  .newsletter{
+    margin-top:1rem;padding:1.25rem;
+  }
+  .newsletter h4{
+    font-family:"JetBrains Mono",monospace;font-size:10px;
+    letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin:0 0 .25rem 0;
+  }
+  .newsletter p{
+    font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.15em;
+    text-transform:uppercase;color:var(--fg-30);margin:0 0 .9rem 0;line-height:1.6;
+  }
+  .newsletter .row{display:flex;gap:.5rem}
+  .newsletter input{
+    flex:1;background:var(--obsidian-2);border:1px solid var(--fg-10);color:var(--fg);
+    padding:.7rem .9rem;font-family:"JetBrains Mono",monospace;font-size:11px;
+  }
+  .newsletter input:focus{border-color:var(--gold);outline:none}
+  .newsletter .btn{padding:.7rem 1rem}
+
+  /* ================= FOOTER ================= */
+  .footer{
+    padding:1.25rem 1.5rem;border-top:1px solid var(--gold-line);
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.2em;
+    text-transform:uppercase;color:rgba(248,249,250,0.2);
+    background:rgba(5,7,10,0.8);backdrop-filter:blur(10px);position:relative;z-index:40;
+  }
+  .footer .links{display:flex;gap:2rem}
+  @media (max-width:720px){
+    .footer{flex-direction:column;gap:.6rem;text-align:center}
+    .footer .links{flex-direction:column;gap:.4rem}
+  }
+
+  /* ================= MODAL ================= */
+  .modal-root{
+    position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;
+    padding:2rem;
+    pointer-events:none;
+  }
+  .modal-root.open{pointer-events:auto}
+  .modal-back{
+    position:absolute;inset:0;background:rgba(5,7,10,0.92);backdrop-filter:blur(18px);
+    opacity:0;transition:opacity .35s var(--ease-cinema);
+  }
+  .modal-root.open .modal-back{opacity:1}
+  .modal-card{
+    position:relative;
+    width:100%;max-width:780px;max-height:90vh;
+    background:rgba(255,255,255,0.02);
+    border:1px solid rgba(212,175,55,0.25);
+    border-radius:6px;display:flex;flex-direction:column;overflow:hidden;
+    transform:translateY(20px) scale(.98);opacity:0;
+    transition:transform .45s var(--ease-celestial), opacity .35s var(--ease-cinema);
+  }
+  .modal-root.open .modal-card{transform:none;opacity:1}
+  .modal-head{
+    padding:1.25rem 1.5rem;border-bottom:1px solid rgba(212,175,55,0.1);
+    background:rgba(5,7,10,0.4);display:flex;justify-content:space-between;align-items:center;
+  }
+  .modal-head h2{
+    font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--gold);margin:0;
+  }
+  .modal-head p{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--fg-30);margin:.3rem 0 0 0}
+  .modal-close{
+    background:transparent;border:0;color:rgba(212,175,55,0.6);cursor:pointer;
+    width:32px;height:32px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:18px;line-height:1;
+    transition:background .25s, color .25s;
+  }
+  .modal-close:hover{background:rgba(212,175,55,0.1);color:var(--gold)}
+  .modal-body{padding:1.75rem;overflow-y:auto;display:flex;flex-direction:column;gap:1.5rem}
+  .modal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem 1.5rem}
+  .modal-grid .stat .k{font-size:8px}
+  .interpretation{
+    padding:1.25rem;background:rgba(5,7,10,0.5);border:1px solid rgba(212,175,55,0.07);
+    position:relative;
+  }
+  .interpretation::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:rgba(212,175,55,0.25);
+  }
+  .interpretation h3{
+    font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.25em;
+    text-transform:uppercase;color:var(--gold);margin:0 0 .8rem 0;
+    display:flex;align-items:center;gap:.5rem;
+  }
+  .interpretation p{
+    font-size:13px;color:rgba(248,249,250,0.75);line-height:1.7;margin:0 0 .75rem 0;
+    font-weight:300;
+  }
+  .interpretation p strong{color:var(--gold)}
+  .modal-foot{
+    padding:1.1rem 1.5rem;border-top:1px solid rgba(212,175,55,0.1);
+    background:rgba(5,7,10,0.4);
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;
+  }
+  .modal-foot .note{font-family:"JetBrains Mono",monospace;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--fg-30)}
+  .modal-foot .acts{display:flex;gap:.5rem}
+  .modal-foot .btn{padding:.6rem .9rem;font-size:10px}
+  .modal-foot .btn-ghost{border-color:rgba(212,175,55,0.25);color:rgba(212,175,55,0.85)}
+
+  /* ================= REDUCED MOTION ================= */
+  @media (prefers-reduced-motion: reduce){
+    .reveal-line > span,
+    .card,
+    .reveal-fade{
+      transition:opacity .4s linear !important;
+      transform:none !important;
+      clip-path:none !important;
+    }
+    .card::before{transition:none !important;width:100% !important}
+    .constellation,
+    .ready .constellation{transition:opacity .4s linear !important}
+    .ready .constellation .star{animation:none !important;opacity:.45 !important}
+    .ready .constellation .star.dim{opacity:.18 !important}
+    .constellation .line{animation:none !important;stroke-dashoffset:0 !important}
+    .ready .constellation-inner{animation:none !important}
+    .constellation-parallax{transform:none !important}
+    .ambience{animation:none !important}
+    .logo .ring-inner{animation:none !important}
+    .card.glow:hover{transform:none !important}
+    .btn:hover{transform:none !important}
+    .bar > span{transition:none !important;width:var(--w,17%) !important}
+    .card-stars i{animation:none !important}
+    .tier-ring .dot{animation:none !important}
+    .ring-loader{animation:none !important;border-top-color:var(--gold)}
+  }
+
+  /* tablet/mobile constellation reduction */
+  @media (max-width:720px){
+    .constellation .star.extra,
+    .constellation .line.extra{display:none}
+    .constellation-parallax{transform:none !important}
+  }
+</style>
+</head>
+<body>
+
+<div class="film-grain" aria-hidden="true"></div>
+<div class="ambience" aria-hidden="true"></div>
+
+<!-- ============= CONSTELLATION SCROLL LAYER (Effect 3) ============= -->
+<div class="constellation" aria-hidden="true">
+  <div class="constellation-parallax">
+    <div class="constellation-inner">
+      <svg viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+        <!-- Constellation A: upper-left "Ursa-like" lines -->
+        <polyline class="line" points="120,140 240,180 360,150 460,220 540,190 620,260" />
+        <polyline class="line extra" points="240,180 280,90" />
+        <!-- Constellation B: upper-right "wing" -->
+        <polyline class="line" points="1180,130 1280,210 1380,160 1450,250 1520,210" />
+        <!-- Constellation C: lower-left soft chord -->
+        <polyline class="line extra" points="80,720 220,820 360,760 500,840" />
+        <!-- Constellation D: lower-right (avoid form area on desktop) -->
+        <polyline class="line" points="1100,860 1240,820 1340,880 1460,830 1540,890" />
+        <!-- Center bridge -->
+        <polyline class="line extra" points="700,420 820,360 940,440" />
+
+        <!-- Stars: tiny, varying opacity. mix of gold + wuxing accents -->
+        <g>
+          <!-- left cluster -->
+          <circle class="star" cx="120" cy="140" r="1.6" style="animation-delay:.2s"/>
+          <circle class="star" cx="240" cy="180" r="1.4" style="animation-delay:.35s"/>
+          <circle class="star" cx="360" cy="150" r="1.8" style="animation-delay:.5s"/>
+          <circle class="star" cx="460" cy="220" r="1.2" style="animation-delay:.65s"/>
+          <circle class="star" cx="540" cy="190" r="1.5" style="animation-delay:.8s"/>
+          <circle class="star" cx="620" cy="260" r="1.3" style="animation-delay:.95s"/>
+          <circle class="star dim" cx="280" cy="90"  r="1.1" style="animation-delay:.6s"/>
+          <circle class="star dim" cx="190" cy="260" r="0.9" style="animation-delay:.7s"/>
+
+          <!-- right cluster -->
+          <circle class="star" cx="1180" cy="130" r="1.5" style="animation-delay:.4s"/>
+          <circle class="star" cx="1280" cy="210" r="1.7" style="animation-delay:.55s"/>
+          <circle class="star" cx="1380" cy="160" r="1.3" style="animation-delay:.7s"/>
+          <circle class="star" cx="1450" cy="250" r="1.4" style="animation-delay:.85s"/>
+          <circle class="star" cx="1520" cy="210" r="1.6" style="animation-delay:1s"/>
+          <circle class="star dim" cx="1430" cy="100" r="1" style="animation-delay:.95s"/>
+          <circle class="star dim extra" cx="1240" cy="320" r="1.1" style="animation-delay:1.1s"/>
+
+          <!-- bottom cluster -->
+          <circle class="star extra" cx="80"  cy="720" r="1.3" style="animation-delay:.7s"/>
+          <circle class="star extra" cx="220" cy="820" r="1.1" style="animation-delay:.85s"/>
+          <circle class="star extra" cx="360" cy="760" r="1.4" style="animation-delay:1s"/>
+          <circle class="star extra" cx="500" cy="840" r="1.2" style="animation-delay:1.15s"/>
+
+          <circle class="star" cx="1100" cy="860" r="1.5" style="animation-delay:.95s"/>
+          <circle class="star" cx="1240" cy="820" r="1.3" style="animation-delay:1.1s"/>
+          <circle class="star" cx="1340" cy="880" r="1.6" style="animation-delay:1.25s"/>
+          <circle class="star" cx="1460" cy="830" r="1.2" style="animation-delay:1.4s"/>
+          <circle class="star" cx="1540" cy="890" r="1.4" style="animation-delay:1.55s"/>
+
+          <!-- center bridge -->
+          <circle class="star dim" cx="700" cy="420" r="0.9" style="animation-delay:1.2s"/>
+          <circle class="star dim" cx="820" cy="360" r="1"   style="animation-delay:1.35s"/>
+          <circle class="star dim" cx="940" cy="440" r="0.9" style="animation-delay:1.5s"/>
+
+          <!-- WuXing accent points (very few, very subtle) -->
+          <circle class="star fire dim extra"  cx="1080" cy="640" r="1.1" style="animation-delay:1.4s"/>
+          <circle class="star water dim extra" cx="180"  cy="500" r="1"   style="animation-delay:1.6s"/>
+          <circle class="star wood dim extra"  cx="780"  cy="780" r="1.1" style="animation-delay:1.8s"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- ============= APP SHELL ============= -->
+<div class="shell" id="shell">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo reveal-fade" style="--rd:60ms">
+      <div class="ring"><div class="ring-inner"></div></div>
+      <span class="name">Bazodiac</span>
+    </div>
+    <div class="header-meta reveal-fade" style="--rd:140ms">
+      <span class="beta">Confidential Beta · 2026</span>
+      <span class="sep"></span>
+      <span class="region">DACH Region Origin</span>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- LEFT / HERO -->
+    <section class="col-hero">
+
+      <div>
+        <div class="eyebrow reveal-fade" style="--rd:180ms">
+          <span class="rule"></span>
+          <span class="label" id="eyebrow-label">Atemporal Alignment Platform</span>
+        </div>
+
+        <h1 class="headline" style="margin-top:1.4rem">
+          <span class="reveal-line"><span style="--rd:260ms">A FRAMEWORK</span></span>
+          <span class="reveal-line"><span style="--rd:340ms">OF THE</span></span>
+          <span class="reveal-line"><span style="--rd:420ms" class="accent">FUSED FIRMAMENTS</span></span>
+        </h1>
+
+        <p class="sub reveal-fade" style="--rd:560ms;margin-top:1.6rem">
+          Synthesis of Western temporal cycles and Eastern elemental vectors.
+          Precision-mapped for the modern architect of fate.
+        </p>
+      </div>
+
+      <!-- Birth Data Form -->
+      <div class="card glow form-card" style="--rd:620ms" data-card>
+        <div class="card-stars" aria-hidden="true">
+          <i style="left:8%;top:30%;animation-delay:0s"></i>
+          <i style="left:90%;top:14%;animation-delay:1.2s"></i>
+          <i style="left:55%;top:80%;animation-delay:2.4s"></i>
+        </div>
+        <div class="form-head">
+          <div>
+            <h2 class="form-title">Birth Data Vector</h2>
+            <p class="form-sub">Step 01 · Temporal-Spatial Origin</p>
+          </div>
+          <div class="form-step">Vector <b>0/4</b></div>
+        </div>
+
+        <div class="field-grid">
+          <div class="field full">
+            <label for="f-name">Designation</label>
+            <input id="f-name" type="text" placeholder="Full name" autocomplete="off"/>
+          </div>
+          <div class="field">
+            <label for="f-date">Date</label>
+            <input id="f-date" type="text" placeholder="YYYY-MM-DD" autocomplete="off"/>
+          </div>
+          <div class="field">
+            <label for="f-time">Time</label>
+            <input id="f-time" type="text" placeholder="HH:MM" autocomplete="off"/>
+          </div>
+          <div class="field full">
+            <label for="f-place">Place of Origin</label>
+            <input id="f-place" type="text" placeholder="City, country" autocomplete="off"/>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" id="btn-compute" data-magnetic>
+            <span>Compute Alignment</span>
+            <span class="arrow" id="btn-arrow">→</span>
+          </button>
+          <button class="btn btn-ghost" id="btn-demo" data-magnetic>
+            <span>Demo Vector</span>
+          </button>
+        </div>
+
+        <div class="status-row" id="status-row">
+          <div><span class="dot"></span><span id="status-label">Awaiting input</span></div>
+          <span id="status-meta" class="mono">FuFirE v1 · idle</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- RIGHT / SIDE -->
+    <aside class="col-side">
+      <div style="width:100%;max-width:420px;display:flex;flex-direction:column;gap:.75rem">
+
+        <!-- Fusion Chart Card -->
+        <div class="card glow chart-card" style="--rd:700ms" data-card>
+          <div class="card-stars" aria-hidden="true">
+            <i style="left:12%;top:60%;animation-delay:.6s"></i>
+            <i style="left:78%;top:24%;animation-delay:1.8s"></i>
+          </div>
+          <div class="chart-head">
+            <div>
+              <div class="form-title" style="margin-bottom:.2rem">Fusion Chart</div>
+              <div class="form-sub">FuFirE Engine Output</div>
+            </div>
+            <div class="form-step mono"><b id="chart-state-label">EMPTY</b></div>
+          </div>
+
+          <!-- empty -->
+          <div class="chart-state chart-empty" id="state-empty">
+            <div class="icon">◐</div>
+            <p>Submit your birth data vector to compute the fusion chart.</p>
+          </div>
+
+          <!-- loading -->
+          <div class="chart-state chart-loading" id="state-loading" hidden>
+            <div class="ring-loader"></div>
+            <p>Computing alignment…</p>
+          </div>
+
+          <!-- error -->
+          <div class="chart-state chart-error" id="state-error" hidden>
+            <div class="icon">!</div>
+            <p>FuFirE relay failed. Re-submit vector.</p>
+            <button class="btn btn-ghost" data-magnetic onclick="retry()" style="margin-top:.6rem">Retry</button>
+          </div>
+
+          <!-- success -->
+          <div class="chart-state chart-success" id="state-success" hidden style="display:none">
+            <div class="chart-stats">
+              <div class="stat"><span class="k">Sun</span><span class="v" id="r-sun">—</span></div>
+              <div class="stat"><span class="k">Moon</span><span class="v" id="r-moon">—</span></div>
+              <div class="stat"><span class="k">Asc.</span><span class="v" id="r-asc">—</span></div>
+              <div class="stat"><span class="k">Bazi Animal</span><span class="v" id="r-animal">—</span></div>
+              <div class="stat"><span class="k">Daymaster</span><span class="v" id="r-day">—</span></div>
+              <div class="stat highlight"><span class="k">Wu-Xing</span><span class="v" id="r-wu">—</span></div>
+            </div>
+
+            <div class="ring-vis">
+              <svg viewBox="0 0 200 120" width="100%" height="100%" aria-hidden="true">
+                <circle cx="100" cy="60" r="48" fill="none" stroke="rgba(212,175,55,0.15)"/>
+                <circle cx="100" cy="60" r="38" fill="none" stroke="rgba(212,175,55,0.08)"/>
+                <g stroke="rgba(212,175,55,0.6)" stroke-width="1.2">
+                  <line x1="100" y1="12" x2="100" y2="18"/>
+                  <line x1="148" y1="60" x2="142" y2="60"/>
+                  <line x1="100" y1="108" x2="100" y2="102"/>
+                  <line x1="52"  y1="60" x2="58"  y2="60"/>
+                  <line x1="134" y1="26" x2="130" y2="30"/>
+                  <line x1="134" y1="94" x2="130" y2="90"/>
+                  <line x1="66"  y1="94" x2="70"  y2="90"/>
+                  <line x1="66"  y1="26" x2="70"  y2="30"/>
+                </g>
+                <circle cx="100" cy="60" r="2" fill="var(--gold)"/>
+              </svg>
+            </div>
+
+            <div class="chart-cta">
+              <div class="vec">Vector Sync · <b>0.9982</b></div>
+              <button class="btn btn-ghost" id="btn-open-report" data-magnetic style="padding:.55rem .9rem;font-size:10px">
+                Open Report →
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bento HUD -->
+        <div class="bento">
+          <div class="card glow" style="--rd:780ms" data-card>
+            <div class="ck">
+              <span class="label">Position Status</span>
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg>
+            </div>
+            <div class="v">#847<small>OF 5K</small></div>
+            <div class="extra">
+              <div class="bar"><span style="--w:17%"></span></div>
+            </div>
+          </div>
+
+          <div class="card glow" style="--rd:840ms" data-card>
+            <div class="ck">
+              <span class="label">Founding Tier</span>
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6z"/></svg>
+            </div>
+            <div class="v">ORIGIN<small>LOCKED</small></div>
+            <div class="extra">
+              <span class="tier-ring"><span class="dot"></span></span>
+            </div>
+          </div>
+
+          <div class="card glow span2 engine" style="--rd:900ms" data-card>
+            <div class="ck">
+              <span class="label">Temporal Engine</span>
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>
+            </div>
+            <div class="v">FUFIRE V1<small>ACTIVE SYSTEM</small></div>
+            <div class="footer">
+              <span class="left">Vector Sync: 0.9982</span>
+              <span class="right">Secure</span>
+            </div>
+          </div>
+
+          <div class="card glow span2" style="--rd:960ms" data-card id="net-card">
+            <div class="ck">
+              <span class="label" id="net-label">Network Status</span>
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="9" r="3"/><path d="M16 17a5 5 0 0 0-10 0M19 8h2M20 7v2M19 13h2M20 12v2"/></svg>
+            </div>
+            <div class="v" id="net-v">0<small id="net-sub">WAITING</small></div>
+            <div class="extra">
+              <div class="bar"><span style="--w:0%" id="net-bar"></span></div>
+              <div class="net-meta" id="net-meta">Awaiting 3 additional signals</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Newsletter -->
+        <div class="card glow newsletter" style="--rd:1020ms" data-card>
+          <h4>Signal Subscription</h4>
+          <p>Quarterly transmission · No noise, only alignment.</p>
+          <form class="row" id="newsletter-form" onsubmit="return submitNewsletter(event)">
+            <input type="email" id="nl-email" placeholder="you@aligned.io" required />
+            <button class="btn btn-primary" data-magnetic style="flex:0 0 auto">Join</button>
+          </form>
+          <div class="status-row" id="nl-status" style="border-top:0;padding-top:.6rem;margin-top:.6rem">
+            <div><span class="dot"></span><span id="nl-label">Idle</span></div>
+            <span class="mono" style="color:var(--fg-30)">SMTP·muted</span>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+  </main>
+
+  <footer class="footer">
+    <div>© 2026 Bazodiac Technologies</div>
+    <div class="links">
+      <span>Built for thinkers, not believers.</span>
+      <span>Computed, not retrieved.</span>
+      <span>Privacy by mathematics.</span>
+    </div>
+  </footer>
+</div>
+
+<!-- ============= MODAL ============= -->
+<div class="modal-root" id="modal" aria-hidden="true" role="dialog" aria-labelledby="modal-title">
+  <div class="modal-back" onclick="closeModal()"></div>
+  <div class="modal-card" role="document">
+    <div class="modal-head">
+      <div>
+        <h2 id="modal-title">Fusion Astrology Report</h2>
+        <p>Computed Alignment Vector</p>
+      </div>
+      <button class="modal-close" onclick="closeModal()" aria-label="Close">×</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="modal-grid">
+        <div class="stat"><span class="k">Western Sun</span><span class="v" id="m-sun">—</span></div>
+        <div class="stat"><span class="k">Western Moon</span><span class="v" id="m-moon">—</span></div>
+        <div class="stat"><span class="k">Ascendant</span><span class="v" id="m-asc">—</span></div>
+        <div class="stat"><span class="k">Bazi Animal</span><span class="v" id="m-animal">—</span></div>
+        <div class="stat"><span class="k">Bazi Daymaster</span><span class="v" id="m-day">—</span></div>
+        <div class="stat"><span class="k">Bazi Hour Master</span><span class="v" id="m-hour">—</span></div>
+        <div class="stat highlight"><span class="k">WuXing Element</span><span class="v" id="m-wu">—</span></div>
+      </div>
+
+      <div class="interpretation">
+        <h3>◇ Fusion Interpretation · Decoded</h3>
+        <p id="interp-1">Decoding alignment vector…</p>
+        <p id="interp-2"></p>
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      <p class="note">A private computation based on your specific temporal-spatial origin.</p>
+      <div class="acts">
+        <button class="btn btn-ghost" data-magnetic onclick="downloadTXT()">↓ TXT</button>
+        <button class="btn btn-ghost" data-magnetic onclick="window.print()">↓ PDF</button>
+        <button class="btn btn-primary" data-magnetic style="padding:.6rem .9rem;font-size:10px">Share Signal</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   ENTRANCE: trigger ready state on next frame
+   ========================================================= */
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Trigger entrance synchronously so transitions still fire from the initial state,
+// and add belt-and-braces fallbacks in case the script ran before body parsed.
+function __triggerReady(){ document.body && document.body.classList.add('ready'); }
+__triggerReady();
+document.addEventListener('DOMContentLoaded', __triggerReady);
+window.addEventListener('load', __triggerReady);
+setTimeout(__triggerReady, 50);
+
+/* =========================================================
+   EFFECT 2 — ZODIAC CARD HOVER GLOW
+   Track cursor relative to each card; set --mouse-x/y CSS vars.
+   Only active on devices with hover (skipped automatically by CSS hover gating).
+   ========================================================= */
+(function(){
+  const cards = document.querySelectorAll('[data-card]');
+  if (!window.matchMedia('(hover:hover)').matches) return; // mobile: no tracking
+  if (reduceMotion) {
+    // Static glow: center it
+    cards.forEach(c=>{
+      c.style.setProperty('--mouse-x','50%');
+      c.style.setProperty('--mouse-y','50%');
+    });
+    return;
+  }
+  cards.forEach(card => {
+    card.addEventListener('pointermove', (e) => {
+      const r = card.getBoundingClientRect();
+      const x = ((e.clientX - r.left) / r.width) * 100;
+      const y = ((e.clientY - r.top) / r.height) * 100;
+      card.style.setProperty('--mouse-x', x + '%');
+      card.style.setProperty('--mouse-y', y + '%');
+    });
+    card.addEventListener('pointerleave', () => {
+      card.style.setProperty('--mouse-x', '50%');
+      card.style.setProperty('--mouse-y', '50%');
+    });
+  });
+})();
+
+/* =========================================================
+   EFFECT 2 — MAGNETIC BUTTONS (very subtle, 3–6px)
+   ========================================================= */
+(function(){
+  if (reduceMotion) return;
+  if (!window.matchMedia('(hover:hover)').matches) return;
+  const buttons = document.querySelectorAll('[data-magnetic]');
+  buttons.forEach(btn => {
+    btn.addEventListener('pointermove', (e) => {
+      const r = btn.getBoundingClientRect();
+      const cx = r.left + r.width/2;
+      const cy = r.top + r.height/2;
+      const dx = (e.clientX - cx) / r.width;
+      const dy = (e.clientY - cy) / r.height;
+      const max = 4; // cap movement
+      btn.style.transform = `translate(${dx*max}px, ${dy*max}px)`;
+    });
+    btn.addEventListener('pointerleave', () => {
+      btn.style.transform = '';
+    });
+  });
+})();
+
+/* =========================================================
+   EFFECT 3 — SUBTLE PARALLAX
+   Bind page scrollY to --scroll-y, capped, on the constellation layer.
+   ========================================================= */
+(function(){
+  if (reduceMotion) return;
+  const layer = document.querySelector('.constellation');
+  let raf = 0;
+  const update = () => {
+    const y = Math.min(Math.max(window.scrollY, 0), 200); // cap
+    layer.style.setProperty('--scroll-y', y + 'px');
+    raf = 0;
+  };
+  window.addEventListener('scroll', () => {
+    if (!raf) raf = requestAnimationFrame(update);
+  }, { passive:true });
+})();
+
+/* =========================================================
+   FORM + FUFIRE SIMULATION (preserves the original states)
+   ========================================================= */
+const $ = (id) => document.getElementById(id);
+
+function setStatus(state, label, meta){
+  const row = $('status-row');
+  row.classList.remove('loading','success','error');
+  if (state) row.classList.add(state);
+  $('status-label').textContent = label;
+  if (meta) $('status-meta').textContent = meta;
+}
+
+function showState(name){
+  ['empty','loading','success','error'].forEach(s => {
+    const el = $('state-'+s);
+    if (s === name) {
+      el.removeAttribute('hidden');
+      el.style.display = 'flex';
+      if (s === 'success') el.style.display = 'flex';
+    } else {
+      el.setAttribute('hidden','');
+      el.style.display = 'none';
+    }
+  });
+  $('chart-state-label').textContent = name.toUpperCase();
+}
+
+function fillResult(data){
+  ['sun','moon','asc','animal','day','wu'].forEach(k => {
+    const el = $('r-'+k);
+    if (el) el.textContent = data[k];
+  });
+  $('m-sun').textContent = data.sun;
+  $('m-moon').textContent = data.moon;
+  $('m-asc').textContent = data.asc;
+  $('m-animal').textContent = data.animal;
+  $('m-day').textContent = data.day;
+  $('m-hour').textContent = data.hour;
+  $('m-wu').textContent = data.wu;
+  $('interp-1').innerHTML = `Your Western <strong>${data.sun}</strong> sun aligned with the Eastern <strong>${data.animal}</strong> branch describes an architecture of paced ambition — drawn outward by air, anchored inward by earth.`;
+  $('interp-2').innerHTML = `The dominant <strong>${data.wu}</strong> vector suggests deliberate sequencing: build, then transmit. Avoid premature radiation of incomplete signals.`;
+}
+
+const DEMO = {
+  sun:'Aquarius', moon:'Scorpio', asc:'Virgo',
+  animal:'Tiger', day:'Yang Wood', hour:'Yin Fire',
+  wu:'Wood'
+};
+
+let referrals = 0;
+let isJoined = false;
+
+function refreshNetworkCard(){
+  $('net-v').firstChild.nodeValue = String(referrals);
+  const sub = $('net-sub');
+  const bar = $('net-bar');
+  const meta = $('net-meta');
+  const label = $('net-label');
+  if (isJoined && referrals >= 3){
+    sub.textContent = 'READY';
+    label.textContent = 'YOUR BIRTHCHART';
+    meta.textContent = 'Primary node active';
+    bar.style.width = '100%';
+  } else {
+    sub.textContent = isJoined ? 'JOINED' : 'WAITING';
+    label.textContent = isJoined ? 'NETWORK STATUS' : 'NETWORK STATUS';
+    meta.textContent = `Awaiting ${Math.max(3-referrals,0)} additional signals`;
+    bar.style.width = Math.min(referrals/3*100, 100) + '%';
+  }
+}
+refreshNetworkCard();
+
+$('btn-compute').addEventListener('click', () => runCompute(false));
+$('btn-demo').addEventListener('click', () => runCompute(true));
+$('btn-open-report').addEventListener('click', openModal);
+
+let lastMode = false;
+function runCompute(demo){
+  lastMode = demo;
+  // simple validation: in demo mode we skip
+  if (!demo){
+    const name = $('f-name').value.trim();
+    const date = $('f-date').value.trim();
+    const time = $('f-time').value.trim();
+    const place = $('f-place').value.trim();
+    if (!name || !date || !time || !place){
+      setStatus('error','Vector incomplete','Fill all fields · or use demo');
+      return;
+    }
+  }
+  setStatus('loading','Relaying to FuFirE…','FuFirE v1 · live');
+  showState('loading');
+
+  // simulate latency
+  const ms = 1100 + Math.random()*400;
+  setTimeout(() => {
+    // 8% simulated error
+    if (!demo && Math.random() < 0.08){
+      setStatus('error','Relay failed','FuFirE v1 · 502');
+      showState('error');
+      return;
+    }
+    fillResult(DEMO);
+    setStatus('success','Alignment computed','FuFirE v1 · sync 0.9982');
+    showState('success');
+    isJoined = true;
+    refreshNetworkCard();
+  }, ms);
+}
+
+function retry(){ runCompute(lastMode); }
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+function openModal(){
+  const m = $('modal');
+  m.classList.add('open');
+  m.setAttribute('aria-hidden','false');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(){
+  const m = $('modal');
+  m.classList.remove('open');
+  m.setAttribute('aria-hidden','true');
+  document.body.style.overflow = '';
+}
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.retry = retry;
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+});
+
+/* =========================================================
+   DOWNLOADS
+   ========================================================= */
+function downloadTXT(){
+  const lines = [
+    'BAZODIAC · FUSION ASTROLOGY REPORT',
+    '------------------------------------',
+    `Sun:        ${$('m-sun').textContent}`,
+    `Moon:       ${$('m-moon').textContent}`,
+    `Ascendant:  ${$('m-asc').textContent}`,
+    `Bazi:       ${$('m-animal').textContent}`,
+    `Daymaster:  ${$('m-day').textContent}`,
+    `Hour Master:${$('m-hour').textContent}`,
+    `WuXing:     ${$('m-wu').textContent}`,
+    '',
+    'INTERPRETATION',
+    $('interp-1').textContent,
+    '',
+    $('interp-2').textContent
+  ].join('\n');
+  const blob = new Blob([lines], { type:'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'bazodiac-report.txt';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+window.downloadTXT = downloadTXT;
+
+/* =========================================================
+   NEWSLETTER
+   ========================================================= */
+function submitNewsletter(e){
+  e.preventDefault();
+  const email = $('nl-email').value.trim();
+  const row = $('nl-status');
+  row.classList.remove('loading','success','error');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    row.classList.add('error');
+    $('nl-label').textContent = 'Invalid signal';
+    return false;
+  }
+  row.classList.add('loading');
+  $('nl-label').textContent = 'Transmitting…';
+  setTimeout(()=>{
+    row.classList.remove('loading');
+    row.classList.add('success');
+    $('nl-label').textContent = 'Subscribed · aligned';
+    referrals = Math.min(referrals+1, 3);
+    refreshNetworkCard();
+  }, 900);
+  return false;
+}
+window.submitNewsletter = submitNewsletter;
+</script>
+
+</body>
+</html>

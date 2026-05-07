@@ -6,6 +6,7 @@
   "description": "Bazodiac FuFirE Fusion Preview: standalone frontend plus Railway-ready contract API adapter.",
   "scripts": {
     "start": "node server.mjs",
+    "test": "node --test tests/*.test.mjs",
     "check": "node scripts/check.mjs",
     "smoke": "node scripts/smoke-test.mjs"
   },
