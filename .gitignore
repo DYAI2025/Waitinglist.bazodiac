@@ -2,12 +2,33 @@
 .DS_Store
 Thumbs.db
 
-# Dependencies and package managers
+# Editors
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.code-workspace
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Node / npm
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+# Python (used by some SDLC scaffolding scripts)
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
 
 # Build and runtime outputs
 dist/
@@ -15,9 +36,11 @@ build/
 coverage/
 .cache/
 .tmp/
-.env
-.env.*
-!.env.example
 
 # Railway / local runtime
 .railway/
+
+# Local agent / tooling state (claude-flow, claude-code, ruv-llm)
+.claude/
+.swarm/
+ruvector.db
