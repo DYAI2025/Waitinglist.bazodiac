@@ -1,0 +1,13 @@
+# Code owners for the Bazodiac waitlist preview.
+# See https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners.
+
+# Editorial-policy artefacts: copy lives or dies by these.
+# Required reviewer when these change: STK-privacy-compliance-owner or STK-founder
+# (per REQ-USA-editorial-framing-reflection and the lexicon's review process).
+4-deploy/runbooks/editorial-framing-lexicon.md  @DYAI2025
+public/index.html                               @DYAI2025
+
+# Spec, decisions, and design artefacts: project-level governance.
+1-spec/                                         @DYAI2025
+decisions/                                      @DYAI2025
+2-design/                                       @DYAI2025
