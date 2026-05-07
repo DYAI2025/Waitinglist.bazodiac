@@ -2,7 +2,7 @@
 
 **Type**: Usability
 
-**Status**: Approved
+**Status**: Draft
 
 **Priority**: Must-have
 
@@ -12,15 +12,17 @@
 
 ## Description
 
-Frontend microcopy that interprets chart data must use reflection-oriented phrasing — language that invites consideration, suggests exploration, or frames provisionally — rather than prediction-asserting phrasing that claims certainty about future events. This requirement formalizes the editorial intent of `GOAL-honest-reflection-framing` so that copy changes are reviewable both mechanically (forbidden-phrase grep) and editorially (presence of reflection tokens per surface).
+Frontend microcopy that interprets chart data must use reflection-oriented phrasing — language that invites consideration, suggests exploration, or frames provisionally — rather than prediction-asserting phrasing that claims certainty about future events. This requirement formalizes the editorial intent of `GOAL-honest-reflection-framing`. Verification is **editorial**, not mechanical: a copy reviewer (or AI agent acting as one) consults the project's editorial-voice guideline and judges each piece of copy in context.
 
 The covered surfaces are: hero copy, the six chart tile tooltips and ARIA labels, the interpretation modal headline and body lead-in, the newsletter consent label, and any error-rendering copy that comments on chart contents.
 
+Words from the horoscope tradition (Horoskop, Schicksal, Zukunft, vorhersagen, versprechen) are not forbidden. They may appear in copy, especially in negating, redefining, or contrastive form ("Kein Horoskop-Versprechen. Eine Signatur."), which is in fact Bazodiac's signature voice. The judgment is whether each occurrence supports the reflection-not-prediction stance.
+
 ## Acceptance Criteria
 
-- Given the rendered content of `public/index.html` plus any tooltip / aria strings, when grepped against a forbidden-phrases list (DE: `Schicksal`, `Vorhersage`, `Horoskop`, `wird sein`, `wird passieren`, `bestimmt sein`; EN: `you will be`, `predicts`, `destined`, `your future`, `horoscope`, `fortune-tells`), then no occurrence is found inside the covered surfaces.
-- Given the same surfaces, when each is reviewed, then each contains at least one reflection token per language (DE: `Reflexion`, `Einladung`, `vielleicht`, `möglich`, `erkunden`, `betrachten`; EN: `reflect`, `invite`, `consider`, `may`, `explore`, `provisional`).
-- Given a copy-change PR, when prepared for merge, then a check script `scripts/check-editorial-framing.mjs` (to be added) enforces the forbidden list as a `npm run check` step and fails the build on any forbidden hit. The reflection-token check remains a manual editorial review until the lexicon is finalized.
+- Given the editorial-voice guideline at [`1-spec/editorial-voice.md`](../editorial-voice.md), when a copy reviewer (human or AI) reads any chart-interpretation surface, then they can confidently classify each piece of copy as reflection-aligned or prediction-asserting.
+- Given a copy-change PR touching `public/index.html`, when prepared for merge, then the reviewer has consulted `1-spec/editorial-voice.md` and confirmed alignment with its 4 principles. (`.github/CODEOWNERS` adds an automated review-request to `STK-founder` / `STK-privacy-compliance-owner`.)
+- Given the soft-hint script `scripts/check-editorial-voice.mjs` (invoked via `npm run editorial-hints`), when run, then it surfaces watchword occurrences as **non-fatal hints** to assist the reviewer — never as build failures.
 - Given DE and EN copy, when both are reviewed, then both meet the same standard (parity with [REQ-USA-i18n-de-en-parity](REQ-USA-i18n-de-en-parity.md)).
 
 ## Related Constraints
@@ -30,4 +32,8 @@ The covered surfaces are: hero copy, the six chart tile tooltips and ARIA labels
 
 ## Implementation
 
-The canonical DE+EN phrase lists and the editorial review process live in [`4-deploy/runbooks/editorial-framing-lexicon.md`](../../4-deploy/runbooks/editorial-framing-lexicon.md). The mechanical check is implemented in `scripts/check-editorial-framing.mjs` (planned in `TASK-implement-check-editorial-framing`). Both are governed by [`DEC-data-as-fenced-markdown-blocks`](../../decisions/DEC-data-as-fenced-markdown-blocks.md).
+The editorial guideline (principles + examples + watchwords) lives in [`1-spec/editorial-voice.md`](../editorial-voice.md). The soft-hint linter is `scripts/check-editorial-voice.mjs`, invoked via `npm run editorial-hints`.
+
+## Pivot context
+
+This requirement was rewritten on 2026-05-07 in the editorial-framing pivot. The prior version mandated a forbidden-phrase blacklist and a fail-build script — that approach was abandoned because it false-flagged Bazodiac's own anti-prediction brand voice ("Kein Horoskop-Versprechen", "Kein Schicksal. Eine Signatur."). The new approach treats brand voice as an editorial values question requiring human judgment, supported (not enforced) by a soft-hint linter. See [`docs/plans/2026-05-07-editorial-framing-pivot-design.md`](../../docs/plans/2026-05-07-editorial-framing-pivot-design.md) for the full rationale.
