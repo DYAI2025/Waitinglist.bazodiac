@@ -22,7 +22,6 @@ This phase defines **how** we're building the system. Focus on architecture, dat
 | [DEC-zero-runtime-deps](../decisions/DEC-zero-runtime-deps.md) | Zero runtime dependencies (Node built-ins only) | When proposing a new HTTP framework, runtime dependency, or build-tool integration. |
 | [DEC-frozen-error-codes](../decisions/DEC-frozen-error-codes.md) | Frozen ALL_CAPS error code set as contract surface | When adding or changing an error code in `api-design.md` or `data-model.md`. |
 | [DEC-same-origin-monolith](../decisions/DEC-same-origin-monolith.md) | Same-origin Node monolith (static + API in one process) | When proposing component boundaries, deployment topology, or a CDN integration. |
-| [DEC-data-as-fenced-markdown-blocks](../decisions/DEC-data-as-fenced-markdown-blocks.md) | Versioned data files as Markdown with named fenced code blocks | When proposing a new versioned data artefact in `architecture.md`, `data-model.md`, or `api-design.md`. |
 <!-- Add rows as decisions are recorded. File column: [DEC-kebab-name](../decisions/DEC-kebab-name.md) -->
 
 ---

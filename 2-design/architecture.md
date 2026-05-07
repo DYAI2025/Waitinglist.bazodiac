@@ -154,4 +154,3 @@ The following decisions govern this architecture. Read them before changing comp
 | [DEC-zero-runtime-deps](../decisions/DEC-zero-runtime-deps.md) | Zero runtime dependencies — `node:*` built-ins only. |
 | [DEC-frozen-error-codes](../decisions/DEC-frozen-error-codes.md) | Frozen ALL_CAPS `ERROR_CODES` set as contract surface. |
 | [DEC-same-origin-monolith](../decisions/DEC-same-origin-monolith.md) | Same-origin Node monolith (static + API in one process) for the preview iteration. |
-| [DEC-data-as-fenced-markdown-blocks](../decisions/DEC-data-as-fenced-markdown-blocks.md) | Versioned data files as Markdown with named fenced code blocks (governs the editorial-framing lexicon and any future data-as-document policy artefact). |

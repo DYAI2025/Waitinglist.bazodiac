@@ -41,3 +41,4 @@ The decisive factor is the combination of `DEC-zero-runtime-deps` (no parser dep
 | Date | Change | Involvement |
 |------|--------|-------------|
 | 2026-05-07 | Initial decision | ai-proposed/human-approved |
+| 2026-05-07 | Deprecated — first instance (4-deploy/runbooks/editorial-framing-lexicon.md) deleted in editorial-framing pivot; new design uses bullet-list-under-heading pattern that does not need a recorded fenced-block convention. See docs/plans/2026-05-07-editorial-framing-pivot-design.md. | ai-proposed/human-approved |

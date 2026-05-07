@@ -1,6 +1,6 @@
 # DEC-data-as-fenced-markdown-blocks: Versioned data files as Markdown with named fenced code blocks
 
-**Status**: Active
+**Status**: Deprecated
 
 **Category**: Convention
 
