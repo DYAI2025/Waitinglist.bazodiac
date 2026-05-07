@@ -12,7 +12,7 @@ All three endpoints share:
   - Success: `{ "ok": true, ...endpoint-specific fields }`
   - Error:   `{ "ok": false, "error": { "code": "STABLE_CODE", "message": "human readable", "field": "fieldNameIfApplicable" } }`
 - **Errors:** non-2xx HTTP status is paired with `ok: false`. `error.code` is a stable, machine-readable, ALL_CAPS string rendered verbatim by the UI (e.g. `VALIDATION_ERROR`, `FUFIRE_UNAVAILABLE`, `CONFIGURATION_ERROR`, `INTERPRETATION_UNAVAILABLE`, `CONSENT_REQUIRED`, `INVALID_EMAIL`, `ALREADY_SUBSCRIBED`, `RATE_LIMITED`).
-- **No silent fallbacks.** The frontend never invents data. If an endpoint is unreachable, the relevant card shows the error code and a retry button. Do not return synthesized data on failure.
+- **No silent frontend fallbacks.** The frontend never invents data. If an endpoint is unreachable, the relevant card shows the error code and a retry button. Production backends must not synthesize data on failure. The local/Railway adapter in this repository intentionally returns deterministic fixture data so the preview can be deployed before the final FuFirE services are connected.
 
 ---
 
@@ -22,7 +22,7 @@ Compute the FuFirE fusion chart for a given birth data set.
 
 ### Request
 
-Required fields: `birthDate`, `birthTime`, `birthPlace`, `timezone`, `language`.
+Required fields: `birthDate`, `birthTime`, `birthPlace`, `language`. `timezone` is optional during the preview adapter phase and may be `null` when the backend resolves it from `birthPlace`.
 
 ```json
 {
@@ -39,7 +39,7 @@ Required fields: `birthDate`, `birthTime`, `birthPlace`, `timezone`, `language`.
 | `birthDate` | `string` (ISO `YYYY-MM-DD`) | yes | |
 | `birthTime` | `string` (`HH:MM`) \| `null` | yes | `null` is valid — the user checked "I don't know my birth time". |
 | `birthPlace` | `string` | yes | Free-form. Backend resolves it to coordinates server-side. |
-| `timezone` | `string` (IANA) | yes | e.g. `"Europe/Berlin"`. |
+| `timezone` | `string` (IANA) \| `null` | no | e.g. `"Europe/Berlin"`; `null` lets the backend infer it from `birthPlace`. |
 | `language` | `"de" \| "en"` | yes | UI language. |
 
 See `fixtures/fusion-chart.request.valid.json`.

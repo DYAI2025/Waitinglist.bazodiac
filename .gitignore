@@ -1,0 +1,23 @@
+# Operating system metadata
+.DS_Store
+Thumbs.db
+
+# Dependencies and package managers
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build and runtime outputs
+dist/
+build/
+coverage/
+.cache/
+.tmp/
+.env
+.env.*
+!.env.example
+
+# Railway / local runtime
+.railway/
