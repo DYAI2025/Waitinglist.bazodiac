@@ -58,7 +58,14 @@ Stakeholders + collaborators are to be modeled in `1-spec/stakeholders.md` once 
 - API Design (`2-design/api-design.md`): drafted 2026-05-07, **updated 2026-05-07 (v2)** with `## Smoke Testing` section + 3 new Coverage rows. References `contracts/public-api.md` as authoritative schema; documents HTTP conventions, envelope discriminator (`ok`), status-code-to-error-code mapping, idempotency profiles, versioning policy, validation rules, provider-failure semantics, smoke testing, analytics, rate-limiting policy.
 - Decisions: 4 Active recorded — [`DEC-layered-adapter`](decisions/DEC-layered-adapter.md), [`DEC-zero-runtime-deps`](decisions/DEC-zero-runtime-deps.md), [`DEC-frozen-error-codes`](decisions/DEC-frozen-error-codes.md), [`DEC-same-origin-monolith`](decisions/DEC-same-origin-monolith.md). Indexed in `2-design/CLAUDE.design.md` (4 entries), `4-deploy/CLAUDE.deploy.md` (2 entries), and per-component `CLAUDE.component.md` files (frontend: 2; adapter: all 4).
 - Component decomposition: **2 components** — [`frontend`](3-code/frontend/CLAUDE.component.md) (HTML/CSS/JS in `public/index.html`, 7 reqs after editorial-framing addition) + [`adapter`](3-code/adapter/CLAUDE.component.md) (Node.js zero-deps, 17 reqs). All component req tables now show Approved status (Draft annotations removed in v2).
-- **Completeness assessment (2026-05-07 v2): 0 Critical, 1 Important, 1 Minor.** Important: `ASM-fufire-api-available` (High, Unverified) — verification requires live FuFirE engine = subject of `GOAL-real-provider-integration` next iteration. Minor: 3 Medium-risk Unverified vendor assumptions (interpretation, newsletter, geocoding) — verification follows vendor selection. Design → Code gate **fully open**. Next step: `/SDLC-implementation-plan` (substantial forward scope now available).
+- **Completeness assessment (2026-05-07 v2): 0 Critical, 1 Important, 1 Minor.** Important: `ASM-fufire-api-available` (High, Unverified) — to be verified in Phase 4 of implementation plan. Minor: 3 Medium-risk Unverified vendor assumptions — to be resolved in Phase 2.
+
+**Implementation plan created (2026-05-07).** [`3-code/tasks.md`](3-code/tasks.md): **22 tasks across 4 phases**.
+- Phase 1 — Editorial framing tooling (6 tasks, P1): closes `GOAL-honest-reflection-framing` I-1 gap; builds `scripts/check-editorial-framing.mjs` with versioned lexicon.
+- Phase 2 — Vendor selection (6 tasks, P2): 4 vendor `DEC-*` decisions + assumption linkage. Research-only, no code changes.
+- Phase 3 — Live-mode integration (6 tasks, P2): wires real FuFirE, geocoding, interpretation, newsletter providers; verifies envelope byte-compat.
+- Phase 4 — Production cutover (4 tasks, P2): stub-mode-disabled gate, deployed-URL smoke, assumption verification, go-live runbook.
+- 3 of 6 Approved goals (`GOAL-pre-launch-preview`, `GOAL-bilingual-experience`, `GOAL-accessible-chart-tiles`) require no forward tasks — they are pre-implemented at commit `7737da9` and re-verified end-to-end in Phase 4. Next step: `/SDLC-execute-next-task` to start Phase 1.
 
 **SDLC scaffold:** pangon/ai-sdlc-scaffold installed in `1-spec/`, `2-design/`, `3-code/`, `4-deploy/`, `decisions/`.
 
