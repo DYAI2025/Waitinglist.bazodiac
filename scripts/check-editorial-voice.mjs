@@ -14,6 +14,10 @@ import { fileURLToPath } from 'node:url';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(HERE, '..');
 
+// Excerpt window around each watchword match (chars).
+const EXCERPT_PREFIX_CHARS = 30;
+const EXCERPT_SUFFIX_CHARS = 40;
+
 function parseArgs(argv) {
   const args = { voice: null, target: null };
   for (let i = 2; i < argv.length; i++) {
@@ -55,8 +59,8 @@ function findHints(html, watchwords) {
     for (let i = 0; i < lines.length; i++) {
       const idx = lines[i].search(re);
       if (idx === -1) continue;
-      const start = Math.max(0, idx - 30);
-      const end = Math.min(lines[i].length, idx + watchword.length + 40);
+      const start = Math.max(0, idx - EXCERPT_PREFIX_CHARS);
+      const end = Math.min(lines[i].length, idx + watchword.length + EXCERPT_SUFFIX_CHARS);
       const prefix = start > 0 ? '...' : '';
       const suffix = end < lines[i].length ? '...' : '';
       const excerpt = `${prefix}${lines[i].slice(start, end).trim()}${suffix}`;
