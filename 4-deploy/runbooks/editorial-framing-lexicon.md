@@ -84,14 +84,16 @@ provisional
 
 ## How the check works
 
-`scripts/check-editorial-framing.mjs` (zero runtime dependencies, per [`DEC-zero-runtime-deps`](../../decisions/DEC-zero-runtime-deps.md)):
+`scripts/check-editorial-framing.mjs` (zero runtime dependencies, per [`DEC-zero-runtime-deps`](../../decisions/DEC-zero-runtime-deps.md); structural pattern per [`DEC-data-as-fenced-markdown-blocks`](../../decisions/DEC-data-as-fenced-markdown-blocks.md)):
 
-1. Reads this file from a stable relative path.
-2. Extracts the four fenced code blocks by their language tags (`forbidden-de`, `forbidden-en`, `reflection-de`, `reflection-en`).
-3. Scans `public/index.html`, isolating in-scope surfaces (identified by selector or comment-based markers — exact mechanism documented in the script's source).
-4. **Fails the check** if any forbidden phrase from either language appears inside an in-scope surface.
-5. **Warns** (non-fatal until the lexicon is hardened) if a surface has no reflection tokens in a given language.
-6. Exits with code `0` on pass, non-zero on fail (the warnings stay non-fatal until promoted by an explicit decision).
+1. Reads this file from the canonical path `4-deploy/runbooks/editorial-framing-lexicon.md` (resolved relative to the repository root, or via a `--lexicon` CLI argument for tests).
+2. Extracts the four fenced code blocks by their language tags (`forbidden-de`, `forbidden-en`, `reflection-de`, `reflection-en`) using the regex `` /```<tag>\n([\s\S]*?)```/ ``.
+3. Per extracted block: splits on newlines, trims each line, drops empty lines and lines starting with `#`. The remaining lines are the canonical phrase list for that tag.
+4. Scans `public/index.html`, isolating in-scope surfaces (identified by selector or comment-based markers — exact mechanism documented in the script's source as part of `TASK-implement-check-editorial-framing`).
+5. **Fails the check** if any forbidden phrase from either language appears inside an in-scope surface.
+6. **Warns** (non-fatal until the lexicon is hardened) if a surface has no reflection tokens in a given language.
+7. **MUST fail loudly with a non-zero exit code and a clear error message** if any of the four expected blocks (`forbidden-de`, `forbidden-en`, `reflection-de`, `reflection-en`) is missing, malformed, or yields zero entries after parsing. A check that silently loads zero phrases and reports "no issues" is a worse failure mode than no check at all.
+8. Exits with code `0` on pass, non-zero on fail (the warnings stay non-fatal until promoted by an explicit decision).
 
 ## Editorial review process
 
