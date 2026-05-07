@@ -24,7 +24,7 @@ The browser side renders `error.code` from the envelope verbatim. No client-side
 | [REQ-F-null-birth-time-accepted](../../1-spec/requirements/REQ-F-null-birth-time-accepted.md) | Functional | Must-have | UI exposes the "I don't know my birth time" path; sends `birthTime: null`. |
 | [REQ-USA-i18n-de-en-parity](../../1-spec/requirements/REQ-USA-i18n-de-en-parity.md) | Usability | Must-have | All visible UI text exists in both DE and EN with full parity. |
 | [REQ-USA-error-code-rendered-verbatim](../../1-spec/requirements/REQ-USA-error-code-rendered-verbatim.md) | Usability | Must-have | Frontend renders backend `error.code` verbatim; no synthesized fallback. |
-| [REQ-USA-editorial-framing-reflection](../../1-spec/requirements/REQ-USA-editorial-framing-reflection.md) | Usability | Must-have | Microcopy uses reflection-oriented phrasing, never prediction-asserting; verified via forbidden-phrase grep + manual editorial review. |
+| [REQ-USA-editorial-framing-reflection](../../1-spec/requirements/REQ-USA-editorial-framing-reflection.md) | Usability | Must-have | Microcopy follows the editorial guideline at `1-spec/editorial-voice.md`; reviewed editorially per PR; `npm run editorial-hints` provides non-fatal hints. |
 | [REQ-USA-keyboard-accessible-tiles](../../1-spec/requirements/REQ-USA-keyboard-accessible-tiles.md) | Usability | Should-have | Six chart tiles keyboard-focusable; live-localized ARIA; Escape dismiss. |
 | [REQ-USA-no-8px-essential-text](../../1-spec/requirements/REQ-USA-no-8px-essential-text.md) | Usability | Should-have | No essential UI text uses `font-size: 8px`. |
 
