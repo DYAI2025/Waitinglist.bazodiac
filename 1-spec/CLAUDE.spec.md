@@ -76,6 +76,7 @@ When an artifact (goal, user story, requirement) is no longer relevant:
 
 | File | Title | Trigger |
 |------|-------|---------|
+| [DEC-data-as-fenced-markdown-blocks](../decisions/DEC-data-as-fenced-markdown-blocks.md) | Versioned data files as Markdown with named fenced code blocks | When a requirement references a "list" or "map" of small string entries to be consumed mechanically. |
 <!-- Add rows as decisions are recorded. File column: [DEC-kebab-name](../decisions/DEC-kebab-name.md) -->
 
 ---
