@@ -132,7 +132,7 @@ All 18 Approved Must-have requirements and 5 Approved Should-have requirements a
 | [REQ-F-envelope-byte-compat](../1-spec/requirements/REQ-F-envelope-byte-compat.md) (SH) | Adapter — both stub branch (`fixtures.mjs`) and live branch (`providers/*.mjs`) build the same envelope shape; smoke test asserts shape parity across modes |
 | [REQ-F-idempotent-newsletter-signup](../1-spec/requirements/REQ-F-idempotent-newsletter-signup.md) (SH) | Adapter — `newsletterService` delegates uniqueness to vendor; soft-success or `ALREADY_SUBSCRIBED` envelope per contract; no duplicate records created locally (no local persistence exists) |
 | [REQ-USA-keyboard-accessible-tiles](../1-spec/requirements/REQ-USA-keyboard-accessible-tiles.md) (SH) | Frontend — six tiles carry `tabindex="0"` + `role="group"` + localized `aria-label`; tooltip on hover/focus; Escape blurs |
-| [REQ-USA-no-8px-essential-text](../1-spec/requirements/REQ-USA-no-8px-essential-text.md) (SH) | Frontend CSS — listed selectors use `≥10px`; `npm run check` regression guard once `scripts/check-editorial-framing.mjs` and the typography linter are extended |
+| [REQ-USA-no-8px-essential-text](../1-spec/requirements/REQ-USA-no-8px-essential-text.md) (SH) | Frontend CSS — listed selectors use `≥10px`; regression guard via a future typography linter (separate concern from the editorial-voice script) |
 | [REQ-MNT-smoke-against-public-url](../1-spec/requirements/REQ-MNT-smoke-against-public-url.md) (SH) | `scripts/smoke-test.mjs` reads optional `PUBLIC_API_BASE_URL`; if set, polls `/healthz` then runs identical assertion set against the deployed URL; if unset, spawns local server on port 4173 |
 
 ## Constraint Compliance
