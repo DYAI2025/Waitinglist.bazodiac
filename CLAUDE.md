@@ -33,7 +33,7 @@ Stakeholders + collaborators are to be modeled in `1-spec/stakeholders.md` once 
 
 ### Current State
 
-**Phase: Design (retrospective / code-derived baseline).**
+**Phase: Code (retrospective / code-derived baseline; forward iteration in progress).**
 
 **Code-derived baseline note.** The Specification phase is being populated *after* implementation, not before. Iteration 1 + Iteration 2 are committed to `origin/main` (commit `7737da9`) and pass all quality gates (`npm run check`, `npm test` — 33 tests, `npm run smoke`). The committed code, `contracts/public-api.md`, `contracts/SMOKE_CHECKLIST.md`, and the two Iteration-2 reports (`BAZODIAC_BACKEND_ITERATION_2_REPORT.md`, `test_results_npm_run_check_passed_npm_test_pa.md`) are the source of truth that artifacts in `1-spec/`, `2-design/`, and `decisions/` document. Treat these artifacts as descriptions of an *existing* system, not as a forward plan — later modifications must not assume the spec preceded the code.
 
@@ -65,7 +65,10 @@ Stakeholders + collaborators are to be modeled in `1-spec/stakeholders.md` once 
 - Phase 2 — Vendor selection (6 tasks, P2): 4 vendor `DEC-*` decisions + assumption linkage. Research-only, no code changes.
 - Phase 3 — Live-mode integration (6 tasks, P2): wires real FuFirE, geocoding, interpretation, newsletter providers; verifies envelope byte-compat.
 - Phase 4 — Production cutover (4 tasks, P2): stub-mode-disabled gate, deployed-URL smoke, assumption verification, go-live runbook.
-- 3 of 6 Approved goals (`GOAL-pre-launch-preview`, `GOAL-bilingual-experience`, `GOAL-accessible-chart-tiles`) require no forward tasks — they are pre-implemented at commit `7737da9` and re-verified end-to-end in Phase 4. Next step: `/SDLC-execute-next-task` to start Phase 1.
+- 3 of 6 Approved goals (`GOAL-pre-launch-preview`, `GOAL-bilingual-experience`, `GOAL-accessible-chart-tiles`) require no forward tasks — they are pre-implemented at commit `7737da9` and re-verified end-to-end in Phase 4.
+
+**Implementation progress: 1/22 tasks done, currently in Phase 1.**
+- 2026-05-07: `TASK-define-editorial-lexicon` Done — [`4-deploy/runbooks/editorial-framing-lexicon.md`](4-deploy/runbooks/editorial-framing-lexicon.md) written. Source of truth for the editorial-framing check (4 fenced code blocks with DE+EN forbidden phrases and reflection tokens, plus surfaces-in-scope, examples, and review process). Next task: `TASK-implement-check-editorial-framing` (build `scripts/check-editorial-framing.mjs`).
 
 **SDLC scaffold:** pangon/ai-sdlc-scaffold installed in `1-spec/`, `2-design/`, `3-code/`, `4-deploy/`, `decisions/`.
 
