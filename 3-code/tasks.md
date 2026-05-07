@@ -40,16 +40,21 @@
 
 | ID | Task | Priority | Status | Req | Dependencies | Updated | Notes |
 |----|------|----------|--------|-----|--------------|---------|-------|
-| TASK-document-editorial-framing-frontend | Create or extend `3-code/frontend/README.md` with the copy-change workflow: edit `public/index.html` → `npm run check` → fix or extend lexicon | P1 | Todo | [REQ-USA-editorial-framing-reflection](../1-spec/requirements/REQ-USA-editorial-framing-reflection.md) | TASK-implement-check-editorial-framing | 2026-05-07 | |
+| TASK-document-editorial-framing-frontend | Create or extend `3-code/frontend/README.md` with the copy-change workflow: edit `public/index.html` → `npm run check` → fix or extend lexicon | P1 | Cancelled | [REQ-USA-editorial-framing-reflection](../1-spec/requirements/REQ-USA-editorial-framing-reflection.md) | TASK-implement-check-editorial-framing | 2026-05-08 | Cancelled: replaced by TASK-document-editorial-voice-frontend (different doc target). |
+| TASK-document-editorial-voice-frontend | Update `3-code/frontend/README.md` (or create) with the copy-change workflow: edit public/index.html → optionally `npm run editorial-hints` → consult 1-spec/editorial-voice.md → reviewer sign-off via CODEOWNERS | P1 | Todo | [REQ-USA-editorial-framing-reflection](../1-spec/requirements/REQ-USA-editorial-framing-reflection.md) | TASK-add-editorial-hints-npm-script | 2026-05-08 | Pivot supersedes TASK-document-editorial-framing-frontend. NOT done in this plan — documents the workflow once it exists. |
 
 ### Adapter
 
 | ID | Task | Priority | Status | Req | Dependencies | Updated | Notes |
 |----|------|----------|--------|-----|--------------|---------|-------|
-| TASK-define-editorial-lexicon | Create `4-deploy/runbooks/editorial-framing-lexicon.md` with versioned DE+EN forbidden-phrase + reflection-token lists | P1 | Done | [REQ-USA-editorial-framing-reflection](../1-spec/requirements/REQ-USA-editorial-framing-reflection.md) | - | 2026-05-07 | Lexicon written with 4 fenced code blocks (`forbidden-de`, `forbidden-en`, `reflection-de`, `reflection-en`) parseable by zero-deps regex |
-| TASK-implement-check-editorial-framing | Build `scripts/check-editorial-framing.mjs` (Node built-ins only) that reads the lexicon, scans `public/index.html`, exits non-zero on forbidden hits | P1 | Todo | [REQ-USA-editorial-framing-reflection](../1-spec/requirements/REQ-USA-editorial-framing-reflection.md) | TASK-define-editorial-lexicon | 2026-05-07 | Honors `DEC-zero-runtime-deps` |
-| TASK-test-editorial-framing-script | Add `tests/editorial-framing.test.mjs` with `node:test` cases covering: forbidden detection (DE+EN), reflection-token detection, lexicon parsing, exit codes | P1 | Todo | [REQ-USA-editorial-framing-reflection](../1-spec/requirements/REQ-USA-editorial-framing-reflection.md) | TASK-implement-check-editorial-framing | 2026-05-07 | |
-| TASK-wire-editorial-framing-into-check | Integrate the script as a step in `scripts/check.mjs` (or `npm run check` runner) so it gates on every PR | P1 | Todo | [REQ-USA-editorial-framing-reflection](../1-spec/requirements/REQ-USA-editorial-framing-reflection.md) | TASK-test-editorial-framing-script | 2026-05-07 | |
+| TASK-define-editorial-lexicon | Create `4-deploy/runbooks/editorial-framing-lexicon.md` with versioned DE+EN forbidden-phrase + reflection-token lists | P1 | Done | [REQ-USA-editorial-framing-reflection](../1-spec/requirements/REQ-USA-editorial-framing-reflection.md) | - | 2026-05-08 | Superseded by editorial-voice.md in 2026-05-07 pivot. Lexicon file deleted. See docs/plans/2026-05-07-editorial-framing-pivot-design.md. |
+| TASK-create-editorial-voice-doc | Create `1-spec/editorial-voice.md` with 4 principles, 6 DE/EN before/after examples, 5 watchwords, governance note | P1 | Done | [REQ-USA-editorial-framing-reflection](../1-spec/requirements/REQ-USA-editorial-framing-reflection.md) | - | 2026-05-08 | Pivot supersedes TASK-define-editorial-lexicon. Implemented via pivot plan Task 1. |
+| TASK-implement-check-editorial-framing | Build `scripts/check-editorial-framing.mjs` (Node built-ins only) that reads the lexicon, scans `public/index.html`, exits non-zero on forbidden hits | P1 | Cancelled | [REQ-USA-editorial-framing-reflection](../1-spec/requirements/REQ-USA-editorial-framing-reflection.md) | TASK-define-editorial-lexicon | 2026-05-08 | Cancelled: editorial-framing pivot replaced by TASK-implement-check-editorial-voice (different script name + different semantics: soft hint, not blacklist). |
+| TASK-implement-check-editorial-voice | Build `scripts/check-editorial-voice.mjs` (zero deps, soft hint, exits 0 always on content findings) | P1 | Done | [REQ-USA-editorial-framing-reflection](../1-spec/requirements/REQ-USA-editorial-framing-reflection.md) | TASK-create-editorial-voice-doc | 2026-05-08 | Pivot supersedes TASK-implement-check-editorial-framing. Implemented via pivot plan Task 3 (TDD green after pivot plan Task 2 red). |
+| TASK-test-editorial-framing-script | Add `tests/editorial-framing.test.mjs` with `node:test` cases covering: forbidden detection (DE+EN), reflection-token detection, lexicon parsing, exit codes | P1 | Cancelled | [REQ-USA-editorial-framing-reflection](../1-spec/requirements/REQ-USA-editorial-framing-reflection.md) | TASK-implement-check-editorial-framing | 2026-05-08 | Cancelled: replaced by TASK-test-editorial-voice-script. Tests for the new script live in tests/editorial-voice.test.mjs. |
+| TASK-test-editorial-voice-script | Add `tests/editorial-voice.test.mjs` covering hint emission, slash-split watchwords, zero-hit, parser loud-failure | P1 | Done | [REQ-USA-editorial-framing-reflection](../1-spec/requirements/REQ-USA-editorial-framing-reflection.md) | TASK-create-editorial-voice-doc | 2026-05-08 | Pivot supersedes TASK-test-editorial-framing-script. Implemented via pivot plan Task 2 + 3. |
+| TASK-wire-editorial-framing-into-check | Integrate the script as a step in `scripts/check.mjs` (or `npm run check` runner) so it gates on every PR | P1 | Cancelled | [REQ-USA-editorial-framing-reflection](../1-spec/requirements/REQ-USA-editorial-framing-reflection.md) | TASK-test-editorial-framing-script | 2026-05-08 | Cancelled: editorial-framing pivot removed npm run check wiring. Standalone npm run editorial-hints instead. Replaced by TASK-add-editorial-hints-npm-script. |
+| TASK-add-editorial-hints-npm-script | Add `npm run editorial-hints` to package.json (NOT in npm run check) | P1 | Done | [REQ-USA-editorial-framing-reflection](../1-spec/requirements/REQ-USA-editorial-framing-reflection.md) | TASK-implement-check-editorial-voice | 2026-05-08 | Pivot supersedes TASK-wire-editorial-framing-into-check. Implemented via pivot plan Task 4. |
 | TASK-configure-fufire-live | Set `FUFIRE_BASE_URL` + `FUFIRE_API_KEY` in staging env; run `/api/public/fusion-chart` against live FuFirE; assert `mapFufireResponse` mappings hold against real schema | P2 | Todo | [REQ-F-fufire-chart-mapping](../1-spec/requirements/REQ-F-fufire-chart-mapping.md), [REQ-F-fusion-chart-endpoint](../1-spec/requirements/REQ-F-fusion-chart-endpoint.md) | TASK-decide-fufire-deployment | 2026-05-07 | |
 | TASK-configure-geocoding-live | Wire `GEOCODING_API_URL` + `GEOCODING_API_KEY` per `DEC-geocoding-vendor`; verify `resolveLocation` returns correct lat/lon/timezone for sample places | P2 | Todo | - | TASK-decide-geocoding-vendor | 2026-05-07 | |
 | TASK-configure-interpretation-live | Wire `INTERPRETATION_API_URL` + `GEMINI_API_KEY` per `DEC-interpretation-vendor`; verify `/api/public/fusion-interpretation` produces vendor-generated content | P2 | Todo | [REQ-F-fusion-interpretation-endpoint](../1-spec/requirements/REQ-F-fusion-interpretation-endpoint.md) | TASK-decide-interpretation-vendor | 2026-05-07 | |
@@ -60,7 +65,8 @@
 
 | ID | Task | Priority | Status | Req | Dependencies | Updated | Notes |
 |----|------|----------|--------|-----|--------------|---------|-------|
-| TASK-phase-1-manual-testing | Update `4-deploy/runbooks/editorial-framing-review.md` runbook (manual review steps + expected `npm run check` output); document phase-1 build/run/test commands in `3-code/{frontend,adapter}/README.md` | P1 | Todo | - | TASK-wire-editorial-framing-into-check, TASK-document-editorial-framing-frontend | 2026-05-07 | |
+| TASK-phase-1-manual-testing | Update `4-deploy/runbooks/editorial-framing-review.md` runbook (manual review steps + expected `npm run check` output); document phase-1 build/run/test commands in `3-code/{frontend,adapter}/README.md` | P1 | Cancelled | - | TASK-wire-editorial-framing-into-check, TASK-document-editorial-framing-frontend | 2026-05-08 | Cancelled: replaced by TASK-phase-1-manual-testing-pivot (different artefacts to manual-test against). |
+| TASK-phase-1-manual-testing-pivot | Update `4-deploy/runbooks/editorial-review-process.md` runbook (manual editorial review steps + npm run editorial-hints output explanation); document phase-1 build/run/test commands in `3-code/{frontend,adapter}/README.md` | P1 | Todo | - | TASK-document-editorial-voice-frontend | 2026-05-08 | Pivot supersedes TASK-phase-1-manual-testing. NOT done in this plan. |
 | TASK-phase-2-manual-testing | Document the 4 vendor-decision rationales in `4-deploy/runbooks/vendor-selection.md` with comparison criteria, selected vendor, and rollout plan per provider | P2 | Todo | - | TASK-update-assumption-statuses | 2026-05-07 | |
 | TASK-phase-3-manual-testing | Create `4-deploy/runbooks/live-mode-deployment.md`: env-var checklist, smoke procedure, rollback steps; update `3-code/{frontend,adapter}/README.md` with flip-to-live procedure | P2 | Todo | - | TASK-verify-envelope-byte-compat-live | 2026-05-07 | |
 | TASK-runbook-stub-mode-prod-disabled-check | Add a deployment runbook gate to verify `PUBLIC_API_STUB_MODE=false` in production env vars before declaring production live | P2 | Todo | [REQ-COMP-stub-mode-prod-disabled](../1-spec/requirements/REQ-COMP-stub-mode-prod-disabled.md) | TASK-phase-3-manual-testing | 2026-05-07 | Honors `CON-stub-mode-dev-only` |
@@ -76,17 +82,17 @@ Defines the order in which tasks should be executed. Tasks are grouped into phas
 ### Phase 1: Editorial framing tooling
 
 **Capabilities delivered:**
-- `npm run check` mechanically enforces the forbidden-phrase blacklist on `public/index.html` (`REQ-USA-editorial-framing-reflection`).
-- Editorial lexicon (DE+EN forbidden phrases + reflection tokens) lives as a versioned data file in `4-deploy/runbooks/editorial-framing-lexicon.md`, reviewable and updatable independently of code.
-- `GOAL-honest-reflection-framing` Success Criterion "User-visible copy frames experience as reflection, not prediction" becomes mechanically verifiable.
+- `npm run editorial-hints` (standalone, NOT in `npm run check`) emits non-fatal hints when watchwords appear in `public/index.html`, supporting editorial review (`REQ-USA-editorial-framing-reflection`).
+- Editorial-voice document (4 principles + 6 examples + 5 watchwords) lives as a versioned data+prose file in `1-spec/editorial-voice.md`, reviewable per PR via `.github/CODEOWNERS`.
+- `GOAL-honest-reflection-framing` Success Criterion "User-visible copy frames experience as reflection, not prediction" is achieved via editorial guideline + soft-hint linter (not mechanical blacklist).
 
 **Tasks:**
-1. TASK-define-editorial-lexicon
-2. TASK-implement-check-editorial-framing
-3. TASK-test-editorial-framing-script
-4. TASK-wire-editorial-framing-into-check
-5. TASK-document-editorial-framing-frontend
-6. TASK-phase-1-manual-testing
+1. TASK-create-editorial-voice-doc
+2. TASK-test-editorial-voice-script (TDD red)
+3. TASK-implement-check-editorial-voice (TDD green)
+4. TASK-add-editorial-hints-npm-script
+5. TASK-document-editorial-voice-frontend
+6. TASK-phase-1-manual-testing-pivot
 
 ### Phase 2: Vendor selection
 
