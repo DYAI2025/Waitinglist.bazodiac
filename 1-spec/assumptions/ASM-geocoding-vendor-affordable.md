@@ -16,11 +16,11 @@ Pre-launch traffic is expected to be modest (hundreds to low thousands of chart 
 
 ## Verification Plan
 
-**Trigger:** `TASK-decide-geocoding-vendor` resolves — either to a chosen vendor (e.g., Mapbox / OpenCage / Google) or to `DEC-no-geocoding-vendor` (vendor not needed because BAFE accepts `lat`/`lon` directly per `DEC-fufire-baseline`).
+**Trigger:** `TASK-decide-geocoding-vendor` resolves — either to a chosen vendor (e.g., Mapbox / OpenCage / Google) or to a *prospective* `DEC-no-geocoding-vendor` (not yet recorded; would be created if BAFE accepting `lat`/`lon` directly per `DEC-fufire-baseline` makes a vendor unnecessary).
 **Method:** If a vendor is chosen, verification happens when its monthly invoice + traffic-projection arithmetic confirms affordability against the project's budget posture. If no vendor is needed, the assumption becomes vacuously true and is closed via `Status: Verified — N/A (vendor not selected)`.
 **Owner:** [STK-founder](../stakeholders.md)
 **Target date:** Post-Phase-2 vendor-decision resolution.
-**Records to update on verification:** Status field (`Unverified` → `Verified`); add a `## Verification Evidence` section with date and evidence link; if applicable, add a `## Resolved by` section linking to the relevant `DEC-*`.
+**Records to update on verification:** Status field (`Unverified` → `Verified`); add a `## Verification Evidence` section with date and evidence link; if applicable, add a `## Resolved by` section linking to the relevant `DEC-*`. **If invalidated instead** (e.g., no affordable vendor found), change Status to `Invalidated` and surface a follow-up artefact.
 
 ## Related Artifacts
 

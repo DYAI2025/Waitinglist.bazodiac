@@ -20,7 +20,7 @@ Several EU-friendly newsletter vendors meet these criteria. The selection is a c
 **Method:** Vendor's published GDPR/DPA documentation reviewed by `STK-privacy-compliance-owner`; double-opt-in mechanic verified via test signup with confirmation-email round-trip; data-retention + right-to-erasure flow documented in the runbook.
 **Owner:** [STK-privacy-compliance-owner](../stakeholders.md)
 **Target date:** Post-Phase-2 vendor-decision resolution.
-**Records to update on verification:** Status field (`Unverified` → `Verified`); add a `## Verification Evidence` section with date and evidence link; if applicable, add a `## Resolved by` section linking to the relevant `DEC-*`.
+**Records to update on verification:** Status field (`Unverified` → `Verified`); add a `## Verification Evidence` section with date and evidence link; if applicable, add a `## Resolved by` section linking to the relevant `DEC-*`. **If invalidated instead** (e.g., DPA review fails or double-opt-in implementation not compliant), change Status to `Invalidated` and surface a follow-up artefact.
 
 ## Related Artifacts
 

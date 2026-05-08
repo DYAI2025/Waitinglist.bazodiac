@@ -16,11 +16,11 @@ The Gemini family is widely available, and `src/providers/interpretationProvider
 
 ## Verification Plan
 
-**Trigger:** `TASK-decide-interpretation-vendor` resolves — either to a chosen path (Gemini direct / proxy router) or to `DEC-no-separate-interpretation-vendor` (BAFE's `/v1/experience/daily` returns `summary`, `themes`, `caution`, `opportunity` natively per `2-design/external-context/bafe-api-reference.md`).
+**Trigger:** `TASK-decide-interpretation-vendor` resolves — either to a chosen path (Gemini direct / proxy router) or to a *prospective* `DEC-no-separate-interpretation-vendor` (not yet recorded; would be created if BAFE's `/v1/experience/daily` returning `summary`, `themes`, `caution`, `opportunity` natively per `2-design/external-context/bafe-api-reference.md` is judged sufficient).
 **Method:** If a vendor is chosen, verification is a successful end-to-end call producing acceptable DE+EN content quality. If no vendor is needed, the assumption is closed via `Status: Verified — N/A (BAFE-native interpretation sufficient)`.
 **Owner:** [STK-founder](../stakeholders.md)
 **Target date:** Post-Phase-2 vendor-decision resolution.
-**Records to update on verification:** Status field (`Unverified` → `Verified`); add a `## Verification Evidence` section with date and evidence link; if applicable, add a `## Resolved by` section linking to the relevant `DEC-*`.
+**Records to update on verification:** Status field (`Unverified` → `Verified`); add a `## Verification Evidence` section with date and evidence link; if applicable, add a `## Resolved by` section linking to the relevant `DEC-*`. **If invalidated instead** (e.g., neither path produces acceptable DE+EN quality), change Status to `Invalidated` and surface a follow-up artefact.
 
 ## Related Artifacts
 
