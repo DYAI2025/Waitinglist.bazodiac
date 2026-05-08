@@ -2,6 +2,8 @@
 
 **All AI outputs must be in English**, regardless of the language used in user prompts. This applies to code, comments, documentation, configuration files, commit messages, and response text.
 
+**Exception — verbatim external snapshots.** Files under `2-design/external-context/` may preserve their original source language when ingested verbatim from upstream (e.g., a third-party API documentation export). The frontmatter's `status: snapshot` field signals this, and the live source-of-truth named in the file's `> Authoritative source` blockquote takes precedence on conflict. Any AI-authored prose in the same directory (introductory notes, summaries) still follows the English rule.
+
 ## Memory Policy
 
 **Do not use Claude memory files to store project information**. All project knowledge — domain context, team structure, constraints, decisions, and any other relevant information — must be captured exclusively through the SDLC artifact system (stakeholders, constraints, assumptions, goals, requirements, decisions, etc.). This ensures all knowledge is structured, traceable, and available to every team member working on the project.
