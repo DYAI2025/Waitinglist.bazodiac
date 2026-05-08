@@ -41,7 +41,7 @@ Stakeholders + collaborators are to be modeled in `1-spec/stakeholders.md` once 
 
 **Implemented baseline (committed to `origin/main`):**
 - Modular adapter under `src/{config,errors,http,validation,fixtures,routes/publicApi,services/*,providers/*}.mjs`; thin `server.mjs` bootstrap. Zero runtime dependencies (`node:http`, `node:fs`, `node:path` only).
-- Provider boundaries: FuFirE (`POST {FUFIRE_BASE_URL}/chart`, header `X-API-Key`), geocoding + timezone, Gemini interpretation, newsletter — generic, stub-mode-default.
+- Provider boundaries: FuFirE (`POST {FUFIRE_BASE_URL}/v1/fusion`, header `X-API-Key`), geocoding + timezone, Gemini interpretation, newsletter — generic, stub-mode-default.
 - Stable error envelope `{ok: bool, error?: {code, message, field?}}` with 13 ALL_CAPS error codes.
 - Frontend fixes in `public/index.html`: scrolling unblock, opt-in rich cursor FX (`localStorage.bazodiac.effects=='rich'`), contrast tokens, keyboard-accessible chart-tile tooltips (DE/EN ARIA), provisional ascendant when birth time unknown.
 - `archive/uploads-reference/*` consolidates legacy uploads; `.env.example` documents the full provider env-var set.

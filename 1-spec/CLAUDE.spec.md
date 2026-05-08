@@ -137,7 +137,7 @@ When an artifact (goal, user story, requirement) is no longer relevant:
 | [REQ-F-fusion-interpretation-endpoint](requirements/REQ-F-fusion-interpretation-endpoint.md) | Functional | Must-have | Approved | `POST /api/public/fusion-interpretation` returns the contract interpretation envelope. |
 | [REQ-F-newsletter-signup-endpoint](requirements/REQ-F-newsletter-signup-endpoint.md) | Functional | Must-have | Approved | `POST /api/public/newsletter-signup` confirms a consenting subscription. |
 | [REQ-F-null-birth-time-accepted](requirements/REQ-F-null-birth-time-accepted.md) | Functional | Must-have | Approved | Chart endpoint accepts `birthTime: null` and renders ascendant as provisional. |
-| [REQ-F-fufire-chart-mapping](requirements/REQ-F-fufire-chart-mapping.md) | Functional | Must-have | Approved | FuFirE provider maps the chart contract to the upstream `/chart` schema exactly. |
+| [REQ-F-fufire-chart-mapping](requirements/REQ-F-fufire-chart-mapping.md) | Functional | Must-have | Draft | FuFirE provider maps the chart contract to the upstream `/v1/fusion` schema (downgraded 2026-05-08 per DEC-fufire-baseline; awaiting re-approval). |
 | [REQ-F-stub-mode-toggle](requirements/REQ-F-stub-mode-toggle.md) | Functional | Must-have | Approved | `PUBLIC_API_STUB_MODE` switches between fixture and live modes by env-var only. |
 | [REQ-F-config-validation-live](requirements/REQ-F-config-validation-live.md) | Functional | Must-have | Approved | Missing live env vars fail startup with `CONFIGURATION_ERROR` listing every variable. |
 | [REQ-F-envelope-byte-compat](requirements/REQ-F-envelope-byte-compat.md) | Functional | Should-have | Approved | Stub-mode and live-mode envelopes are byte-compatible in shape. |
@@ -163,7 +163,7 @@ When an artifact (goal, user story, requirement) is no longer relevant:
 
 | File | Category | Status | Risk | Summary |
 |------|----------|--------|------|---------|
-| [ASM-fufire-api-available](assumptions/ASM-fufire-api-available.md) | Technology | Unverified | High | FuFirE/BAFE chart engine reachable with documented `/chart` schema at launch. |
+| [ASM-fufire-api-available](assumptions/ASM-fufire-api-available.md) | Technology | Verified | High | FuFirE/BAFE chart engine reachable with documented `/v1/fusion` schema at launch. |
 | [ASM-interpretation-vendor-selectable](assumptions/ASM-interpretation-vendor-selectable.md) | Business | Unverified | Medium | A Gemini or equivalent proxy interpretation vendor will be procurable at acceptable terms. |
 | [ASM-newsletter-vendor-gdpr-compliant](assumptions/ASM-newsletter-vendor-gdpr-compliant.md) | Regulatory | Unverified | Medium | A GDPR-compliant newsletter vendor with double opt-in + JSON API will be selected before launch. |
 | [ASM-geocoding-vendor-affordable](assumptions/ASM-geocoding-vendor-affordable.md) | Business | Unverified | Medium | A geocoding + timezone vendor will be affordable at expected pre-launch traffic. |

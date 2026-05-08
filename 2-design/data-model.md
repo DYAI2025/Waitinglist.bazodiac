@@ -109,7 +109,7 @@ Frozen `error.code` values: `VALIDATION_ERROR`, `CONSENT_REQUIRED`, `INVALID_EMA
 
 ## Internal Mapping: Public ↔ FuFirE Schema
 
-Inside the `fufireProvider`, the public `ChartRequest` is translated into an upstream FuFirE `/chart` payload, and the response is mapped back into a public `FusionChart`. This mapping is the only place where the upstream schema appears.
+Inside the `fufireProvider`, the public `ChartRequest` is translated into an upstream FuFirE `/v1/fusion` payload, and the response is mapped back into a public `FusionChart`. This mapping is the only place where the upstream schema appears.
 
 | Public field | FuFirE outbound (`buildFufireRequest`) | FuFirE inbound (`mapFufireResponse`) |
 |---|---|---|

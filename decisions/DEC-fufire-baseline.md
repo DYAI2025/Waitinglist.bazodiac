@@ -6,7 +6,7 @@
 
 **Scope**: backend (`src/providers/fufireProvider.mjs` + production env-vars)
 
-**Source**: [REQ-F-fufire-chart-mapping](../1-spec/requirements/REQ-F-fufire-chart-mapping.md), [CON-fufire-chart-endpoint](../1-spec/constraints/CON-fufire-chart-endpoint.md), [ASM-fufire-api-available](../1-spec/assumptions/ASM-fufire-api-available.md)
+**Source**: [REQ-F-fufire-chart-mapping](../1-spec/requirements/REQ-F-fufire-chart-mapping.md) (currently Draft 2026-05-08, pending re-approval), [CON-fufire-chart-endpoint](../1-spec/constraints/CON-fufire-chart-endpoint.md), [ASM-fufire-api-available](../1-spec/assumptions/ASM-fufire-api-available.md)
 
 **Supersedes**: n/a
 

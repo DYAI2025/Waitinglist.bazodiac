@@ -29,7 +29,7 @@ Tests under [`tests/`](../../tests/); contract surface frozen in [`contracts/pub
   - `GET /`, `GET /<asset>` — static frontend delivery.
   - `OPTIONS *` — CORS preflight.
 - **Outbound HTTP (live mode only — `PUBLIC_API_STUB_MODE=false`)**:
-  - FuFirE chart engine: `POST {FUFIRE_BASE_URL}/chart`, header `X-API-Key: {FUFIRE_API_KEY}`. Mapped per `REQ-F-fufire-chart-mapping`.
+  - FuFirE chart engine: `POST {FUFIRE_BASE_URL}/v1/fusion`, header `X-API-Key: {FUFIRE_API_KEY}`. Mapped per `REQ-F-fufire-chart-mapping`.
   - Geocoding + Timezone APIs: vendor TBD (HTTP).
   - Interpretation API (Gemini-based): vendor TBD (HTTP).
   - Newsletter API: vendor with double opt-in (HTTP).
@@ -45,7 +45,7 @@ All API responses use the stable envelope `{ok: true, ...}` or `{ok: false, erro
 | [REQ-F-fusion-interpretation-endpoint](../../1-spec/requirements/REQ-F-fusion-interpretation-endpoint.md) | Functional | Must-have | `POST /api/public/fusion-interpretation` returns the contract interpretation envelope. |
 | [REQ-F-newsletter-signup-endpoint](../../1-spec/requirements/REQ-F-newsletter-signup-endpoint.md) | Functional | Must-have | `POST /api/public/newsletter-signup` confirms a consenting subscription. |
 | [REQ-F-null-birth-time-accepted](../../1-spec/requirements/REQ-F-null-birth-time-accepted.md) | Functional | Must-have | Chart endpoint accepts `birthTime: null` and renders ascendant as provisional. |
-| [REQ-F-fufire-chart-mapping](../../1-spec/requirements/REQ-F-fufire-chart-mapping.md) | Functional | Must-have | FuFirE provider maps the chart contract to the upstream `/chart` schema exactly. |
+| [REQ-F-fufire-chart-mapping](../../1-spec/requirements/REQ-F-fufire-chart-mapping.md) | Functional | Must-have | FuFirE provider maps the chart contract to the upstream `/v1/fusion` schema (Draft, downgraded 2026-05-08 per DEC-fufire-baseline; awaiting re-approval). |
 | [REQ-F-stub-mode-toggle](../../1-spec/requirements/REQ-F-stub-mode-toggle.md) | Functional | Must-have | `PUBLIC_API_STUB_MODE` switches between fixture and live modes by env-var only. |
 | [REQ-F-config-validation-live](../../1-spec/requirements/REQ-F-config-validation-live.md) | Functional | Must-have | Missing live env vars fail startup with `CONFIGURATION_ERROR` listing every variable. |
 | [REQ-F-no-fixture-fallback-in-prod](../../1-spec/requirements/REQ-F-no-fixture-fallback-in-prod.md) | Functional | Must-have | Service layer must not return fixture data when `stubMode === false`. |
