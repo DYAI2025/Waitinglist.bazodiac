@@ -80,6 +80,7 @@ test('exits 2 when voice doc is missing the Watchwords heading', async () => {
   const { code, stderr } = await runScript(['--voice', voice, '--target', target]);
   assert.equal(code, 2);
   assert.match(stderr, /Watchwords/);
+  assert.match(stderr, new RegExp(voice.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 
   await rm(dir, { recursive: true });
 });

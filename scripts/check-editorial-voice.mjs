@@ -81,9 +81,24 @@ async function main() {
     ? resolve(args.target)
     : resolve(REPO_ROOT, 'public/index.html');
 
-  const voiceMd = await readFile(voicePath, 'utf-8');
-  const watchwords = extractWatchwords(voiceMd);
-  const html = await readFile(targetPath, 'utf-8');
+  let voiceMd;
+  try {
+    voiceMd = await readFile(voicePath, 'utf-8');
+  } catch (err) {
+    throw new Error(`failed to read editorial-voice doc at ${voicePath}: ${err.message}`);
+  }
+  let watchwords;
+  try {
+    watchwords = extractWatchwords(voiceMd);
+  } catch (err) {
+    throw new Error(`${err.message} (in ${voicePath})`);
+  }
+  let html;
+  try {
+    html = await readFile(targetPath, 'utf-8');
+  } catch (err) {
+    throw new Error(`failed to read target at ${targetPath}: ${err.message}`);
+  }
   const hints = findHints(html, watchwords);
 
   if (hints.length === 0) {
