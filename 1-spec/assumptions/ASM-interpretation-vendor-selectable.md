@@ -16,10 +16,11 @@ The Gemini family is widely available, and `src/providers/interpretationProvider
 
 ## Verification Plan
 
-1. Vendor evaluation matrix: Gemini direct vs. Vertex AI vs. OpenRouter vs. self-hosted (ollama / llama.cpp), scoring on cost per 1k tokens, rate limits, latency, content filtering, and EU data-residency.
-2. Cost projection: estimated requests per visitor × target visitor volume × cost per request — compared against pre-launch budget.
-3. Contract / data-handling review with the privacy-compliance owner before signing.
-4. Runtime verification post-selection: `INTERPRETATION_API_URL` + `GEMINI_API_KEY` set in staging; integration smoke produces non-empty `interpretation.body` against real birth data.
+**Trigger:** `TASK-decide-interpretation-vendor` resolves — either to a chosen path (Gemini direct / proxy router) or to `DEC-no-separate-interpretation-vendor` (BAFE's `/v1/experience/daily` returns `summary`, `themes`, `caution`, `opportunity` natively per `2-design/external-context/bafe-api-reference.md`).
+**Method:** If a vendor is chosen, verification is a successful end-to-end call producing acceptable DE+EN content quality. If no vendor is needed, the assumption is closed via `Status: Verified — N/A (BAFE-native interpretation sufficient)`.
+**Owner:** [STK-founder](../stakeholders.md)
+**Target date:** Post-Phase-2 vendor-decision resolution.
+**Records to update on verification:** Status field (`Unverified` → `Verified`); add a `## Verification Evidence` section with date and evidence link; if applicable, add a `## Resolved by` section linking to the relevant `DEC-*`.
 
 ## Related Artifacts
 

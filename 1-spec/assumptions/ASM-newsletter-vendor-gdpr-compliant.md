@@ -16,10 +16,11 @@ Several EU-friendly newsletter vendors meet these criteria. The selection is a c
 
 ## Verification Plan
 
-1. Vendor evaluation matrix scoring: GDPR (consent storage + audit trail, deletion + export endpoints, EU data-residency or SCCs), JSON API stability, double-opt-in support, error semantics, pricing.
-2. Privacy-compliance owner sign-off on the selected vendor's data-processing terms.
-3. Implement vendor-specific request/response mapping in `src/providers/newsletterProvider.mjs` and exercise via a staging signup; verify confirmation email lands and that re-subscription is handled per [`REQ-F-idempotent-newsletter-signup`](../requirements/REQ-F-idempotent-newsletter-signup.md).
-4. Confirm consent records are retrievable and deletable per GDPR.
+**Trigger:** `TASK-decide-newsletter-vendor` resolves to a chosen vendor (Brevo / ConvertKit / Buttondown / other).
+**Method:** Vendor's published GDPR/DPA documentation reviewed by `STK-privacy-compliance-owner`; double-opt-in mechanic verified via test signup with confirmation-email round-trip; data-retention + right-to-erasure flow documented in the runbook.
+**Owner:** [STK-privacy-compliance-owner](../stakeholders.md)
+**Target date:** Post-Phase-2 vendor-decision resolution.
+**Records to update on verification:** Status field (`Unverified` → `Verified`); add a `## Verification Evidence` section with date and evidence link; if applicable, add a `## Resolved by` section linking to the relevant `DEC-*`.
 
 ## Related Artifacts
 

@@ -16,9 +16,11 @@ The founder ([STK-founder](../stakeholders.md)) is based in DE-EU; the primary i
 
 ## Verification Plan
 
-1. Marketing / audience research: which languages are spoken by the visitors targeted by pre-launch outreach (ads, social, partnerships)?
-2. Once early signups exist: signup-language analytics — what fraction of subscribers chose DE vs EN, and is there a long tail of "neither" that suggests demand for a third locale?
-3. Re-evaluate after 3 months of data; if a clear third-locale demand emerges, add it (the i18n + tooltip-string structure already supports any number of locales).
+**Trigger:** First wave of public-traffic analytics post-launch (Phase 4 cutover or first 30 days of public availability, whichever comes first).
+**Method:** Track language-toggle ratio + EN-content engagement metrics in production analytics. Threshold: if EN sessions are < 5% of total over a rolling 30-day window, the assumption is invalidated and the language strategy revisits (potential addition of further locales or de-prioritization of EN).
+**Owner:** [STK-founder](../stakeholders.md)
+**Target date:** 30 days post-public-launch.
+**Records to update on verification:** Status field (`Unverified` → `Verified`); add a `## Verification Evidence` section with date and analytics-snapshot reference; if invalidated instead, change Status to `Invalidated` and surface a follow-up artefact.
 
 ## Related Artifacts
 

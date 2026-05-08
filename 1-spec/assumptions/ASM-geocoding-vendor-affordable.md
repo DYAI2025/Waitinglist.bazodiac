@@ -16,11 +16,11 @@ Pre-launch traffic is expected to be modest (hundreds to low thousands of chart 
 
 ## Verification Plan
 
-1. Traffic projection from pre-launch outreach: number of expected unique visitors × percentage that submit birth data → expected geocoding + timezone request volume per month.
-2. Vendor short-list with quota and per-request cost (free-tier ceiling, paid-tier overage cost).
-3. Pricing review against pre-launch budget; selection.
-4. Optional: design (and record as a decision) an explicit geocoding cache for `birthPlace → coordinates` lookups, since `birthPlace` strings repeat across users (per [`CON-no-silent-provider-fallback`](../constraints/CON-no-silent-provider-fallback.md), any cache must be explicit and marked).
-5. Runtime: integration smoke against `GEOCODING_API_URL` + `TIMEZONE_API_URL` with valid keys.
+**Trigger:** `TASK-decide-geocoding-vendor` resolves — either to a chosen vendor (e.g., Mapbox / OpenCage / Google) or to `DEC-no-geocoding-vendor` (vendor not needed because BAFE accepts `lat`/`lon` directly per `DEC-fufire-baseline`).
+**Method:** If a vendor is chosen, verification happens when its monthly invoice + traffic-projection arithmetic confirms affordability against the project's budget posture. If no vendor is needed, the assumption becomes vacuously true and is closed via `Status: Verified — N/A (vendor not selected)`.
+**Owner:** [STK-founder](../stakeholders.md)
+**Target date:** Post-Phase-2 vendor-decision resolution.
+**Records to update on verification:** Status field (`Unverified` → `Verified`); add a `## Verification Evidence` section with date and evidence link; if applicable, add a `## Resolved by` section linking to the relevant `DEC-*`.
 
 ## Related Artifacts
 
