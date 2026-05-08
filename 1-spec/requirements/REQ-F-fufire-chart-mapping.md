@@ -2,13 +2,19 @@
 
 **Type**: Functional
 
-**Status**: Approved
+**Status**: Draft
 
 **Priority**: Must-have
+
+**Last updated**: 2026-05-08
 
 **Source**: [CON-fufire-chart-endpoint](../constraints/CON-fufire-chart-endpoint.md)
 
 **Source stakeholder**: [STK-upstream-provider-maintainers](../stakeholders.md)
+
+## Status downgrade — 2026-05-08
+
+This requirement was Approved on the assumption that the upstream chart endpoint was `/chart`. The 2026-05-08 BAFE API documentation snapshot ([`../../2-design/external-context/bafe-api-reference.md`](../../2-design/external-context/bafe-api-reference.md)) corrected this: the actual production endpoint is `POST /v1/fusion`. Per [`DEC-fufire-baseline`](../../decisions/DEC-fufire-baseline.md), the requirement title and acceptance criteria were rewritten in commit `0fc253b` to reference `/v1/fusion` instead of `/chart`, and the status is downgraded **Approved → Draft** to flag that re-approval by [STK-upstream-provider-maintainers](../stakeholders.md) is required before the requirement resumes Active enforcement. The frozen response mapping is also marked provisional pending live verification in Phase 3 (`TASK-configure-fufire-live`).
 
 ## Description
 

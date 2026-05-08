@@ -141,7 +141,7 @@ All 7 Active constraints are respected: same-origin Node deployment, single `pub
 
 ## Design Risks
 
-- `ASM-fufire-api-available` (High, Unverified): the entire live-mode chart path depends on the upstream FuFirE engine matching the documented `/chart` schema. A schema drift breaks `REQ-F-fufire-chart-mapping` until `mapFufireResponse` is updated.
+- `ASM-fufire-api-available` (High, Unverified): the entire live-mode chart path depends on the upstream FuFirE engine matching the documented `/v1/fusion` schema. A schema drift breaks `REQ-F-fufire-chart-mapping` until `mapFufireResponse` is updated.
 - `ASM-interpretation-vendor-selectable`, `ASM-newsletter-vendor-gdpr-compliant`, `ASM-geocoding-vendor-affordable` (Medium, Unverified): provider modules are scaffolded with generic interfaces; a vendor that does not match those interfaces forces provider rewrites, not architecture changes.
 
 ## Architectural Decisions
