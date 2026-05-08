@@ -12,6 +12,7 @@ This phase handles **deployment and operations**. Focus on reliability, repeatab
 |------|-------|---------|
 | [DEC-zero-runtime-deps](../decisions/DEC-zero-runtime-deps.md) | Zero runtime dependencies (Node built-ins only) | When reviewing the build/install path or considering adding a CDN, edge function, or framework. |
 | [DEC-same-origin-monolith](../decisions/DEC-same-origin-monolith.md) | Same-origin Node monolith (static + API in one process) | When designing CI/CD, hosting, or proxy/CDN layout. |
+| [DEC-fufire-baseline](../decisions/DEC-fufire-baseline.md) | Consume the deployed BAFE engine as the FuFirE provider | When configuring production environment variables for the adapter (`FUFIRE_BASE_URL`, `FUFIRE_API_KEY`). |
 <!-- Add rows as decisions are recorded. File column: [DEC-kebab-name](../decisions/DEC-kebab-name.md) -->
 
 ---

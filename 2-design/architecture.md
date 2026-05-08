@@ -14,7 +14,7 @@ graph LR
   Browser["User Browser<br/>public/index.html"]
   Server["Node Adapter<br/>server.mjs + src/"]
   Fixtures[("contracts/fixtures/")]
-  FuFirE["FuFirE Engine<br/>POST {FUFIRE_BASE_URL}/chart"]
+  FuFirE["FuFirE Engine<br/>POST {FUFIRE_BASE_URL}/v1/fusion"]
   Geo["Geocoding + Timezone APIs"]
   Interp["Interpretation API<br/>(Gemini-based)"]
   News["Newsletter API"]
@@ -88,7 +88,7 @@ graph TD
 
 | Provider | Protocol | Active constraint |
 |---|---|---|
-| FuFirE chart engine | `POST {FUFIRE_BASE_URL}/chart`, header `X-API-Key` | `CON-fufire-chart-endpoint`, `REQ-F-fufire-chart-mapping`, `ASM-fufire-api-available` (Unverified High) |
+| FuFirE chart engine | `POST {FUFIRE_BASE_URL}/v1/fusion`, header `X-API-Key` | `CON-fufire-chart-endpoint` (Draft, awaiting re-approval), `REQ-F-fufire-chart-mapping`, `DEC-fufire-baseline`, `ASM-fufire-api-available` (Verified 2026-05-08) |
 | Geocoding + Timezone | HTTP, vendor TBD | `ASM-geocoding-vendor-affordable` (Unverified Medium) |
 | Interpretation (Gemini-based) | HTTP, vendor TBD | `ASM-interpretation-vendor-selectable` (Unverified Medium) |
 | Newsletter | HTTP, vendor with double opt-in | `ASM-newsletter-vendor-gdpr-compliant` (Unverified Medium) |
@@ -154,3 +154,4 @@ The following decisions govern this architecture. Read them before changing comp
 | [DEC-zero-runtime-deps](../decisions/DEC-zero-runtime-deps.md) | Zero runtime dependencies — `node:*` built-ins only. |
 | [DEC-frozen-error-codes](../decisions/DEC-frozen-error-codes.md) | Frozen ALL_CAPS `ERROR_CODES` set as contract surface. |
 | [DEC-same-origin-monolith](../decisions/DEC-same-origin-monolith.md) | Same-origin Node monolith (static + API in one process) for the preview iteration. |
+| [DEC-fufire-baseline](../decisions/DEC-fufire-baseline.md) | Consume the deployed BAFE engine as the FuFirE provider; production endpoint `POST {FUFIRE_BASE_URL}/v1/fusion` with `ff_pro_*` API key tier. |

@@ -1,14 +1,20 @@
-# CON-fufire-chart-endpoint: FuFirE engine is reached at `POST {FUFIRE_BASE_URL}/chart` exactly
+# CON-fufire-chart-endpoint: FuFirE engine is reached at `POST {FUFIRE_BASE_URL}/v1/fusion` exactly
 
 **Category**: Technical
 
-**Status**: Active
+**Status**: Draft
+
+**Last updated**: 2026-05-08
 
 **Source stakeholder**: [STK-upstream-provider-maintainers](../stakeholders.md)
 
+## Status downgrade — 2026-05-08
+
+This constraint was Approved on the assumption that the upstream chart endpoint was `/chart`. The 2026-05-08 BAFE API documentation snapshot ([`../../2-design/external-context/bafe-api-reference.md`](../../2-design/external-context/bafe-api-reference.md)) corrected this: the actual production endpoint is `POST /v1/fusion` (the previous `/chart` path is not exposed by the deployed BAFE engine). The constraint body has been rewritten to match the corrected endpoint, and the status is downgraded **Approved → Draft** to flag that re-approval by [STK-upstream-provider-maintainers](../stakeholders.md) is required before the constraint resumes Active enforcement. The frozen response mapping is also marked provisional pending live verification in Phase 3 (`TASK-configure-fufire-live`).
+
 ## Description
 
-The FuFirE chart engine is reached at exactly **`POST {FUFIRE_BASE_URL}/chart`** with header `X-API-Key: ${FUFIRE_API_KEY}` and `Content-Type: application/json`.
+The FuFirE chart engine is reached at exactly **`POST {FUFIRE_BASE_URL}/v1/fusion`** with header `X-API-Key: ${FUFIRE_API_KEY}` and `Content-Type: application/json`.
 
 The frozen request payload schema:
 
@@ -21,7 +27,7 @@ The frozen request payload schema:
 - `time_standard: "CIVIL"`
 - `day_boundary: "midnight"`
 
-The frozen response mapping consumed by the adapter:
+The frozen response mapping consumed by the adapter (provisional pending live verification — see [`DEC-fufire-baseline`](../../decisions/DEC-fufire-baseline.md), Known gap):
 
 - `positions.Sun.sign` → `chart.sunSign`
 - `positions.Moon.sign` → `chart.moonSign`
@@ -38,7 +44,12 @@ This is the boundary contract jointly owned with the FuFirE/BAFE team. Any devia
 
 ## Impact
 
-- `src/providers/fufireProvider.mjs` is the single integration point with FuFirE. No other module may construct or send `/chart` requests.
+- `src/providers/fufireProvider.mjs` is the single integration point with FuFirE. No other module may construct or send `/v1/fusion` requests.
 - Changing the URL path, header name, payload constants, or response field mapping requires a coordinated change with the FuFirE team and a migration plan (versioned endpoint, parallel rollout).
 - The mapping is enforced by `tests/fufire-provider.test.mjs` — payload constants, response shape, German/English wuXing keys, provisional ascendant blanking, and HTTP-error → `FUFIRE_UNAVAILABLE` mapping are all verified.
 - Implies the requirement [REQ-F-fufire-chart-mapping](../requirements/REQ-F-fufire-chart-mapping.md): a formal lock of this mapping.
+
+## Related Artifacts
+
+- [DEC-fufire-baseline](../../decisions/DEC-fufire-baseline.md) — records the deployed BAFE engine baseline (production URL, API-key tier, rate limits, selected upstream endpoint) that this constraint inherits from.
+- [`../../2-design/external-context/bafe-api-reference.md`](../../2-design/external-context/bafe-api-reference.md) — verbatim BAFE API documentation snapshot captured 2026-05-08; primary verification artefact for the endpoint correction.

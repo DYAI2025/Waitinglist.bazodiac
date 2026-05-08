@@ -84,6 +84,7 @@ When an artifact (goal, user story, requirement) is no longer relevant:
 
 | File | Title | Trigger |
 |------|-------|---------|
+| [DEC-fufire-baseline](../decisions/DEC-fufire-baseline.md) | Consume the deployed BAFE engine as the FuFirE provider | When reviewing `CON-fufire-chart-endpoint` for re-approval; when assessing whether `ASM-fufire-api-available` needs re-verification. |
 <!-- Add rows as decisions are recorded. File column: [DEC-kebab-name](../decisions/DEC-kebab-name.md) -->
 
 ---
@@ -179,7 +180,7 @@ When an artifact (goal, user story, requirement) is no longer relevant:
 | [CON-react-archive-inactive](constraints/CON-react-archive-inactive.md) | Technical | Active | `archive/` is reference-only and not build-ready. |
 | [CON-stub-mode-dev-only](constraints/CON-stub-mode-dev-only.md) | Operational | Active | `PUBLIC_API_STUB_MODE=true` is dev/preview only; production must set `false` explicitly. |
 | [CON-no-synthesized-data-in-prod](constraints/CON-no-synthesized-data-in-prod.md) | Operational | Active | Production must not synthesize astrology, interpretation, or signup data. |
-| [CON-fufire-chart-endpoint](constraints/CON-fufire-chart-endpoint.md) | Technical | Active | FuFirE engine reached at exactly `POST {FUFIRE_BASE_URL}/chart` with frozen payload + response mapping. |
+| [CON-fufire-chart-endpoint](constraints/CON-fufire-chart-endpoint.md) | Technical | Draft | FuFirE engine reached at exactly `POST {FUFIRE_BASE_URL}/v1/fusion` with frozen payload + response mapping. Downgraded 2026-05-08 per `DEC-fufire-baseline`; awaiting re-approval. |
 | [CON-no-silent-provider-fallback](constraints/CON-no-silent-provider-fallback.md) | Technical | Active | Production fails closed with a structured error; stub mode is the only allowed fixture path. |
 | [CON-same-origin-node-deployment](constraints/CON-same-origin-node-deployment.md) | Operational | Active | Preferred deployment for this iteration: single Node process serving static + API same-origin. |
 <!-- Add rows as constraints are created. File column: [CON-kebab-name](constraints/CON-kebab-name.md) -->

@@ -22,7 +22,18 @@ This phase defines **how** we're building the system. Focus on architecture, dat
 | [DEC-zero-runtime-deps](../decisions/DEC-zero-runtime-deps.md) | Zero runtime dependencies (Node built-ins only) | When proposing a new HTTP framework, runtime dependency, or build-tool integration. |
 | [DEC-frozen-error-codes](../decisions/DEC-frozen-error-codes.md) | Frozen ALL_CAPS error code set as contract surface | When adding or changing an error code in `api-design.md` or `data-model.md`. |
 | [DEC-same-origin-monolith](../decisions/DEC-same-origin-monolith.md) | Same-origin Node monolith (static + API in one process) | When proposing component boundaries, deployment topology, or a CDN integration. |
+| [DEC-fufire-baseline](../decisions/DEC-fufire-baseline.md) | Consume the deployed BAFE engine as the FuFirE provider | When modifying the upstream-FuFirE schema mapping in `data-model.md` or `api-design.md`, or when introducing a new BAFE endpoint to the architecture. |
 <!-- Add rows as decisions are recorded. File column: [DEC-kebab-name](../decisions/DEC-kebab-name.md) -->
+
+---
+
+## External context
+
+Verbatim snapshots of upstream documentation referenced by design and decision artefacts live under [`external-context/`](external-context/). These files preserve the source language per the language-policy carve-out in [`../CLAUDE.md`](../CLAUDE.md); the live source-of-truth named in each file's frontmatter takes precedence on conflict.
+
+| File | Purpose |
+|------|---------|
+| [`external-context/bafe-api-reference.md`](external-context/bafe-api-reference.md) | BAFE / FuFirE engine API documentation snapshot (captured 2026-05-08); referenced by [`DEC-fufire-baseline`](../decisions/DEC-fufire-baseline.md), [`CON-fufire-chart-endpoint`](../1-spec/constraints/CON-fufire-chart-endpoint.md), and [`ASM-fufire-api-available`](../1-spec/assumptions/ASM-fufire-api-available.md). |
 
 ---
 
