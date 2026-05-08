@@ -28,4 +28,8 @@
 
 - [ASM-kebab-name](../assumptions/ASM-kebab-name.md) — [brief explanation of the relationship]
 
+## Implementation
+
+- [path/to/runbook-or-script](../../path/to/runbook-or-script) — [navigation aid linking to the runbook, script, or other artefact that implements this requirement. Use when the implementation lives in a separate file that future readers should be able to navigate to. Not a substitute for Acceptance Criteria.]
+
 -->
