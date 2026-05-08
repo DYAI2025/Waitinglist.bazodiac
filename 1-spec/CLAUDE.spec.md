@@ -137,7 +137,7 @@ When an artifact (goal, user story, requirement) is no longer relevant:
 | [REQ-F-fusion-interpretation-endpoint](requirements/REQ-F-fusion-interpretation-endpoint.md) | Functional | Must-have | Approved | `POST /api/public/fusion-interpretation` returns the contract interpretation envelope. |
 | [REQ-F-newsletter-signup-endpoint](requirements/REQ-F-newsletter-signup-endpoint.md) | Functional | Must-have | Approved | `POST /api/public/newsletter-signup` confirms a consenting subscription. |
 | [REQ-F-null-birth-time-accepted](requirements/REQ-F-null-birth-time-accepted.md) | Functional | Must-have | Approved | Chart endpoint accepts `birthTime: null` and renders ascendant as provisional. |
-| [REQ-F-fufire-chart-mapping](requirements/REQ-F-fufire-chart-mapping.md) | Functional | Must-have | Draft | FuFirE provider maps the chart contract to the upstream `/v1/fusion` schema (downgraded 2026-05-08 per DEC-fufire-baseline; awaiting re-approval). |
+| [REQ-F-fufire-chart-mapping](requirements/REQ-F-fufire-chart-mapping.md) | Functional | Must-have | Approved | FuFirE provider maps the chart contract to the upstream `/v1/fusion` schema. |
 | [REQ-F-stub-mode-toggle](requirements/REQ-F-stub-mode-toggle.md) | Functional | Must-have | Approved | `PUBLIC_API_STUB_MODE` switches between fixture and live modes by env-var only. |
 | [REQ-F-config-validation-live](requirements/REQ-F-config-validation-live.md) | Functional | Must-have | Approved | Missing live env vars fail startup with `CONFIGURATION_ERROR` listing every variable. |
 | [REQ-F-envelope-byte-compat](requirements/REQ-F-envelope-byte-compat.md) | Functional | Should-have | Approved | Stub-mode and live-mode envelopes are byte-compatible in shape. |
@@ -180,7 +180,7 @@ When an artifact (goal, user story, requirement) is no longer relevant:
 | [CON-react-archive-inactive](constraints/CON-react-archive-inactive.md) | Technical | Active | `archive/` is reference-only and not build-ready. |
 | [CON-stub-mode-dev-only](constraints/CON-stub-mode-dev-only.md) | Operational | Active | `PUBLIC_API_STUB_MODE=true` is dev/preview only; production must set `false` explicitly. |
 | [CON-no-synthesized-data-in-prod](constraints/CON-no-synthesized-data-in-prod.md) | Operational | Active | Production must not synthesize astrology, interpretation, or signup data. |
-| [CON-fufire-chart-endpoint](constraints/CON-fufire-chart-endpoint.md) | Technical | Draft | FuFirE engine reached at exactly `POST {FUFIRE_BASE_URL}/v1/fusion` with frozen payload + response mapping. Downgraded 2026-05-08 per `DEC-fufire-baseline`; awaiting re-approval. |
+| [CON-fufire-chart-endpoint](constraints/CON-fufire-chart-endpoint.md) | Technical | Active | FuFirE engine reached at exactly `POST {FUFIRE_BASE_URL}/v1/fusion` with frozen payload + response mapping. |
 | [CON-no-silent-provider-fallback](constraints/CON-no-silent-provider-fallback.md) | Technical | Active | Production fails closed with a structured error; stub mode is the only allowed fixture path. |
 | [CON-same-origin-node-deployment](constraints/CON-same-origin-node-deployment.md) | Operational | Active | Preferred deployment for this iteration: single Node process serving static + API same-origin. |
 <!-- Add rows as constraints are created. File column: [CON-kebab-name](constraints/CON-kebab-name.md) -->

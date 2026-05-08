@@ -2,15 +2,15 @@
 
 **Category**: Technical
 
-**Status**: Draft
+**Status**: Approved
 
 **Last updated**: 2026-05-08
 
 **Source stakeholder**: [STK-upstream-provider-maintainers](../stakeholders.md)
 
-## Status downgrade — 2026-05-08
+## Status history — 2026-05-08
 
-This constraint was Approved on the assumption that the upstream chart endpoint was `/chart`. The 2026-05-08 BAFE API documentation snapshot ([`../../2-design/external-context/bafe-api-reference.md`](../../2-design/external-context/bafe-api-reference.md)) corrected this: the actual production endpoint is `POST /v1/fusion` (the previous `/chart` path is not exposed by the deployed BAFE engine). The constraint body has been rewritten to match the corrected endpoint, and the status is downgraded **Approved → Draft** to flag that re-approval by [STK-upstream-provider-maintainers](../stakeholders.md) is required before the constraint resumes Active enforcement. The frozen response mapping is also marked provisional pending live verification in Phase 3 (`TASK-configure-fufire-live`).
+This constraint was Approved on the assumption that the upstream chart endpoint was `/chart`. The 2026-05-08 BAFE API documentation snapshot ([`../../2-design/external-context/bafe-api-reference.md`](../../2-design/external-context/bafe-api-reference.md)) corrected this: the actual production endpoint is `POST /v1/fusion` (the previous `/chart` path is not exposed by the deployed BAFE engine). The constraint body has been rewritten to match the corrected endpoint, and the status is downgraded **Approved → Draft** to flag that re-approval by [STK-upstream-provider-maintainers](../stakeholders.md) is required before the constraint resumes Active enforcement. The frozen response mapping is also marked provisional pending live verification in Phase 3 (`TASK-configure-fufire-live`). Re-approved 2026-05-08 by STK-founder after review of the /v1/fusion wording. Status restored to Approved.
 
 ## Description
 
