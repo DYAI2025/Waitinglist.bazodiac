@@ -63,7 +63,9 @@ function findHints(html, watchwords) {
       const end = Math.min(lines[i].length, idx + watchword.length + EXCERPT_SUFFIX_CHARS);
       const prefix = start > 0 ? '...' : '';
       const suffix = end < lines[i].length ? '...' : '';
-      const excerpt = `${prefix}${lines[i].slice(start, end).trim()}${suffix}`;
+      const rawExcerpt = lines[i].slice(start, end).trim();
+      const safeExcerpt = rawExcerpt.replace(/[\x00-\x1F\x7F]/g, '?');
+      const excerpt = `${prefix}${safeExcerpt}${suffix}`;
       hints.push({ line: i + 1, watchword, excerpt });
     }
   }

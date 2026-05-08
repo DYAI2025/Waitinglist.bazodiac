@@ -110,3 +110,19 @@ test('extracts watchwords when ## Watchwords is the last section in the doc', as
 
   await rm(dir, { recursive: true });
 });
+
+test('strips control characters from excerpts before printing', async () => {
+  const { dir, voice, target } = await setupFixtures(
+    `## Watchwords\n\n- Horoskop\n\n## End\n`,
+    `<p>before \x1B[31mHoroskop\x1B[0m after</p>\n`,
+  );
+
+  const { code, stdout } = await runScript(['--voice', voice, '--target', target]);
+  assert.equal(code, 0);
+  // The escape sequence (0x1B) must not appear in the output excerpt.
+  assert.doesNotMatch(stdout, /\x1B/);
+  // The placeholder should appear instead.
+  assert.match(stdout, /\?\[31mHoroskop\?\[0m/);
+
+  await rm(dir, { recursive: true });
+});
