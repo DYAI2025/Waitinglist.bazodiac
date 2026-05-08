@@ -17,6 +17,14 @@ This phase defines **what** we're building and **why**. Focus on clarity, measur
 
 ---
 
+## Language policy exception
+
+[`CLAUDE.md`](../CLAUDE.md) mandates English for all AI outputs. **Specification artefacts that document bilingual product content** (e.g., [`editorial-voice.md`](editorial-voice.md), which catalogs DE+EN editorial conventions) are exempt: their content has to be bilingual to do its job. Do not auto-translate these documents.
+
+All other Specification artefacts (goals, user stories, requirements, decisions, indexes, narrative descriptions) follow the English-only mandate.
+
+---
+
 ## AI Guidelines
 
 ### Per-artifact guidance
